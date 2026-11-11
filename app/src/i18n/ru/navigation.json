@@ -1,0 +1,58 @@
+{
+  "navigation": {
+    "menu": {
+      "footer_account": {
+        "account": "Аккаунт",
+        "updates": "Обновления",
+        "support": "Поддержка",
+        "ai_agent": "ИИ-агент",
+        "mcp_connection": "Подключение MCP",
+        "preferences": "Настройки",
+        "source_code": "Исходный код"
+      },
+      "user_dashboard": {
+        "overview": "Обзор",
+        "account": "Аккаунт",
+        "preferences": "Настройки",
+        "ai_agent": "ИИ-агент",
+        "mcp_connection": "Подключение MCP"
+      },
+      "org_dashboard": {
+        "websites": "Сайты",
+        "settings": "Настройки"
+      },
+      "org_settings": {
+        "general": "Основные",
+        "members": "Участники",
+        "sandbox": "Песочница"
+      },
+      "project_dashboard": {
+        "overview": "Обзор",
+        "media": "Медиафайлы",
+        "settings": "Настройки"
+      },
+      "project_settings": {
+        "general": "Основные",
+        "configure": "Конфигурация",
+        "git": "Git",
+        "schemas": "Схемы",
+        "snippets": "Фрагменты",
+        "arrangement": "Расположение"
+      }
+    },
+    "sidebar": {
+      "open_menu": "Открыть меню",
+      "code": "Код",
+      "config": "Конфиг",
+      "actions": {
+        "close": "Закрыть"
+      },
+      "sidebar_trigger_mobile": {
+        "title": "Список контента",
+        "description": "Просматривайте файлы контента на боковой панели",
+        "message": "Ищете контент? Откройте боковую панель, чтобы увидеть все файлы.",
+        "open_sidebar": "Открыть боковую панель"
+      }
+    }
+  }
+}

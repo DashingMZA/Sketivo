@@ -1,0 +1,28 @@
+{
+  "add-site": {
+    "add_new_site": "添加新网站",
+    "create_new_site": "创建新网站",
+    "import_site_desc": "选择导入网站的方式。",
+    "add_to_org_desc": "向您的组织添加一个新网站。",
+    "connected": "已连接",
+    "not_connected": "未连接",
+    "site_name_label": "网站名称",
+    "site_name_placeholder": "输入网站名称",
+    "git_provider_label": "Git 代码托管平台",
+    "choose_provider_placeholder": "选择平台",
+    "repository_label": "代码仓库",
+    "select_repository_placeholder": "选择一个代码仓库",
+    "branch_label": "分支 (Branch)",
+    "please_wait": "请稍候",
+    "choose_branch_placeholder": "选择分支",
+    "no_repository_found": "未找到代码仓库",
+    "cant_see_repo": "在此处未找到您的仓库？",
+    "configure_on": "在 {provider} 上配置访问权限",
+    "site_url_label": "网站网址 (可选)",
+    "site_url_placeholder": "https://example.com",
+    "back": "返回",
+    "create_site": "创建网站",
+    "project_created_success": "项目创建成功",
+    "something_went_wrong": "出错了！"
+  }
+}

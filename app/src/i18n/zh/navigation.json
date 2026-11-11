@@ -1,0 +1,58 @@
+{
+  "navigation": {
+    "menu": {
+      "footer_account": {
+        "account": "账户",
+        "updates": "更新日志",
+        "support": "帮助与支持",
+        "ai_agent": "AI 助手",
+        "mcp_connection": "MCP 连接",
+        "preferences": "偏好设置",
+        "source_code": "源代码"
+      },
+      "user_dashboard": {
+        "overview": "概览",
+        "account": "账户",
+        "preferences": "偏好设置",
+        "ai_agent": "AI 助手",
+        "mcp_connection": "MCP 连接"
+      },
+      "org_dashboard": {
+        "websites": "网站列表",
+        "settings": "设置"
+      },
+      "org_settings": {
+        "general": "通用",
+        "members": "成员",
+        "sandbox": "沙箱环境"
+      },
+      "project_dashboard": {
+        "overview": "概览",
+        "media": "媒体库",
+        "settings": "设置"
+      },
+      "project_settings": {
+        "general": "通用",
+        "configure": "配置",
+        "git": "Git",
+        "schemas": "模型结构 (Schemas)",
+        "snippets": "代码片段",
+        "arrangement": "内容排序"
+      }
+    },
+    "sidebar": {
+      "open_menu": "打开菜单",
+      "code": "代码",
+      "config": "配置",
+      "actions": {
+        "close": "关闭"
+      },
+      "sidebar_trigger_mobile": {
+        "title": "内容列表",
+        "description": "在侧边栏中查看所有内容文件",
+        "message": "正在查找内容文件？打开侧边栏即可查看全部文件。",
+        "open_sidebar": "打开侧边栏"
+      }
+    }
+  }
+}

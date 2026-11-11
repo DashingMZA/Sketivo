@@ -1,0 +1,58 @@
+{
+  "navigation": {
+    "menu": {
+      "footer_account": {
+        "account": "Tài khoản",
+        "updates": "Cập nhật",
+        "support": "Hỗ trợ",
+        "ai_agent": "Trợ lý AI",
+        "mcp_connection": "Kết nối MCP",
+        "preferences": "Tùy chọn",
+        "source_code": "Mã nguồn"
+      },
+      "user_dashboard": {
+        "overview": "Tổng quan",
+        "account": "Tài khoản",
+        "preferences": "Tùy chọn",
+        "ai_agent": "Trợ lý AI",
+        "mcp_connection": "Kết nối MCP"
+      },
+      "org_dashboard": {
+        "websites": "Trang web",
+        "settings": "Cài đặt"
+      },
+      "org_settings": {
+        "general": "Cài đặt chung",
+        "members": "Thành viên",
+        "sandbox": "Sandbox"
+      },
+      "project_dashboard": {
+        "overview": "Tổng quan",
+        "media": "Tệp đa phương tiện",
+        "settings": "Cài đặt"
+      },
+      "project_settings": {
+        "general": "Cài đặt chung",
+        "configure": "Cấu hình",
+        "git": "Git",
+        "schemas": "Schema",
+        "snippets": "Đoạn mã mẫu",
+        "arrangement": "Sắp xếp"
+      }
+    },
+    "sidebar": {
+      "open_menu": "Mở menu",
+      "code": "Mã nguồn",
+      "config": "Cấu hình",
+      "actions": {
+        "close": "Đóng"
+      },
+      "sidebar_trigger_mobile": {
+        "title": "Danh sách nội dung",
+        "description": "Xem tất cả tệp nội dung từ thanh bên",
+        "message": "Đang tìm tệp nội dung? Mở thanh bên để xem toàn bộ danh sách.",
+        "open_sidebar": "Mở thanh bên"
+      }
+    }
+  }
+}

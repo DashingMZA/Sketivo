@@ -1,0 +1,180 @@
+{
+  "org": {
+    "create": {
+      "add_org_btn": "Thêm tổ chức mới",
+      "dialog_title": "Tạo tổ chức mới",
+      "dialog_desc": "Thêm một tổ chức mới vào tài khoản của bạn.",
+      "demo_error": "Bạn không thể tạo tổ chức mới trong chế độ demo.",
+      "success": "Tạo tổ chức thành công. Bây giờ bạn có thể thêm thành viên.",
+      "name_label": "Tên tổ chức",
+      "submit_btn": "Tạo tổ chức"
+    },
+    "switcher": {
+      "default_org": "Tổ chức",
+      "search": "Tìm kiếm...",
+      "not_found": "Không tìm thấy tổ chức nào.",
+      "add_new": "Thêm tổ chức mới"
+    },
+    "general": {
+      "form": {
+        "title": "Tên tổ chức",
+        "description": "Cập nhật tên tổ chức của bạn",
+        "update_btn": "Cập nhật tổ chức",
+        "demo_error": "Bạn không thể cập nhật tổ chức trong chế độ demo.",
+        "success": "Đã cập nhật tổ chức thành công."
+      },
+      "archive": {
+        "title_archive": "Lưu trữ tổ chức",
+        "title_restore": "Khôi phục tổ chức",
+        "desc_archive": "Lưu trữ tổ chức này — tổ chức sẽ bị ẩn khỏi danh sách hoạt động nhưng có thể khôi phục sau này.",
+        "desc_restore": "Tổ chức này đang được lưu trữ. Bạn có thể khôi phục để kích hoạt lại.",
+        "archive_btn": "Lưu trữ tổ chức",
+        "restore_btn": "Khôi phục tổ chức",
+        "dialog_title_archive": "Lưu trữ tổ chức",
+        "dialog_title_restore": "Khôi phục tổ chức",
+        "dialog_desc_archive": "Lưu trữ sẽ ẩn tổ chức khỏi danh sách đang hoạt động. Bạn có thể khôi phục lại khi cần.",
+        "dialog_desc_restore": "Khôi phục tổ chức này và kích hoạt lại. Nội dung và cài đặt vẫn được bảo toàn.",
+        "success_archive": "Đã lưu trữ tổ chức thành công.",
+        "success_restore": "Đã khôi phục tổ chức về trạng thái hoạt động.",
+        "error": "Cập nhật tổ chức thất bại. Vui lòng thử lại sau."
+      },
+      "delete": {
+        "title": "Xóa tổ chức",
+        "description": "Xóa tổ chức sẽ xóa vĩnh viễn tất cả dự án, thành viên và cài đặt. Thao tác này không thể hoàn tác.",
+        "delete_org_btn": "Xóa tổ chức",
+        "dialog_title": "Bạn có chắc chắn không?",
+        "dialog_desc": "Xóa tổ chức sẽ xóa vĩnh viễn toàn bộ dữ liệu dự án và thành viên.",
+        "placeholder": "Nhập CONFIRM để xác nhận",
+        "demo_error": "Bạn không thể xóa tổ chức demo.",
+        "success": "Đã xóa tổ chức thành công",
+        "error": "Đã xảy ra lỗi"
+      },
+      "avatar": {
+        "title": "Ảnh đại diện / Logo tổ chức",
+        "description": "Làm nổi bật tổ chức của bạn bằng cách thêm ảnh đại diện.",
+        "demo_error": "Bạn không thể cập nhật tổ chức trong chế độ demo.",
+        "success": "Đã cập nhật ảnh đại diện tổ chức thành công."
+      },
+      "leave": {
+        "title": "Leave Organization",
+        "description": "Revoke your access to this organization. You will need an invite from an owner or admin to rejoin.",
+        "leave_org_btn": "Leave Organization",
+        "dialog_title": "Leave Organization?",
+        "dialog_desc": "Are you sure you want to leave this organization? You will immediately lose access to all its projects, media, and settings.",
+        "placeholder": "type CONFIRM to confirm",
+        "demo_error": "You cannot leave organizations in demo mode.",
+        "success": "You have left the organization.",
+        "error": "Failed to leave the organization."
+      }
+    },
+    "members": {
+      "title": "Thành viên nhóm",
+      "description": "Quản lý các thành viên trong nhóm và phân quyền",
+      "anonymous": "Ẩn danh",
+      "roles": {
+        "owner": "Chủ sở hữu (Owner)",
+        "admin": "Quản trị viên (Admin)",
+        "editor": "Biên tập viên (Editor)"
+      },
+      "add_member": {
+        "add_member_btn": "Thêm thành viên",
+        "dialog_title": "Thêm thành viên nhóm",
+        "dialog_desc": "Thêm một thành viên mới vào tổ chức của bạn.",
+        "email_label": "Email",
+        "email_placeholder": "Nhập email",
+        "role_label": "Vai trò",
+        "role_placeholder": "Chọn vai trò",
+        "roles_group": "Danh sách vai trò",
+        "demo_error": "Tính năng này không khả dụng trong chế độ demo.",
+        "error": "Không thể thêm thành viên vào tổ chức."
+      },
+      "actions": {
+        "delete_user": "Xóa người dùng",
+        "remove_member": "Xóa thành viên",
+        "make": "Chuyển thành",
+        "are_you_sure": "Bạn có chắc chắn không?",
+        "delete_warning": "Thao tác này không thể hoàn tác và sẽ xóa vĩnh viễn.",
+        "placeholder": "Nhập CONFIRM để xác nhận",
+        "demo_error_delete": "Bạn không thể xóa người dùng trong chế độ demo.",
+        "demo_error_update": "Tính năng này không khả dụng trong chế độ demo.",
+        "success_delete": "Đã xóa người dùng thành công.",
+        "error_delete_suffix": "Bạn không có quyền xóa người dùng này.",
+        "error_update_fn": "Chức năng cập nhật không khả dụng",
+        "success_update": "Vai trò của thành viên đã được cập nhật thành công.",
+        "error_generic": "Đã xảy ra lỗi",
+        "leave_org": "Leave Organization",
+        "leave_warning": "Are you sure you want to leave this organization? You will immediately lose access to all projects and settings in this organization.",
+        "demo_error_leave": "You cannot leave organizations in demo mode.",
+        "success_leave": "You have left the organization."
+      }
+    },
+    "sandbox": {
+      "title": "Sandbox Vercel",
+      "description": "Kết nối mã token truy cập Vercel để bật tính năng xem trước trực tiếp cho các dự án của bạn.",
+      "connected": "Đã kết nối",
+      "account": "Tài khoản",
+      "project": "Dự án (thanh toán)",
+      "project_label": "Dự án",
+      "disconnect_btn": "Ngắt kết nối",
+      "disconnecting": "Đang ngắt kết nối...",
+      "token_label": "Mã Token Truy Cập Vercel",
+      "token_placeholder": "Dán mã token Vercel của bạn",
+      "create_token_link": "Tạo mã token Vercel mới",
+      "step1": "Tạo mã token Vercel với toàn quyền truy cập tài khoản.",
+      "step2": "Dán vào ô bên dưới và nhấp vào Kết nối.",
+      "step3": "Một dự án sandbox riêng sẽ tự động được tạo trên tài khoản Vercel của bạn.",
+      "connect_btn": "Kết nối",
+      "connecting": "Đang kết nối...",
+      "save_token_btn": "Lưu token",
+      "update_token_btn": "Cập nhật token",
+      "cancel_btn": "Hủy",
+      "status_validating": "Đang xác thực token",
+      "status_creating_project": "Đang tạo dự án sandbox",
+      "status_saving": "Đang lưu cài đặt",
+      "disconnect_confirm_title": "Ngắt kết nối Sandbox Vercel?",
+      "disconnect_confirm_desc": "Bản xem trước sandbox sẽ ngừng hoạt động cho tất cả các dự án trong tổ chức này.",
+      "disconnect_confirm_btn": "Ngắt kết nối",
+      "disconnect_cancel_btn": "Hủy",
+      "toast_token_required": "Vui lòng nhập mã token Vercel của bạn",
+      "toast_connect_success": "Đã kết nối sandbox thành công",
+      "toast_connect_success_desc": "Xem trước sandbox giờ đây sẽ chạy trên tài khoản Vercel của {username}.",
+      "toast_connect_error": "Kết nối sandbox thất bại",
+      "toast_disconnect_success": "Đã ngắt kết nối sandbox",
+      "toast_disconnect_error": "Ngắt kết nối thất bại",
+      "no_permission": "Chỉ chủ sở hữu và quản trị viên tổ chức mới có thể quản lý cài đặt sandbox.",
+      "select_team_title": "Chọn tài khoản Vercel",
+      "personal_account": "Tài khoản cá nhân",
+      "team_label": "Nhóm",
+      "change_token": "Đổi token",
+      "security_title": "Bảo mật & Quyền riêng tư",
+      "security0": "Sandbox chạy **lệnh `dev`** của dự án của bạn (ví dụ: `npm run dev`).",
+      "security1": "Mã token của bạn được **mã hóa bằng AES-256-GCM** trước khi lưu trữ.",
+      "security2": "**Hỗ trợ mọi tài khoản Vercel** — cá nhân hoặc nhóm, gói miễn phí hoặc trả phí.",
+      "security3": "Token **chỉ** được sử dụng để tạo dự án sandbox và quản lý xem trước.",
+      "security4": "**Ngắt kết nối bất cứ lúc nào** để xóa ngay lập tức token khỏi máy chủ của chúng tôi.",
+      "security5": "Mỗi tổ chức đều có một **dự án sandbox độc lập** trên Vercel."
+    }
+  },
+  "org-sites": {
+    "no_sites_found": "Không tìm thấy trang web nào",
+    "try_adjusting": "Thử điều chỉnh từ khóa tìm kiếm của bạn",
+    "archived": "Đã lưu trữ",
+    "private": "Riêng tư",
+    "add_site_url": "Thêm URL trang web",
+    "edited": "Đã chỉnh sửa {time}",
+    "edited_by": "bởi {name}",
+    "added": "Đã thêm {time}",
+    "open_editor": "Mở trình chỉnh sửa",
+    "visit_site": "Truy cập trang web",
+    "view_repository": "Xem trên {provider}",
+    "settings": "Cài đặt",
+    "site_actions": "Thao tác trang web"
+  },
+  "org-archived": {
+    "title": "Tổ chức đã được lưu trữ",
+    "desc_full": "Tổ chức này đã được lưu trữ. Tất cả nội dung hiện ở chế độ chỉ đọc và hầu hết các chức năng quản lý bị vô hiệu hóa.",
+    "desc_banner": "Tổ chức này hiện đang được lưu trữ.",
+    "org_settings": "Cài đặt tổ chức",
+    "view_settings": "Xem cài đặt"
+  }
+}

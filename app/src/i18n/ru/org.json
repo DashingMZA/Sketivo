@@ -1,0 +1,180 @@
+{
+  "org": {
+    "create": {
+      "add_org_btn": "Добавить организацию",
+      "dialog_title": "Создать организацию",
+      "dialog_desc": "Добавьте новую организацию в ваш аккаунт.",
+      "demo_error": "В демо-режиме нельзя создавать новые организации.",
+      "success": "Организация успешно создана. Теперь вы можете приглашать участников.",
+      "name_label": "Название организации",
+      "submit_btn": "Создать организацию"
+    },
+    "switcher": {
+      "default_org": "Организация",
+      "search": "Поиск...",
+      "not_found": "Организация не найдена.",
+      "add_new": "Добавить новую"
+    },
+    "general": {
+      "form": {
+        "title": "Название организации",
+        "description": "Обновите название вашей организации",
+        "update_btn": "Обновить организацию",
+        "demo_error": "В демо-режиме нельзя изменять организацию.",
+        "success": "Организация успешно обновлена."
+      },
+      "archive": {
+        "title_archive": "Архивировать организацию",
+        "title_restore": "Восстановить организацию",
+        "desc_archive": "Архивировать эту организацию — она будет скрыта из активных списков, но может быть восстановлена позже.",
+        "desc_restore": "Эта организация архивирована. Вы можете восстановить ее, чтобы снова сделать активной.",
+        "archive_btn": "Архивировать организацию",
+        "restore_btn": "Восстановить организацию",
+        "dialog_title_archive": "Архивировать организацию",
+        "dialog_title_restore": "Восстановить организацию",
+        "dialog_desc_archive": "Архивация скроет организацию из активных списков.",
+        "dialog_desc_restore": "Восстановите организацию, чтобы вернуть её в активный статус. Все данные сохраняются.",
+        "success_archive": "Организация успешно архивирована.",
+        "success_restore": "Организация восстановлена в активном статусе.",
+        "error": "Не удалось обновить организацию. Пожалуйста, повторите попытку позже."
+      },
+      "delete": {
+        "title": "Удалить организацию",
+        "description": "Удаление организации приведет к безвозвратному удалению всех проектов, участников и настроек.",
+        "delete_org_btn": "Удалить организацию",
+        "dialog_title": "Вы уверены?",
+        "dialog_desc": "Удаление организации приведет к безвозвратному удалению всех проектов и участников.",
+        "placeholder": "Введите CONFIRM для подтверждения",
+        "demo_error": "Вы не можете удалить демонстрационную организацию.",
+        "success": "Организация успешно удалена",
+        "error": "Что-то пошло не так"
+      },
+      "avatar": {
+        "title": "Логотип организации",
+        "description": "Сделайте организацию узнаваемой, загрузив изображение.",
+        "demo_error": "В демо-режиме нельзя изменить логотип.",
+        "success": "Логотип организации успешно обновлен."
+      },
+      "leave": {
+        "title": "Leave Organization",
+        "description": "Revoke your access to this organization. You will need an invite from an owner or admin to rejoin.",
+        "leave_org_btn": "Leave Organization",
+        "dialog_title": "Leave Organization?",
+        "dialog_desc": "Are you sure you want to leave this organization? You will immediately lose access to all its projects, media, and settings.",
+        "placeholder": "type CONFIRM to confirm",
+        "demo_error": "You cannot leave organizations in demo mode.",
+        "success": "You have left the organization.",
+        "error": "Failed to leave the organization."
+      }
+    },
+    "members": {
+      "title": "Участники команды",
+      "description": "Управление участниками команды и правами доступа",
+      "anonymous": "Аноним",
+      "roles": {
+        "owner": "Владелец",
+        "admin": "Администратор",
+        "editor": "Редактор"
+      },
+      "add_member": {
+        "add_member_btn": "Добавить участника",
+        "dialog_title": "Добавить участника в команду",
+        "dialog_desc": "Пригласите нового участника в вашу организацию.",
+        "email_label": "Электронная почта",
+        "email_placeholder": "Введите email",
+        "role_label": "Роль",
+        "role_placeholder": "Выберите роль",
+        "roles_group": "Роли",
+        "demo_error": "Эта функция недоступна в демо-режиме.",
+        "error": "Не удалось добавить участника в организацию."
+      },
+      "actions": {
+        "delete_user": "Удалить пользователя",
+        "remove_member": "Исключить участника",
+        "make": "Назначить",
+        "are_you_sure": "Вы уверены?",
+        "delete_warning": "Это действие нельзя отменить. Пользователь будет удален навсегда.",
+        "placeholder": "Введите CONFIRM для подтверждения",
+        "demo_error_delete": "В демо-режиме нельзя удалять пользователей.",
+        "demo_error_update": "Эта функция недоступна в демо-режиме.",
+        "success_delete": "Пользователь успешно удален.",
+        "error_delete_suffix": "У вас нет прав на удаление этого пользователя.",
+        "error_update_fn": "Функция обновления недоступна",
+        "success_update": "Роль участника успешно обновлена.",
+        "error_generic": "Что-то пошло не так",
+        "leave_org": "Leave Organization",
+        "leave_warning": "Are you sure you want to leave this organization? You will immediately lose access to all projects and settings in this organization.",
+        "demo_error_leave": "You cannot leave organizations in demo mode.",
+        "success_leave": "You have left the organization."
+      }
+    },
+    "sandbox": {
+      "title": "Песочница Vercel",
+      "description": "Подключите токен доступа Vercel, чтобы включить интерактивный предпросмотр для ваших проектов.",
+      "connected": "Подключено",
+      "account": "Аккаунт",
+      "project": "Проект (биллинг)",
+      "project_label": "Проект",
+      "disconnect_btn": "Отключить",
+      "disconnecting": "Отключение...",
+      "token_label": "Токен доступа Vercel",
+      "token_placeholder": "Вставьте токен доступа Vercel",
+      "create_token_link": "Создать токен доступа Vercel",
+      "step1": "Создайте токен доступа Vercel с полным доступом к аккаунту.",
+      "step2": "Вставьте его ниже и нажмите Подключить.",
+      "step3": "В вашем аккаунте Vercel будет автоматически создан специальный проект песочницы.",
+      "connect_btn": "Подключить",
+      "connecting": "Подключение...",
+      "save_token_btn": "Сохранить токен",
+      "update_token_btn": "Обновить токен",
+      "cancel_btn": "Отмена",
+      "status_validating": "Проверка токена",
+      "status_creating_project": "Создание проекта песочницы",
+      "status_saving": "Сохранение настроек",
+      "disconnect_confirm_title": "Отключить песочницу Vercel?",
+      "disconnect_confirm_desc": "Интерактивный предпросмотр перестанет работать для всех проектов этой организации.",
+      "disconnect_confirm_btn": "Отключить",
+      "disconnect_cancel_btn": "Отмена",
+      "toast_token_required": "Введите токен доступа Vercel",
+      "toast_connect_success": "Песочница успешно подключена",
+      "toast_connect_success_desc": "Предпросмотр теперь работает через аккаунт Vercel пользователя {username}.",
+      "toast_connect_error": "Не удалось подключить песочницу",
+      "toast_disconnect_success": "Песочница отключена",
+      "toast_disconnect_error": "Не удалось отключить",
+      "no_permission": "Только владельцы и администраторы организации могут изменять настройки песочницы.",
+      "select_team_title": "Выберите аккаунт Vercel",
+      "personal_account": "Личный аккаунт",
+      "team_label": "Команда",
+      "change_token": "Сменить токен",
+      "security_title": "Безопасность и конфиденциальность",
+      "security0": "Песочница запускает **скрипт `dev`** вашего проекта (например, `npm run dev`).",
+      "security1": "Ваш токен **шифруется с помощью AES-256-GCM** перед сохранением.",
+      "security2": "**Поддерживается любой аккаунт Vercel** — личный или командный, бесплатный или платный.",
+      "security3": "Токен используется **только** для управления проектом песочницы и предпросмотром.",
+      "security4": "Вы можете **отключить интеграцию в любой момент**, чтобы удалить токен с наших серверов.",
+      "security5": "Каждая организация получает **изолированный проект песочницы** на Vercel."
+    }
+  },
+  "org-sites": {
+    "no_sites_found": "Сайты не найдены",
+    "try_adjusting": "Попробуйте изменить поисковый запрос",
+    "archived": "В архиве",
+    "private": "Приватный",
+    "add_site_url": "Добавить URL сайта",
+    "edited": "Изменено {time}",
+    "edited_by": "{name}",
+    "added": "Добавлено {time}",
+    "open_editor": "Открыть редактор",
+    "visit_site": "Открыть сайт",
+    "view_repository": "Открыть на {provider}",
+    "settings": "Настройки",
+    "site_actions": "Действия с сайтом"
+  },
+  "org-archived": {
+    "title": "Организация архивирована",
+    "desc_full": "Эта организация архивирована. Весь контент доступен только для чтения, большинство функций управления отключено.",
+    "desc_banner": "Эта организация в настоящее время находится в архиве.",
+    "org_settings": "Настройки организации",
+    "view_settings": "Просмотреть настройки"
+  }
+}

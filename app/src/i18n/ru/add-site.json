@@ -1,0 +1,28 @@
+{
+  "add-site": {
+    "add_new_site": "Добавить сайт",
+    "create_new_site": "Создать сайт",
+    "import_site_desc": "Выберите способ импорта вашего сайта.",
+    "add_to_org_desc": "Добавьте новый сайт в вашу организацию.",
+    "connected": "Подключено",
+    "not_connected": "Не подключено",
+    "site_name_label": "Название сайта",
+    "site_name_placeholder": "Название сайта",
+    "git_provider_label": "Git-провайдер",
+    "choose_provider_placeholder": "Выберите провайдера",
+    "repository_label": "Репозиторий",
+    "select_repository_placeholder": "Выберите репозиторий",
+    "branch_label": "Ветка (Branch)",
+    "please_wait": "Пожалуйста, подождите",
+    "choose_branch_placeholder": "Выберите ветку",
+    "no_repository_found": "Репозитории не найдены",
+    "cant_see_repo": "Не видите ваш репозиторий?",
+    "configure_on": "Настроить права в {provider}",
+    "site_url_label": "URL сайта (необязательно)",
+    "site_url_placeholder": "https://example.com",
+    "back": "Назад",
+    "create_site": "Создать сайт",
+    "project_created_success": "Проект успешно создан",
+    "something_went_wrong": "Что-то пошло не так!"
+  }
+}
