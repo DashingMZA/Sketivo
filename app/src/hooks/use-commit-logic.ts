@@ -1,0 +1,571 @@
+import { toast } from "@/components/ui/toast";
+import { createCollabBase } from "@/contexts/collab-base-context";
+import { MdxSnippet } from "@/editor/utils/plate-types";
+import { revertToOriginal } from "@/editor/utils/plate-utils";
+import { useAddLog } from "@/hooks/use-add-log";
+import { useGitProvider } from "@/hooks/use-git-provider";
+import { useImages } from "@/hooks/use-images";
+import { authClient } from "@/lib/auth/auth-client";
+import { contentFormatter, format } from "@/lib/utils/content-serializer";
+import {
+  arrayValue,
+  isWrappedValue,
+  recordValue,
+  unwrapValue,
+} from "@/lib/utils/frontmatter-value";
+import { gitBlobSha } from "@/lib/utils/git-utils";
+import { getLogType } from "@/lib/utils/project-log-type-detector";
+import { selectConfig } from "@/redux/features/config/slice";
+import { isCommitConflict } from "@/redux/features/git/commit-conflict";
+import { EAction } from "@/redux/features/project-log/type";
+import { useAppDispatch, useAppSelector } from "@/redux/store";
+import { TField, TFrontmatterData, TState } from "@/types";
+import { useTranslations } from "next-intl";
+import { useParams } from "next/navigation";
+import { useCallback, useEffect, useRef, useState } from "react";
+import type { Socket } from "socket.io-client";
+
+type CommitData = {
+  path: string;
+  content: string;
+};
+
+type PendingCommit = {
+  images: { path: string; content: string }[];
+  data: CommitData;
+  isDraft: boolean;
+  message?: string;
+  description?: string;
+};
+
+export type PublishConflict = PendingCommit & {
+  remoteContent?: string;
+  remoteDeleted: boolean;
+};
+
+type CommitDetails = {
+  message: string;
+  description?: string;
+  createPullRequest?: boolean;
+};
+
+type UseCommitLogicProps = {
+  socket?: Socket | null;
+  state: TState | undefined;
+  setState: React.Dispatch<React.SetStateAction<TState | undefined>>;
+  filePath: string;
+  fmType: format;
+  schema: TField[];
+  snippets: MdxSnippet[];
+  startWith?: string;
+  setBaseline?: (next: TState | undefined) => void;
+  pageContent: string;
+  onReplaceContentRef: (content: string) => void;
+  newPath?: string;
+  /** Blob sha of the version the editor was loaded from. */
+  gitSha?: string;
+  onRenameComplete?: (newPath: string) => void;
+  /** Fired once after a successful commit. Used to trigger sandbox commit-sync. */
+  onCommitSuccess?: () => void;
+};
+
+function checkRequiredFields(
+  schemaFields: TField[],
+  currentData: TState["data"] | undefined,
+  parentLabel = "",
+): string[] {
+  if (!schemaFields || !currentData) return [];
+  const emptyFields: string[] = [];
+
+  schemaFields.forEach((field) => {
+    const fieldLabel = parentLabel
+      ? `${parentLabel} > ${field.label || field.name}`
+      : field.label || field.name;
+
+    // Check if the field itself is marked as required
+    if (field.isRequired) {
+      const fieldEntry = currentData[field.name];
+      let isEmpty = false;
+
+      if (fieldEntry === undefined || fieldEntry === null) {
+        isEmpty = true;
+      } else {
+        // Depending on type, check the value
+        if (field.type === "Array" || field.type === "gallery") {
+          if (Array.isArray(fieldEntry)) {
+            if (fieldEntry.length === 0) {
+              isEmpty = true;
+            }
+          } else if (arrayValue(fieldEntry)) {
+            if (arrayValue(fieldEntry)?.length === 0) {
+              isEmpty = true;
+            }
+          } else {
+            isEmpty = true;
+          }
+        } else {
+          const val = unwrapValue(fieldEntry);
+
+          if (val === undefined || val === null || val === "") {
+            isEmpty = true;
+          } else if (Array.isArray(val) && val.length === 0) {
+            isEmpty = true;
+          }
+        }
+      }
+
+      if (isEmpty) {
+        emptyFields.push(fieldLabel);
+      }
+    }
+
+    // Recurse if there are nested fields
+    const fieldEntry = currentData[field.name];
+    if (fieldEntry) {
+      if (
+        field.type === "object" &&
+        field.fields &&
+        Array.isArray(field.fields)
+      ) {
+        const objectData = recordValue(fieldEntry);
+        emptyFields.push(
+          ...checkRequiredFields(field.fields, objectData, fieldLabel),
+        );
+      } else if (
+        field.type === "Array" &&
+        field.fields &&
+        Array.isArray(field.fields)
+      ) {
+        const arrayData =
+          fieldEntry && typeof fieldEntry === "object" && "value" in fieldEntry
+            ? fieldEntry.value
+            : fieldEntry;
+        if (Array.isArray(arrayData)) {
+          arrayData.forEach((item, index) => {
+            const itemLabel = `${fieldLabel} [${index + 1}]`;
+            emptyFields.push(
+              ...checkRequiredFields(field.fields!, item, itemLabel),
+            );
+          });
+        }
+      }
+    }
+  });
+
+  return emptyFields;
+}
+
+// Stamp current date fields in the data based on the schema. This is used to ensure that fields marked with `alwaysUseCurrentDate` are updated to the current date when committing.
+export function stampCurrentDateFields(
+  data: TFrontmatterData,
+  schema: TField[],
+): TFrontmatterData {
+  const processedData = { ...data };
+
+  schema?.forEach((field) => {
+    if (
+      field?.type?.toLowerCase() === "date" &&
+      field?.alwaysUseCurrentDate === true
+    ) {
+      const current = processedData[field.name];
+      if (current) {
+        processedData[field.name] = isWrappedValue(current)
+          ? { ...current, value: new Date().toISOString() }
+          : new Date().toISOString();
+      }
+    }
+  });
+
+  return processedData;
+}
+
+export function useCommitLogic({
+  socket,
+  state,
+  filePath,
+  fmType,
+  schema,
+  snippets,
+  startWith,
+  setState,
+  setBaseline,
+  pageContent,
+  onReplaceContentRef,
+  newPath,
+  gitSha,
+  onRenameComplete,
+  onCommitSuccess,
+}: UseCommitLogicProps) {
+  const { images, clearImages } = useImages();
+  const dispatch = useAppDispatch();
+  const tEditor = useTranslations("editor.commit");
+  const tFeedback = useTranslations("common.feedback");
+  const tCommon = useTranslations("common");
+  const tConflict = useTranslations("editor.publish_conflict");
+  const tAgents = useTranslations("agents.editor");
+
+  const { data: auth } = authClient.useSession();
+  const params = useParams();
+  const config = useAppSelector(selectConfig);
+  const [addLog] = useAddLog();
+  const { updateFiles, isPending, adapter } = useGitProvider();
+
+  const draftRef = useRef(false);
+  const [commitData, setCommitData] = useState<CommitData | null>(null);
+  const [showCommitModal, setShowCommitModal] = useState(false);
+  const [publishConflict, setPublishConflict] =
+    useState<PublishConflict | null>(null);
+
+  // Pinned at mount: the editor never reloads from a background refetch, so
+  // the live query sha can be newer than what is being edited.
+  const [collabBase] = useState(() =>
+    createCollabBase(gitSha, () => toast.warning(tConflict("collab_outdated"))),
+  );
+  const { getBaseSha } = collabBase;
+
+  const updateSavedBaseline = useCallback(() => {
+    const clonedState = (() => {
+      if (!state) return state;
+      try {
+        return JSON.parse(JSON.stringify(state)) as TState;
+      } catch {
+        return state;
+      }
+    })();
+
+    if (clonedState) {
+      clonedState.page_content = pageContent;
+    }
+
+    setBaseline?.(clonedState);
+
+    if (setState) {
+      setState(clonedState);
+    }
+
+    if (onReplaceContentRef) {
+      onReplaceContentRef(pageContent);
+    }
+  }, [state, pageContent, setBaseline, setState, onReplaceContentRef]);
+
+  const updateSavedBaselineRef = useRef(updateSavedBaseline);
+
+  useEffect(() => {
+    updateSavedBaselineRef.current = updateSavedBaseline;
+  }, [updateSavedBaseline]);
+
+  useEffect(() => {
+    if (!socket) return;
+
+    const onCommitCompleted = (payload: { user_name?: string }) => {
+      toast.success(
+        tFeedback("saved_by_user", { name: payload.user_name ?? "" }),
+      );
+      updateSavedBaselineRef.current();
+    };
+
+    const onCommitError = (payload: { message?: string }) => {
+      toast.error(payload.message);
+    };
+
+    // Keeping the pinned sha makes the next publish hit the conflict dialog.
+    const onExternalCommit = (payload: {
+      user_name?: string;
+      via?: string;
+    }) => {
+      toast.warning(
+        tAgents("external_commit", {
+          name: payload.user_name ?? "",
+          agent: payload.via ?? "",
+        }),
+      );
+    };
+
+    socket.on("commit:completed", onCommitCompleted);
+    socket.on("commit:error", onCommitError);
+    socket.on("commit:external", onExternalCommit);
+
+    return () => {
+      socket.off("commit:completed", onCommitCompleted);
+      socket.off("commit:error", onCommitError);
+      socket.off("commit:external", onExternalCommit);
+    };
+  }, [socket, tAgents, tFeedback]);
+
+  const getProcessedStateData = useCallback(() => {
+    if (!state?.data) return state?.data;
+
+    return stampCurrentDateFields(state.data, schema);
+  }, [state?.data, schema]);
+
+  const commitToProvider = useCallback(
+    async (
+      images: { path: string; content: string }[],
+      data: CommitData,
+      isDraft: boolean,
+      message = tEditor("default_message"),
+      description?: string,
+      overwrite = false,
+    ) => {
+      const targetPath = newPath || data.path;
+      const isRename = targetPath !== data.path;
+
+      const finalMessage = isRename
+        ? tEditor("rename_message", { oldPath: data.path, newPath: targetPath })
+        : message;
+
+      const actions = isRename
+        ? [
+            { path: data.path, delete: true },
+            { path: targetPath, content: data.content },
+            ...images,
+          ]
+        : [{ path: data.path, content: data.content }, ...images];
+
+      const baseSha = getBaseSha();
+      const res = await updateFiles({
+        files: actions,
+        message: finalMessage,
+        description,
+        expectedShas:
+          baseSha && !overwrite ? { [data.path]: baseSha } : undefined,
+      });
+
+      if (isCommitConflict(res.error)) {
+        const conflict =
+          res.error.conflicts.find((c) => c.path === data.path) ??
+          res.error.conflicts[0];
+        setShowCommitModal(false);
+        setPublishConflict({
+          images,
+          data,
+          isDraft,
+          message,
+          description,
+          remoteContent: conflict?.remoteContent,
+          remoteDeleted: conflict?.remoteSha === null,
+        });
+        return;
+      }
+
+      if (!res.error?.message) {
+        const committedSha = gitBlobSha(data.content);
+        collabBase.recordPublished(committedSha);
+
+        // update saved baseline (deep clone to avoid reference aliasing)
+        updateSavedBaseline();
+
+        // Optimistic update
+        const committedPath = isRename ? targetPath : filePath;
+
+        adapter.updateContentCache(
+          dispatch,
+          adapter.contentArgs(config, committedPath, { parser: true }),
+          (draft) => {
+            draft.sha = committedSha;
+            draft.commitDate = new Date().toString();
+            draft.data = {
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              ...(revertToOriginal(getProcessedStateData()!) as any),
+              draft: isDraft,
+            };
+            draft.content = pageContent;
+          },
+        );
+
+        adapter.invalidateCommit(dispatch, committedPath);
+
+        await addLog({
+          project_id: params.projectId as string,
+          action: isRename ? EAction.RENAME : EAction.UPDATE,
+          file: targetPath,
+          file_type: getLogType(targetPath, config),
+        });
+
+        clearImages();
+        toast.success(
+          isRename
+            ? tFeedback("rename_success")
+            : isDraft
+              ? tFeedback("draft_success")
+              : tFeedback("publish_success"),
+        );
+        setShowCommitModal(false);
+
+        const rawOrgId = params.orgId as string;
+        socket?.emit("commit", {
+          org_id: rawOrgId?.startsWith("org-") ? rawOrgId.slice(4) : rawOrgId,
+          project_id: params.projectId as string,
+          file: filePath,
+          action: isRename ? EAction.RENAME : EAction.UPDATE,
+          user_id: auth?.user.user_id,
+          user_name: auth?.user.full_name,
+        });
+
+        // Silently trigger Vercel Sandbox sync in the background if an active session is running
+        // Notify sandbox-preview hook (if wired) so it can pull commits + restart
+        // the dev server. Decoupled via callback — this hook stays git-only.
+        onCommitSuccess?.();
+
+        if (isRename && onRenameComplete) {
+          onRenameComplete(targetPath);
+        }
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [
+      newPath,
+      updateFiles,
+      state,
+      pageContent,
+      setBaseline,
+      setState,
+      onReplaceContentRef,
+      onRenameComplete,
+      adapter,
+      config,
+      params,
+      auth,
+      clearImages,
+      addLog,
+      dispatch,
+      setShowCommitModal,
+      getProcessedStateData,
+      updateSavedBaseline,
+      onCommitSuccess,
+    ],
+  );
+
+  const prepareCommit = useCallback(
+    async (
+      // e: React.FormEvent,
+      shouldCommitManual = false,
+      isDraft = draftRef.current,
+    ) => {
+      // 1. Validate required fields
+      if (schema && state?.data) {
+        const emptyRequiredFields = checkRequiredFields(schema, state.data);
+        if (emptyRequiredFields.length > 0) {
+          const fieldsStr = emptyRequiredFields.join(", ");
+          try {
+            toast.error(
+              tCommon("errors.required_fields_empty", { fields: fieldsStr }),
+            );
+          } catch {
+            toast.error(`Please fill in all required fields: ${fieldsStr}`);
+          }
+          return;
+        }
+      }
+
+      draftRef.current = isDraft;
+
+      const draftField = schema.find((item) => item.name === "draft");
+      const shouldAddDraft = draftField?.type === "boolean" || isDraft === true;
+
+      let originalContent = "";
+      try {
+        const res = await adapter.fetchContent(
+          dispatch,
+          adapter.contentArgs(config, filePath, { parser: false }),
+        );
+        if (typeof res?.data === "string") {
+          originalContent = res.data;
+        }
+      } catch {
+        // failed to fetch original content, comments might be lost
+      }
+
+      const data: CommitData = {
+        path: filePath,
+        content: contentFormatter({
+          data: shouldAddDraft
+            ? {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                ...(revertToOriginal(getProcessedStateData()) as any),
+                draft: isDraft,
+              }
+            : revertToOriginal(getProcessedStateData()),
+          page_content: pageContent || "",
+          format: fmType,
+          startWith,
+          originalContent,
+        }),
+      };
+
+      if (shouldCommitManual) {
+        setCommitData(data);
+        setShowCommitModal(true);
+        return;
+      }
+
+      await commitToProvider(images, data, isDraft);
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [
+      filePath,
+      fmType,
+      schema,
+      state,
+      startWith,
+      config,
+      snippets,
+      pageContent,
+      commitToProvider,
+      images,
+      dispatch, // Added dispatch dependency
+      getProcessedStateData,
+    ],
+  );
+
+  const resolvePublishConflict = useCallback(
+    async (choice: "overwrite" | "cancel") => {
+      const pendingCommit = publishConflict;
+      if (!pendingCommit) return;
+      if (choice === "cancel") {
+        setPublishConflict(null);
+        return;
+      }
+      await commitToProvider(
+        pendingCommit.images,
+        pendingCommit.data,
+        pendingCommit.isDraft,
+        pendingCommit.message,
+        pendingCommit.description,
+        true,
+      );
+      setPublishConflict(null);
+    },
+    [publishConflict, commitToProvider],
+  );
+
+  const handleCommit = useCallback(
+    async (commitDetails: CommitDetails) => {
+      if (!commitData) return;
+
+      await commitToProvider(
+        images,
+        commitData,
+        draftRef.current,
+        commitDetails.message,
+        commitDetails.description,
+      );
+    },
+    [commitData, images, commitToProvider],
+  );
+
+  return {
+    prepareCommit,
+    handleCommit,
+    draftRef,
+    commitData,
+    showCommitModal,
+    setShowCommitModal,
+    pending: isPending,
+    getProcessedStateData,
+    getBaseSha,
+    collabBase,
+    publishConflict,
+    resolvePublishConflict,
+  };
+}

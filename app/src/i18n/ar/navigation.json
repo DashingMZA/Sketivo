@@ -1,0 +1,58 @@
+{
+  "navigation": {
+    "menu": {
+      "footer_account": {
+        "account": "الحساب",
+        "updates": "التحديثات",
+        "support": "الدعم الفني",
+        "ai_agent": "وكيل الذكاء الاصطناعي",
+        "mcp_connection": "اتصال MCP",
+        "preferences": "التفضيلات",
+        "source_code": "الشيفرة المصدرية"
+      },
+      "user_dashboard": {
+        "overview": "نظرة عامة",
+        "account": "الحساب",
+        "preferences": "التفضيلات",
+        "ai_agent": "وكيل الذكاء الاصطناعي",
+        "mcp_connection": "اتصال MCP"
+      },
+      "org_dashboard": {
+        "websites": "المواقع الإلكترونية",
+        "settings": "الإعدادات"
+      },
+      "org_settings": {
+        "general": "عام",
+        "members": "الأعضاء",
+        "sandbox": "بيئة الاختبار"
+      },
+      "project_dashboard": {
+        "overview": "نظرة عامة",
+        "media": "الوسائط",
+        "settings": "الإعدادات"
+      },
+      "project_settings": {
+        "general": "عام",
+        "configure": "التكوين",
+        "git": "Git",
+        "schemas": "المخططات",
+        "snippets": "المقتطفات البرمجية",
+        "arrangement": "الترتيب"
+      }
+    },
+    "sidebar": {
+      "open_menu": "فتح القائمة",
+      "code": "الرمز البرمجي",
+      "config": "الإعدادات",
+      "actions": {
+        "close": "إغلاق"
+      },
+      "sidebar_trigger_mobile": {
+        "title": "قائمة المحتوى",
+        "description": "عرض جميع ملفات المحتوى من الشريط الجانبي",
+        "message": "هل تبحث عن المحتوى؟ افتح الشريط الجانبي لعرض جميع الملفات.",
+        "open_sidebar": "فتح الشريط الجانبي"
+      }
+    }
+  }
+}

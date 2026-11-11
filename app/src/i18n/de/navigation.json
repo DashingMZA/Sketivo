@@ -1,0 +1,58 @@
+{
+  "navigation": {
+    "menu": {
+      "footer_account": {
+        "account": "Konto",
+        "updates": "Neuigkeiten",
+        "support": "Hilfe & Support",
+        "ai_agent": "KI-Assistent",
+        "mcp_connection": "MCP-Verbindung",
+        "preferences": "Einstellungen",
+        "source_code": "Quellcode"
+      },
+      "user_dashboard": {
+        "overview": "Übersicht",
+        "account": "Konto",
+        "preferences": "Einstellungen",
+        "ai_agent": "KI-Assistent",
+        "mcp_connection": "MCP-Verbindung"
+      },
+      "org_dashboard": {
+        "websites": "Websites",
+        "settings": "Einstellungen"
+      },
+      "org_settings": {
+        "general": "Allgemein",
+        "members": "Mitglieder",
+        "sandbox": "Sandbox"
+      },
+      "project_dashboard": {
+        "overview": "Übersicht",
+        "media": "Medien",
+        "settings": "Einstellungen"
+      },
+      "project_settings": {
+        "general": "Allgemein",
+        "configure": "Konfiguration",
+        "git": "Git",
+        "schemas": "Schemas",
+        "snippets": "Snippets",
+        "arrangement": "Anordnung"
+      }
+    },
+    "sidebar": {
+      "open_menu": "Menü öffnen",
+      "code": "Code",
+      "config": "Konfig",
+      "actions": {
+        "close": "Schließen"
+      },
+      "sidebar_trigger_mobile": {
+        "title": "Inhaltsübersicht",
+        "description": "Alle Inhaltsdateien in der Seitenleiste anzeigen",
+        "message": "Suchen Sie Ihre Inhalte? Öffnen Sie die Seitenleiste, um alle Dateien zu sehen.",
+        "open_sidebar": "Seitenleiste öffnen"
+      }
+    }
+  }
+}

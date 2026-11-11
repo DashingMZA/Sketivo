@@ -1,0 +1,180 @@
+{
+  "org": {
+    "create": {
+      "add_org_btn": "إضافة منظمة جديدة",
+      "dialog_title": "إنشاء منظمة جديدة",
+      "dialog_desc": "أضف منظمة جديدة إلى حسابك.",
+      "demo_error": "لا يمكنك إنشاء منظمة جديدة في الوضع التجريبي.",
+      "success": "تم إنشاء المنظمة بنجاح. يمكنك الآن إضافة أعضاء.",
+      "name_label": "اسم المنظمة",
+      "submit_btn": "إنشاء المنظمة"
+    },
+    "switcher": {
+      "default_org": "المنظمة",
+      "search": "بحث...",
+      "not_found": "لم يتم العثور على منظمة.",
+      "add_new": "إضافة منظمة جديدة"
+    },
+    "general": {
+      "form": {
+        "title": "اسم المنظمة",
+        "description": "تحديث اسم المنظمة الخاصة بك",
+        "update_btn": "تحديث المنظمة",
+        "demo_error": "لا يمكنك تحديث المنظمة في الوضع التجريبي.",
+        "success": "تم تحديث المنظمة بنجاح."
+      },
+      "archive": {
+        "title_archive": "أرشفة المنظمة",
+        "title_restore": "استعادة المنظمة",
+        "desc_archive": "أرشفة هذه المنظمة — ستتم إزالتها من القوائم النشطة مع إمكانية استعادتها لاحقاً.",
+        "desc_restore": "هذه المنظمة مؤرشفة ومخفية من القوائم النشطة. يمكنك استعادتها لجعلها نشطة مجدداً.",
+        "archive_btn": "أرشفة المنظمة",
+        "restore_btn": "استعادة المنظمة",
+        "dialog_title_archive": "أرشفة المنظمة",
+        "dialog_title_restore": "استعادة المنظمة",
+        "dialog_desc_archive": "ستؤدي الأرشفة إلى إخفاء المنظمة من القوائم النشطة. يمكنك استعادتها لاحقاً عند الحاجة.",
+        "dialog_desc_restore": "استعادة هذه المنظمة وجعلها نشطة مرة أخرى. سيتم الاحتفاظ بكافة المحتويات والإعدادات.",
+        "success_archive": "تمت أرشفة المنظمة بنجاح.",
+        "success_restore": "تمت استعادة المنظمة إلى الحالة النشطة.",
+        "error": "تعذر تحديث المنظمة. يُرجى المحاولة مرة أخرى لاحقاً."
+      },
+      "delete": {
+        "title": "حذف المنظمة",
+        "description": "سيؤدي حذف المنظمة إلى إزالة كافة المشاريع والأعضاء والإعدادات نهائياً. لا يمكن التراجع عن هذا الإجراء.",
+        "delete_org_btn": "حذف المنظمة",
+        "dialog_title": "هل أنت متأكد؟",
+        "dialog_desc": "سيؤدي حذف المنظمة إلى حذف جميع المشاريع والأعضاء والإعدادات نهائياً. لا يمكن التراجع عن هذا الإجراء.",
+        "placeholder": "اكتب CONFIRM للتأكيد",
+        "demo_error": "لا يمكنك حذف المنظمة التجريبية — يُرجى التواصل معنا إذا كنت ترغب في حذفها",
+        "success": "تم حذف المنظمة بنجاح",
+        "error": "حدث خطأ ما"
+      },
+      "avatar": {
+        "title": "الصورة المصغرة للمنظمة",
+        "description": "اجعل منظمتك مميزة بإضافة صورة رمزية.",
+        "demo_error": "لا يمكنك تحديث المنظمة في الوضع التجريبي.",
+        "success": "تم تحديث الصورة المصغرة للمنظمة بنجاح."
+      },
+      "leave": {
+        "title": "Leave Organization",
+        "description": "Revoke your access to this organization. You will need an invite from an owner or admin to rejoin.",
+        "leave_org_btn": "Leave Organization",
+        "dialog_title": "Leave Organization?",
+        "dialog_desc": "Are you sure you want to leave this organization? You will immediately lose access to all its projects, media, and settings.",
+        "placeholder": "type CONFIRM to confirm",
+        "demo_error": "You cannot leave organizations in demo mode.",
+        "success": "You have left the organization.",
+        "error": "Failed to leave the organization."
+      }
+    },
+    "members": {
+      "title": "أعضاء الفريق",
+      "description": "إدارة أعضاء فريقك وصلاحياتهم",
+      "anonymous": "مجهول",
+      "roles": {
+        "owner": "المالك",
+        "admin": "مسؤول",
+        "editor": "محرر"
+      },
+      "add_member": {
+        "add_member_btn": "إضافة عضو",
+        "dialog_title": "إضافة عضو للفريق",
+        "dialog_desc": "إضافة عضو جديد إلى منظمتك.",
+        "email_label": "البريد الإلكتروني",
+        "email_placeholder": "أدخل البريد الإلكتروني",
+        "role_label": "الدور",
+        "role_placeholder": "اختر الدور",
+        "roles_group": "الأدوار",
+        "demo_error": "هذه الميزة غير متوفرة في الوضع التجريبي.",
+        "error": "تعذر إضافة العضو إلى المنظمة."
+      },
+      "actions": {
+        "delete_user": "حذف المستخدم",
+        "remove_member": "إزالة العضو",
+        "make": "تعيين",
+        "are_you_sure": "هل أنت متأكد؟",
+        "delete_warning": "لا يمكن التراجع عن هذا الإجراء. سيؤدي هذا إلى الحذف النهائي.",
+        "placeholder": "اكتب CONFIRM للتأكيد",
+        "demo_error_delete": "لا يمكنك حذف المستخدمين في الوضع التجريبي.",
+        "demo_error_update": "هذه الميزة غير متوفرة في الوضع التجريبي.",
+        "success_delete": "تم حذف المستخدم بنجاح.",
+        "error_delete_suffix": "ليس لديك الصلاحية لحذف هذا المستخدم.",
+        "error_update_fn": "خاصية التحديث غير متوفرة",
+        "success_update": "تم تحديث دور العضو بنجاح.",
+        "error_generic": "حدث خطأ ما",
+        "leave_org": "Leave Organization",
+        "leave_warning": "Are you sure you want to leave this organization? You will immediately lose access to all projects and settings in this organization.",
+        "demo_error_leave": "You cannot leave organizations in demo mode.",
+        "success_leave": "You have left the organization."
+      }
+    },
+    "sandbox": {
+      "title": "بيئة اختبار Vercel (Sandbox)",
+      "description": "قم بربط رمز وصول Vercel لتمكين المعاينة الحية لمشاريعك.",
+      "connected": "متصل",
+      "account": "الحساب",
+      "project": "المشروع (الفواتير)",
+      "project_label": "المشروع",
+      "disconnect_btn": "قطع الاتصال",
+      "disconnecting": "جاري قطع الاتصال",
+      "token_label": "رمز وصول Vercel",
+      "token_placeholder": "الصق رمز وصول Vercel الخاص بك",
+      "create_token_link": "إنشاء رمز وصول Vercel",
+      "step1": "أنشئ رمز وصول Vercel بصلاحية كاملة على الحساب.",
+      "step2": "الصق الرمز أدناه واضغط على اتصال.",
+      "step3": "سيتم إنشاء مشروع ساندبوكس مخصص تلقائياً في حساب Vercel الخاص بك.",
+      "connect_btn": "اتصال",
+      "connecting": "جاري الاتصال",
+      "save_token_btn": "حفظ الرمز",
+      "update_token_btn": "تحديث الرمز",
+      "cancel_btn": "إلغاء",
+      "status_validating": "جاري التحقق من الرمز",
+      "status_creating_project": "جاري إنشاء مشروع بيئة الاختبار",
+      "status_saving": "جاري حفظ الإعدادات",
+      "disconnect_confirm_title": "هل تريد قطع اتصال بيئة اختبار Vercel؟",
+      "disconnect_confirm_desc": "ستتوقف المعاينات المباشرة لجميع المشاريع في هذه المنظمة.",
+      "disconnect_confirm_btn": "قطع الاتصال",
+      "disconnect_cancel_btn": "إلغاء",
+      "toast_token_required": "أدخل رمز وصول Vercel",
+      "toast_connect_success": "تم ربط بيئة الاختبار بنجاح",
+      "toast_connect_success_desc": "ستعمل المعاينات المباشرة الآن على حساب Vercel التابع لـ {username}.",
+      "toast_connect_error": "تعذر الاتصال ببيئة الاختبار",
+      "toast_disconnect_success": "تم قطع اتصال بيئة الاختبار",
+      "toast_disconnect_error": "تعذر قطع الاتصال",
+      "no_permission": "يمكن لمالكي المنظمة والمسؤولين فقط إدارة إعدادات بيئة الاختبار.",
+      "select_team_title": "اختر حساب Vercel",
+      "personal_account": "حساب شخصي",
+      "team_label": "الفريق",
+      "change_token": "تغيير الرمز",
+      "security_title": "الأمان والخصوصية",
+      "security0": "تقوم بيئة الاختبار بتشغيل **أمر التطوير (`dev` script)** الخاص بمشروعك (مثل `npm run dev`).",
+      "security1": "يتم **تشفير رمز الوصول باستخدام AES-256-GCM** قبل تخزينه ولا يُحفظ كنص عادي أبداً.",
+      "security2": "**يعمل مع أي حساب Vercel** — شخصي أو فريق، مجاني أو مدفوع.",
+      "security3": "يُستخدم الرمز **فقط** لإنشاء مشروع اختبار مخصص وإدارة المعاينات دون أي إجراءات أخرى.",
+      "security4": "يمكنك **قطع الاتصال في أي وقت** لمسح الرمز تماماً من خوادمنا.",
+      "security5": "تحصل كل منظمة على **مشروع ساندبوكس مخصص** على Vercel لضمان العزل التام."
+    }
+  },
+  "org-sites": {
+    "no_sites_found": "لم يتم العثور على مواقع",
+    "try_adjusting": "جرب تعديل مصطلحات البحث",
+    "archived": "مؤرشف",
+    "private": "خاص",
+    "add_site_url": "إضافة رابط الموقع",
+    "edited": "تم التعديل {time}",
+    "edited_by": "بواسطة {name}",
+    "added": "تمت الإضافة {time}",
+    "open_editor": "فتح المحرر",
+    "visit_site": "زيارة الموقع",
+    "view_repository": "عرض على {provider}",
+    "settings": "الإعدادات",
+    "site_actions": "إجراءات الموقع"
+  },
+  "org-archived": {
+    "title": "المنظمة مؤرشفة",
+    "desc_full": "تمت أرشفة هذه المنظمة. جميع المحتويات للقراءة فقط حالياً، ومعظم وظائف الإدارة معطلة.",
+    "desc_banner": "هذه المنظمة مؤرشفة حالياً ومعظم الإمكانيات معطلة.",
+    "org_settings": "إعدادات المنظمة",
+    "view_settings": "عرض الإعدادات"
+  }
+}

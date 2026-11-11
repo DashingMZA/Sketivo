@@ -1,0 +1,136 @@
+{
+  "schema": {
+    "types": {
+      "string": "Texto (String)",
+      "number": "Número (Number)",
+      "boolean": "Booleano (Boolean)",
+      "media": "Multimedia (Media)",
+      "gallery": "Galería (Gallery)",
+      "array": "Lista (Array)",
+      "date": "Fecha (Date)",
+      "object": "Objeto (Object)"
+    },
+    "fields": {
+      "label": "Etiqueta (Label)",
+      "name": "Nombre del campo",
+      "type": "Tipo de campo",
+      "placeholder": {
+        "type": "Elige un tipo",
+        "label": "ej. Título",
+        "name": "generado_automáticamente"
+      },
+      "description": "Descripción",
+      "default_value": "Valor predeterminado",
+      "boolean": {
+        "true": "Verdadero (True)",
+        "false": "Falso (False)"
+      },
+      "input_style": {
+        "label": "Estilo de entrada",
+        "placeholder": "Elige un estilo de entrada",
+        "options": {
+          "standard_text": "Caja de texto estándar",
+          "standard_table": "Tabla estándar",
+          "dropdown": "Menú desplegable",
+          "multi_dropdown": "Desplegable de selección múltiple"
+        }
+      }
+    },
+    "configuration": {
+      "title": "Configuración del campo",
+      "dropdown": {
+        "title": "Configuración del menú desplegable",
+        "multi_title": "Configuración de selección múltiple",
+        "source": "Fuente de datos",
+        "source_placeholder": "Elige una fuente",
+        "sources": {
+          "static": "Opciones estáticas",
+          "folder": "Archivos de una carpeta",
+          "file": "Datos de un archivo"
+        },
+        "static": {
+          "placeholder": "Introduce el valor de la opción"
+        },
+        "folder": {
+          "path": "Ruta de la carpeta",
+          "path_placeholder": "Selecciona una carpeta",
+          "display_field": "Campo para mostrar (clave Frontmatter)",
+          "field_placeholder": "ej. title (por defecto nombre de archivo)",
+          "loading_fields": "Cargando campos...",
+          "default_field": "nombre_archivo (por defecto)",
+          "include_pattern": "Patrón de inclusión (Glob)",
+          "include_placeholder": "ej. *.md",
+          "exclude_pattern": "Patrón de exclusión (Glob)",
+          "exclude_placeholder": "ej. index.md"
+        },
+        "file": {
+          "path": "Ruta del archivo (JSON/YAML/TOML)",
+          "path_placeholder": "Selecciona un archivo",
+          "data_key": "Clave de datos (campo a extraer)",
+          "key_placeholder": "ej. categories o name",
+          "default_key": "Extraer archivo/array completo"
+        }
+      }
+    },
+    "array": {
+      "label": "Lista de tipo",
+      "placeholder": "Elige el subtipo"
+    },
+    "nested": {
+      "title": "Campos anidados",
+      "add_button": "Añadir campo anidado"
+    },
+    "date": {
+      "default_value": "Valor predeterminado",
+      "mode_placeholder": "Elige el modo",
+      "static": "Fecha fija",
+      "dynamic": "Fecha actual (dinámica)",
+      "empty": "Vacío",
+      "select_initial": "Seleccionar fecha inicial",
+      "today": "Hoy"
+    },
+    "actions": {
+      "add_option": "Añadir opción",
+      "add_field": "Añadir campo",
+      "update_field": "Actualizar campo",
+      "enter_option": "Introduce una opción",
+      "include": "Incluir",
+      "ignore": "Ignorar"
+    },
+    "builder": {
+      "add_new_field": "Añadir nuevo campo",
+      "configure_properties": "Configura las propiedades del nuevo campo",
+      "field_settings": "Ajustes del campo",
+      "required": "Obligatorio",
+      "show": "Mostrar",
+      "hide": "Ocultar",
+      "no_field_selected": "Ningún campo seleccionado",
+      "select_to_edit": "Selecciona un campo de la lista para editar sus ajustes",
+      "no_fields": "Aún no hay campos",
+      "add_first_field": "Agregue su primer campo a continuación",
+      "back_to_fields": "Volver a campos",
+      "field_count": "{count, plural, =0 {0 campos} one {1 campo} other {# campos}}",
+      "configure_field": "Configurar las propiedades del nuevo campo",
+      "select_field_desc": "Seleccione un campo de la lista para editar su configuración",
+      "no_fields_yet": "Aún no hay campos",
+      "type_string": "Texto",
+      "type_number": "Número",
+      "type_boolean": "Booleano",
+      "type_media": "Medios",
+      "type_gallery": "Galería",
+      "type_array": "Arreglo",
+      "type_date": "Fecha",
+      "type_object": "Objeto",
+      "opt_static": "Opciones estáticas",
+      "opt_folder": "Archivos de carpeta",
+      "opt_file": "Datos de archivo",
+      "placeholder_subtype": "Elegir subtipo",
+      "placeholder_default": "Seleccionar valor predeterminado",
+      "placeholder_style": "Elegir estilo de entrada"
+    },
+    "errors": {
+      "name_required": "El nombre del campo es obligatorio",
+      "name_exists": "Ya existe un campo con este nombre"
+    }
+  }
+}

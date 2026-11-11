@@ -1,0 +1,136 @@
+{
+  "schema": {
+    "types": {
+      "string": "স্ট্রিং (String)",
+      "number": "সংখ্যা (Number)",
+      "boolean": "বুলিয়ান (Boolean)",
+      "media": "মিডিয়া (Media)",
+      "gallery": "গ্যালারি (Gallery)",
+      "array": "অ্যারে (Array)",
+      "date": "তারিখ (Date)",
+      "object": "অবজেক্ট (Object)"
+    },
+    "fields": {
+      "label": "লেবেল",
+      "name": "ফিল্ডের নাম",
+      "type": "ফিল্ডের ধরন",
+      "placeholder": {
+        "type": "ধরন নির্বাচন করুন",
+        "label": "যেমন: Title",
+        "name": "স্বয়ংক্রিয়ভাবে তৈরি হবে"
+      },
+      "description": "বিবরণ",
+      "default_value": "ডিফল্ট মান",
+      "boolean": {
+        "true": "সত্য (True)",
+        "false": "মিথ্যা (False)"
+      },
+      "input_style": {
+        "label": "ইনপুট স্টাইল",
+        "placeholder": "ইনপুট স্টাইল বেছে নিন",
+        "options": {
+          "standard_text": "সাধারণ টেক্সটবক্স",
+          "standard_table": "সাধারণ টেবিল",
+          "dropdown": "ড্রপডাউন নির্বাচন",
+          "multi_dropdown": "মাল্টি-সিলেক্ট ড্রপডাউন"
+        }
+      }
+    },
+    "configuration": {
+      "title": "ফিল্ড কনফিগারেশন",
+      "dropdown": {
+        "title": "ড্রপডাউন কনফিগারেশন",
+        "multi_title": "মাল্টি-সিলেক্ট কনফিগারেশন",
+        "source": "উৎস",
+        "source_placeholder": "উৎস বেছে নিন",
+        "sources": {
+          "static": "নির্দিষ্ট অপশনসমূহ",
+          "folder": "ফোল্ডারের ফাইলসমূহ",
+          "file": "ফাইলের ডেটাসমূহ"
+        },
+        "static": {
+          "placeholder": "অপশনের মান লিখুন"
+        },
+        "folder": {
+          "path": "ফোল্ডার পাথ",
+          "path_placeholder": "একটি ফোল্ডার বেছে নিন",
+          "display_field": "ডিসপ্লে ফিল্ড (Frontmatter Key)",
+          "field_placeholder": "যেমন: title (ডিফল্ট ফাইলের নাম)",
+          "loading_fields": "ফিল্ড লোড হচ্ছে...",
+          "default_field": "ফাইলের নাম (ডিফল্ট)",
+          "include_pattern": "অন্তর্ভুক্তির প্যাটার্ন (Glob)",
+          "include_placeholder": "যেমন: *.md",
+          "exclude_pattern": "বর্জনের প্যাটার্ন (Glob)",
+          "exclude_placeholder": "যেমন: index.md"
+        },
+        "file": {
+          "path": "ফাইল পাথ (JSON/YAML/TOML)",
+          "path_placeholder": "একটি ফাইল বেছে নিন",
+          "data_key": "ডেটা কি (নির্দিষ্ট ফিল্ড)",
+          "key_placeholder": "যেমন: categories বা name",
+          "default_key": "সম্পূর্ণ ফাইল/অ্যারে এক্সট্রাক্ট করুন"
+        }
+      }
+    },
+    "array": {
+      "label": "যেটির অ্যারে",
+      "placeholder": "সাব-টাইপ নির্বাচন করুন"
+    },
+    "nested": {
+      "title": "নেস্টেড ফিল্ডসমূহ",
+      "add_button": "নেস্টেড ফিল্ড যোগ করুন"
+    },
+    "date": {
+      "default_value": "ডিফল্ট মান",
+      "mode_placeholder": "মোড নির্বাচন করুন",
+      "static": "নির্দিষ্ট তারিখ",
+      "dynamic": "বর্তমান তারিখ (লাইভ)",
+      "empty": "খালি",
+      "select_initial": "প্রাথমিক তারিখ নির্বাচন করুন",
+      "today": "আজ"
+    },
+    "actions": {
+      "add_option": "অপশন যোগ করুন",
+      "add_field": "ফিল্ড যোগ করুন",
+      "update_field": "ফিল্ড আপডেট করুন",
+      "enter_option": "অপশন লিখুন",
+      "include": "অন্তর্ভুক্ত করুন",
+      "ignore": "উপেক্ষা করুন"
+    },
+    "builder": {
+      "add_new_field": "নতুন ফিল্ড যোগ করুন",
+      "configure_properties": "নতুন ফিল্ডের বৈশিষ্ট্য কনফিগার করুন",
+      "field_settings": "ফিল্ড সেটিংস",
+      "required": "আবশ্যক",
+      "show": "দেখান",
+      "hide": "লুকান",
+      "no_field_selected": "কোনো ফিল্ড নির্বাচিত হয়নি",
+      "select_to_edit": "সম্পাদনা করতে তালিকা থেকে একটি ফিল্ড নির্বাচন করুন",
+      "no_fields": "এখনও কোনো ফিল্ড নেই",
+      "add_first_field": "নিচে আপনার প্রথম ফিল্ড যোগ করুন",
+      "back_to_fields": "ফিল্ডগুলিতে ফিরে যান",
+      "field_count": "{count, plural, =0 {0টি ফিল্ড} one {1টি ফিল্ড} other {#টি ফিল্ড}}",
+      "configure_field": "নতুন ফিল্ডের বৈশিষ্ট্য কনফিগার করুন",
+      "select_field_desc": "সেটিংস সম্পাদনা করতে তালিকা থেকে একটি ফিল্ড নির্বাচন করুন",
+      "no_fields_yet": "এখনও কোনো ফিল্ড নেই",
+      "type_string": "স্ট্রিং",
+      "type_number": "সংখ্যা",
+      "type_boolean": "বুলিয়ান",
+      "type_media": "মিডিয়া",
+      "type_gallery": "গ্যালারি",
+      "type_array": "অ্যারে",
+      "type_date": "তারিখ",
+      "type_object": "অবজেক্ট",
+      "opt_static": "স্থির বিকল্প",
+      "opt_folder": "ফোল্ডার থেকে ফাইল",
+      "opt_file": "ফাইল থেকে ডেটা",
+      "placeholder_subtype": "সাবটাইপ বাছুন",
+      "placeholder_default": "ডিফল্ট মান নির্বাচন করুন",
+      "placeholder_style": "ইনপুট স্টাইল বাছুন"
+    },
+    "errors": {
+      "name_required": "ফিল্ডের নাম আবশ্যক",
+      "name_exists": "এই নামের ফিল্ড ইতিমধ্যে বিদ্যমান"
+    }
+  }
+}

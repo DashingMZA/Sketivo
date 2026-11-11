@@ -1,0 +1,293 @@
+{
+  "search": {
+    "placeholder": "Search or ask AI...",
+    "ask_ai_copilot": "Ask AI Copilot",
+    "ask_about_query": "Ask AI Copilot: \"{query}\"",
+    "create_in_collection": "Create new entry in {collection}",
+    "ai_placeholder": "Ask anything about your site, content, or CMS...",
+    "ai_send": "Send",
+    "copilot_title": "AI Copilot",
+    "copilot_subtitle": "Ask anything — I know your project's content structure and collections.",
+    "suggestion_1": "How do I create a new blog post?",
+    "suggestion_2": "What is site configuration and how do I edit it?",
+    "suggestion_3": "How do I invite a new team member?",
+    "suggestion_4": "Explain the folder structure of this project",
+    "suggestion_file_1": "Summarize this page",
+    "suggestion_file_2": "Suggest SEO improvements for this page",
+    "suggestion_file_3": "Which other pages should link to this one?",
+    "suggestion_file_4": "Proofread this page and list any issues",
+    "suggestion_code_1": "Explain what this file does",
+    "suggestion_code_2": "Which pages does this file affect?",
+    "suggestion_code_3": "What can I safely change here?",
+    "suggestion_code_4": "Summarize the settings in this file",
+    "copy": "Copy",
+    "copied": "Copied!",
+    "new_query": "New conversation",
+    "ai_thinking": "Thinking…",
+    "ai_reading_files": "Reading relevant files…",
+    "ai_sources": "Sources",
+    "copilot_label": "Copilot",
+    "stop_generating": "Stop generating",
+    "groupLabels": {
+      "organizations": "Organizations",
+      "preferences": "Preferences",
+      "organization_settings": "Organization Settings",
+      "ai_agent": "AI Agent",
+      "support_updates": "Support & Updates",
+      "account": "Account",
+      "files": "Files"
+    },
+    "controls": {
+      "navigate": "Navigate",
+      "select": "Select",
+      "close": "Close"
+    },
+    "org_keywords": [
+      "org",
+      "organization",
+      "switch",
+      "workspace",
+      "team",
+      "workspace"
+    ],
+    "items": {
+      "display-picture": {
+        "label": "Display Picture",
+        "href": "/dashboard/account/#display-picture",
+        "keywords": [
+          "display",
+          "profile",
+          "user",
+          "account",
+          "photo",
+          "picture",
+          "image",
+          "avatar",
+          "change",
+          "upload",
+          "update",
+          "edit"
+        ]
+      },
+      "display-name": {
+        "label": "Update Display Name",
+        "href": "/dashboard/account/#display-name",
+        "keywords": [
+          "display name",
+          "name",
+          "profile name",
+          "public name",
+          "username",
+          "screen name",
+          "nickname",
+          "account name",
+          "change name",
+          "update name",
+          "edit name",
+          "rename",
+          "change display name",
+          "update display name",
+          "edit display name",
+          "identity",
+          "personal information"
+        ]
+      },
+      "change-password": {
+        "label": "Change Password",
+        "href": "/dashboard/account/#change-password",
+        "keywords": [
+          "change password",
+          "update password",
+          "edit password",
+          "new password",
+          "current password",
+          "reset password",
+          "password",
+          "security",
+          "credentials",
+          "login credentials",
+          "account security"
+        ]
+      },
+      "set-password": {
+        "label": "Set Password",
+        "href": "/dashboard/account/#set-password",
+        "keywords": [
+          "set password",
+          "create password",
+          "add password",
+          "password",
+          "security",
+          "credentials",
+          "account security"
+        ]
+      },
+      "newsletter": {
+        "label": "Newsletter Subscription",
+        "href": "/dashboard/account/#newsletter",
+        "keywords": [
+          "newsletter",
+          "subscription",
+          "subscribe",
+          "unsubscribe",
+          "email subscription",
+          "email notifications",
+          "marketing emails",
+          "updates",
+          "email updates",
+          "notifications",
+          "mailing list"
+        ]
+      },
+      "language": {
+        "label": "Language",
+        "href": "/dashboard/preference#language",
+        "keywords": [
+          "language",
+          "locale",
+          "region",
+          "change language",
+          "set language",
+          "app language",
+          "interface language",
+          "localization",
+          "i18n",
+          "translation",
+          "preferences"
+        ]
+      },
+      "theme": {
+        "label": "Theme",
+        "href": "/dashboard/preference#theme",
+        "keywords": [
+          "theme",
+          "dark mode",
+          "light mode",
+          "dark theme",
+          "light theme",
+          "system theme",
+          "appearance",
+          "color scheme",
+          "color mode",
+          "night mode",
+          "display theme",
+          "ui theme",
+          "preferences"
+        ]
+      },
+      "coauthor": {
+        "label": "Co-Author Preference",
+        "href": "/dashboard/preference#coauthor",
+        "keywords": [
+          "coauthor",
+          "co-author",
+          "co author",
+          "author preference",
+          "pin author",
+          "impersonate",
+          "show as",
+          "default author",
+          "article author",
+          "post author",
+          "content author",
+          "preferences"
+        ]
+      },
+      "ai-agent": {
+        "label": "AI Agent Settings",
+        "href": "/dashboard/ai-agent",
+        "keywords": [
+          "ai",
+          "copilot",
+          "ai agent",
+          "artificial intelligence",
+          "assistant",
+          "bot",
+          "automation",
+          "smart",
+          "machine learning",
+          "features",
+          "settings",
+          "configuration"
+        ]
+      },
+      "discord-support": {
+        "label": "Discord Community",
+        "href": "https://discord.com/invite/KrpvHfqcNA",
+        "target": "_blank",
+        "keywords": [
+          "support",
+          "help",
+          "discord",
+          "community",
+          "chat",
+          "contact",
+          "talk to us",
+          "issue",
+          "bug",
+          "question",
+          "need help"
+        ]
+      },
+      "updates-feedback": {
+        "label": "Updates & Feedback",
+        "href": "https://updates{configDir}.com/",
+        "target": "_blank",
+        "keywords": [
+          "updates",
+          "feedback",
+          "feature request",
+          "tracking",
+          "building timeline",
+          "changelog",
+          "new features",
+          "roadmap",
+          "what's new"
+        ]
+      },
+      "org-general": {
+        "label": "General Settings",
+        "href": "/{orgId}/settings/general",
+        "keywords": [
+          "general",
+          "organization",
+          "settings",
+          "name",
+          "archive",
+          "delete",
+          "org"
+        ]
+      },
+      "org-members": {
+        "label": "Members",
+        "href": "/{orgId}/settings/members",
+        "keywords": [
+          "members",
+          "team",
+          "invite",
+          "users",
+          "roles",
+          "permissions",
+          "organization"
+        ]
+      },
+      "org-sandbox": {
+        "label": "Sandbox Settings",
+        "href": "/{orgId}/settings/sandbox",
+        "keywords": [
+          "sandbox",
+          "vercel",
+          "integration",
+          "connect",
+          "deployment",
+          "development",
+          "preview",
+          "publish",
+          "deploy",
+          "live",
+          "build"
+        ]
+      }
+    }
+  }
+}

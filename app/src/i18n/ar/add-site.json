@@ -1,0 +1,28 @@
+{
+  "add-site": {
+    "add_new_site": "إضافة موقع جديد",
+    "create_new_site": "إنشاء موقع جديد",
+    "import_site_desc": "اختر طريقة استيراد موقعك.",
+    "add_to_org_desc": "أضف موقعاً جديداً إلى منظمتك.",
+    "connected": "متصل",
+    "not_connected": "غير متصل",
+    "site_name_label": "اسم الموقع",
+    "site_name_placeholder": "اسم الموقع",
+    "git_provider_label": "مزود خدمة Git",
+    "choose_provider_placeholder": "اختر المزود",
+    "repository_label": "المستودع",
+    "select_repository_placeholder": "اختر مستودعاً",
+    "branch_label": "الفرع (Branch)",
+    "please_wait": "يُرجى الانتظار",
+    "choose_branch_placeholder": "اختر الفرع",
+    "no_repository_found": "لم يتم العثور على أي مستودع",
+    "cant_see_repo": "ألا تجد مستودعك هنا؟",
+    "configure_on": "تكوين الأذونات على {provider}",
+    "site_url_label": "رابط الموقع (اختياري)",
+    "site_url_placeholder": "https://example.com",
+    "back": "رجوع",
+    "create_site": "إنشاء الموقع",
+    "project_created_success": "تم إنشاء المشروع بنجاح",
+    "something_went_wrong": "حدث خطأ ما!"
+  }
+}
