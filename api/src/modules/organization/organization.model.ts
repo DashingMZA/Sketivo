@@ -1,0 +1,83 @@
+import { ENUM_ROLE_ORG } from "../../enums/roles";
+import mongoose, { model } from "mongoose";
+import { TOrganizationType } from "./organization.type";
+
+const organizationSchema = new mongoose.Schema<TOrganizationType>(
+  {
+    org_name: {
+      type: String,
+      required: true,
+    },
+    org_id: {
+      type: String,
+      required: true,
+    },
+    org_image: {
+      type: String,
+    },
+    default: {
+      type: Boolean,
+      default: false,
+    },
+    status: {
+      type: String,
+      enum: ["active", "archived"],
+      default: "active",
+    },
+    owner: {
+      type: String,
+      required: true,
+    },
+    members: [
+      {
+        email: {
+          type: String,
+          required: true,
+        },
+        // absent until the invitee registers; invites are keyed by email
+        user_id: {
+          type: String,
+        },
+        role: {
+          type: String,
+          required: true,
+          enum: [ENUM_ROLE_ORG.ADMIN, ENUM_ROLE_ORG.EDITOR],
+        },
+        status: {
+          type: String,
+          enum: ["active", "pending"],
+          default: "active",
+        },
+      },
+    ],
+    sandbox: {
+      type: {
+        token: { type: String, required: true },
+        team_id: { type: String, default: "" },
+        project_id: { type: String, required: true },
+        project_name: { type: String },
+        username: { type: String },
+      },
+      default: null,
+    },
+  },
+  {
+    timestamps: true,
+  },
+);
+
+// At most one default org per owner. Scoped to default:true via the partial
+// filter so a user can still have any number of non-default orgs.
+organizationSchema.index(
+  { owner: 1 },
+  {
+    name: "owner_default_unique",
+    unique: true,
+    partialFilterExpression: { default: true },
+  },
+);
+
+export const Organization = model<TOrganizationType>(
+  "organization",
+  organizationSchema,
+);

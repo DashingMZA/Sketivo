@@ -1,0 +1,170 @@
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import {
+  agentTokenIndex,
+  authenticateAgent,
+  authenticateGitReadToken,
+  issueGitReadToken,
+} from "./agent.auth";
+import { clearAgentCaches, forgetAgents } from "./agent.cache";
+import { EAgentScope, EAgentWriteMode } from "./agent.type";
+
+const m = vi.hoisted(() => ({
+  grantFindOne: vi.fn(),
+  userFindOne: vi.fn(),
+  requireOrgAccess: vi.fn(),
+  lean:
+    (fn: (...a: unknown[]) => unknown) =>
+    (...a: unknown[]) => ({
+      select: () => ({ lean: () => fn(...a) }),
+      lean: () => fn(...a),
+    }),
+}));
+
+vi.mock("../../config/variables", () => ({
+  default: { better_auth_secret: "test-secret" },
+}));
+vi.mock("./agent-grant.model", () => ({
+  AgentGrant: {
+    findOne: m.lean((...a) => m.grantFindOne(...a)),
+    updateOne: () => ({ catch: () => undefined }),
+  },
+}));
+vi.mock("../user/user.model", () => ({
+  User: { findOne: m.lean((...a) => m.userFindOne(...a)) },
+}));
+vi.mock("../../lib/resourceAuth", () => ({
+  requireOrgAccess: (...a: unknown[]) => m.requireOrgAccess(...a),
+}));
+
+const GRANT = {
+  grant_id: "g1",
+  user_id: "u1",
+  token_index: "x",
+  token_hint: "spat_abcd",
+  name: "Claude Code",
+  org_id: "org-1",
+  project_ids: ["p1"],
+  scopes: [EAgentScope.PROJECTS_READ, EAgentScope.CONTENT_READ],
+  write_mode: EAgentWriteMode.DIRECT,
+  expires_at: new Date(Date.now() + 86_400_000),
+};
+const USER = { user_id: "u1", full_name: "Ada", email: "ada@example.com" };
+
+beforeEach(() => {
+  clearAgentCaches();
+  m.grantFindOne.mockReset().mockResolvedValue(GRANT);
+  m.userFindOne.mockReset().mockResolvedValue(USER);
+  m.requireOrgAccess.mockReset().mockResolvedValue({ role: "editor" });
+});
+
+describe("authenticateAgent", () => {
+  it("looks tokens up by hash only and resolves the user's access", async () => {
+    const agent = await authenticateAgent("Bearer spat_secret");
+
+    expect(m.grantFindOne).toHaveBeenCalledWith({
+      token_index: agentTokenIndex("spat_secret"),
+    });
+    expect(agentTokenIndex("spat_secret")).not.toContain("spat_secret");
+    expect(agent).toMatchObject({ user_id: "u1", client_name: "Claude Code" });
+    expect([...agent.scopes]).toEqual(GRANT.scopes);
+  });
+
+  it.each([
+    ["no header", undefined],
+    ["a non-Sketivo token", "Bearer ghp_abc"],
+    ["a non-Bearer scheme", "Basic spat_x"],
+  ])("rejects %s", async (_label, header) => {
+    await expect(authenticateAgent(header)).rejects.toMatchObject({
+      statusCode: 401,
+    });
+    expect(m.grantFindOne).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    ["unknown or revoked", null],
+    ["expired", { ...GRANT, expires_at: new Date(Date.now() - 1000) }],
+  ])("rejects %s tokens", async (_label, grant) => {
+    m.grantFindOne.mockResolvedValue(grant);
+    await expect(authenticateAgent("Bearer spat_x")).rejects.toMatchObject({
+      statusCode: 401,
+    });
+  });
+
+  it("cuts off a user who left the organization", async () => {
+    m.requireOrgAccess.mockRejectedValue(new Error("not a member"));
+    await expect(authenticateAgent("Bearer spat_x")).rejects.toMatchObject({
+      statusCode: 403,
+    });
+  });
+
+  it("reuses a verified token without querying again", async () => {
+    await authenticateAgent("Bearer spat_x");
+    const again = await authenticateAgent("Bearer spat_x");
+    expect(again.token).toBe("spat_x");
+    expect(m.grantFindOne).toHaveBeenCalledTimes(1);
+    expect(m.requireOrgAccess).toHaveBeenCalledTimes(1);
+  });
+
+  it.each([
+    ["the token is revoked", { grant_id: "g1" }],
+    ["the member is removed", { user_id: "u1", org_id: "org-1" }],
+    ["the organization is deleted", { org_id: "org-1" }],
+  ])("re-checks at once when %s", async (_label, match) => {
+    await authenticateAgent("Bearer spat_x");
+    forgetAgents(match);
+    m.grantFindOne.mockResolvedValue(null);
+    await expect(authenticateAgent("Bearer spat_x")).rejects.toMatchObject({
+      statusCode: 401,
+    });
+  });
+
+  it("keeps other users' cached tokens when one member is removed", async () => {
+    await authenticateAgent("Bearer spat_x");
+    forgetAgents({ user_id: "someone-else", org_id: "org-1" });
+    await authenticateAgent("Bearer spat_x");
+    expect(m.grantFindOne).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("read-only git tokens", () => {
+  const issueFor = async (projectId = "p1", ttl?: number) =>
+    issueGitReadToken(await authenticateAgent("Bearer spat_x"), projectId, ttl)
+      .token;
+
+  it("works for git fetches of the site it was issued for", async () => {
+    const token = await issueFor();
+    expect(token.startsWith("spgt_")).toBe(true);
+    await expect(authenticateGitReadToken(token, "p1")).resolves.toMatchObject({
+      user_id: "u1",
+    });
+    expect(m.grantFindOne).toHaveBeenLastCalledWith({ grant_id: "g1" });
+  });
+
+  it("is useless as an MCP token", async () => {
+    const token = await issueFor();
+    await expect(authenticateAgent(`Bearer ${token}`)).rejects.toMatchObject({
+      statusCode: 401,
+    });
+  });
+
+  it.each([
+    ["a tampered token", (t: string) => `${t.slice(0, -2)}xx`, "p1", 401],
+    ["another site", (t: string) => t, "p2", 403],
+  ])("rejects %s", async (_label, mutate, projectId, status) => {
+    const token = mutate(await issueFor());
+    await expect(
+      authenticateGitReadToken(token, projectId),
+    ).rejects.toMatchObject({ statusCode: status });
+  });
+
+  it("rejects an expired token, and one whose access token was revoked", async () => {
+    await expect(
+      authenticateGitReadToken(await issueFor("p1", -1), "p1"),
+    ).rejects.toThrow(/expired/);
+    const token = await issueFor();
+    m.grantFindOne.mockResolvedValue(null);
+    await expect(authenticateGitReadToken(token, "p1")).rejects.toMatchObject({
+      statusCode: 401,
+    });
+  });
+});

@@ -1,0 +1,180 @@
+import brand from "./config/brand";
+import config from "./config/variables";
+import bcrypt from "bcryptjs";
+import { getAuthClient, getAuthDb } from "./auth";
+import { allowedOrigins } from "./config/cors-options";
+import { reconcilePendingInvites } from "./lib/pendingInvites";
+import { createUserId } from "./lib/userIdGenerator";
+import { logger } from "./lib/logger";
+import { resolveEnv } from "./lib/workerEnv";
+import { organizationService } from "./modules/organization/organization.service";
+
+const createAuthDemoInstance = async () => {
+  // better-auth is ESM-only — dynamic import (see auth.ts).
+  const { betterAuth } = await import("better-auth");
+  const { mongodbAdapter } = await import("better-auth/adapters/mongodb");
+  const { customSession } = await import("better-auth/plugins");
+  return betterAuth({
+    basePath: "/api/v1/demo/auth",
+    baseURL: resolveEnv("BASE_URL"),
+    secret: config.better_auth_secret,
+    trustedOrigins: allowedOrigins,
+    database: mongodbAdapter(getAuthDb(), {
+      client: getAuthClient(),
+      usePlural: true,
+    }),
+    session: {
+      expiresIn: 60 * 60 * 24 * 7, // 7 days
+      updateAge: 60 * 60 * 24, // 1 day (every 1 day the session expiration is updated)
+      cookieCache: {
+        enabled: true,
+        maxAge: 5 * 60, // Cache duration in seconds
+      },
+    },
+    appName: `${brand.name} Demo`,
+    rateLimit: {
+      // enabled: true, // enabled only if you want to test it in development
+      window: parseInt(resolveEnv("RATELIMIT_WINDOW") || "10"), // seconds
+      max: parseInt(resolveEnv("RATELIMIT_MAX") || "100"), // max requests / window
+    },
+    databaseHooks: {
+      user: {
+        create: {
+          before: async (user) => {
+            return {
+              data: {
+                ...user,
+                user_id: await createUserId(),
+                full_name: user.name,
+              },
+            };
+          },
+          after: async (user) => {
+            try {
+              await reconcilePendingInvites(user.email, user.user_id as string);
+            } catch (error) {
+              logger.error("Failed to reconcile pending org invites", error);
+            }
+
+            try {
+              await organizationService.ensureDefaultOrganizationService(
+                user.user_id as string,
+              );
+            } catch (error) {
+              logger.error("Failed to create default organization", error);
+            }
+          },
+        },
+      },
+    },
+    user: {
+      modelName: "user",
+      fields: {
+        name: "full_name",
+        emailVerified: "verified",
+      },
+      additionalFields: {
+        full_name: {
+          type: "string",
+          required: true,
+          input: false,
+          defaultValue: "",
+        },
+        user_id: {
+          type: "string",
+          required: true,
+          input: false,
+          defaultValue: "",
+        },
+        provider: {
+          type: "string",
+          required: true,
+          input: false,
+          defaultValue: "Credentials",
+        },
+        role: {
+          type: "string",
+          required: true,
+          input: false,
+          defaultValue: "user",
+        },
+        password: {
+          type: "string",
+          input: true,
+        },
+        subscribed: {
+          type: "boolean",
+          required: false,
+          input: true,
+          defaultValue: false,
+        },
+        country: {
+          type: "string",
+          input: true,
+        },
+      },
+    },
+    advanced: {
+      ipAddress: {
+        ipAddressHeaders: [
+          "do-connecting-ip",
+          "cf-connecting-ip",
+          "x-real-ip",
+          "x-forwarded-for",
+        ],
+      },
+      cookiePrefix: brand.demo_cookie_prefix,
+      crossSubDomainCookies: {
+        enabled: resolveEnv("NODE_ENV") === "production",
+        domain:
+          resolveEnv("NODE_ENV") === "production"
+            ? resolveEnv("DEMO_COOKIE_DOMAIN") || ".sketivo.com"
+            : undefined,
+      },
+      defaultCookieAttributes: {
+        sameSite: resolveEnv("NODE_ENV") === "production" ? "none" : "lax",
+        secure: resolveEnv("NODE_ENV") === "production",
+        path: "/",
+      },
+    },
+    emailAndPassword: {
+      enabled: true,
+      password: {
+        // your custom password hashing function
+        hash: async (password: string) => {
+          const hashPass = await bcrypt.hash(password, config.salt);
+          return hashPass;
+        },
+        // your custom password verification function
+        verify: async ({ password, hash }) => {
+          const isValidPassword = await bcrypt.compare(password, hash);
+          return isValidPassword;
+        },
+      },
+    },
+    plugins: [
+      customSession(async ({ user, session }) => {
+        return {
+          user,
+          session: {
+            ...session,
+            serverTime: new Date().toISOString(),
+          },
+        };
+      }),
+    ],
+  });
+};
+
+export type AuthDemoInstance = Awaited<
+  ReturnType<typeof createAuthDemoInstance>
+>;
+
+// Lazily AND asynchronously created — see getAuth in auth.ts.
+let _authDemoPromise: Promise<AuthDemoInstance> | null = null;
+export const getAuthDemo = (): Promise<AuthDemoInstance> => {
+  if (!_authDemoPromise) {
+    _authDemoPromise = createAuthDemoInstance();
+  }
+  return _authDemoPromise;
+};

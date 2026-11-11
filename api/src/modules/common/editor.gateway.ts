@@ -1,0 +1,144 @@
+import { isOrgMember } from "../../lib/orgAccess";
+import { Server as IOServer, Socket } from "socket.io";
+import { forgetHead } from "../agent/agent.cache";
+
+// ---------------------------------------------------------------------------
+// Types
+// ---------------------------------------------------------------------------
+
+type JoinPayload = {
+  org_id: string;
+  project_id: string;
+  file: string;
+};
+
+type CommitPayload = JoinPayload & {
+  action: string;
+};
+
+type CommitBroadcast = {
+  file: string;
+  action: string;
+  user_id: string;
+  user_name: string;
+  committed_at: string;
+};
+
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+function getRoomKey(org_id: string, project_id: string, file: string): string {
+  return `${org_id}:${project_id}:${file}`;
+}
+
+function isValidJoinPayload(p: JoinPayload): boolean {
+  return Boolean(p.org_id && p.project_id && p.file);
+}
+
+// ---------------------------------------------------------------------------
+// Gateway
+// ---------------------------------------------------------------------------
+
+let gatewayIo: IOServer | undefined;
+
+export type TExternalCommit = {
+  file: string;
+  action: string;
+  user_id: string;
+  user_name: string;
+  via: string;
+  commit_sha: string;
+};
+
+/**
+ * Tells editors open on these files that the repository changed outside the
+ * shared document (an AI agent). Unlike `commit:completed`, the editor must not
+ * treat its own content as saved.
+ */
+export function broadcastExternalCommit(
+  org_id: string,
+  project_id: string,
+  commits: TExternalCommit[],
+): void {
+  if (!gatewayIo) return;
+  const committed_at = new Date().toISOString();
+  for (const commit of commits) {
+    gatewayIo
+      .to(getRoomKey(org_id, project_id, commit.file))
+      .emit("commit:external", { ...commit, committed_at });
+  }
+}
+
+export function initEditorGateway(io: IOServer): void {
+  gatewayIo = io;
+  io.on("connection", (socket: Socket) => {
+    // Join a file room — must be called by the client before emitting "commit".
+    // Membership is verified server-side so a client can't join another
+    // organization's room by guessing ids.
+    socket.on("join-editor", async (payload: JoinPayload) => {
+      if (!isValidJoinPayload(payload)) return;
+
+      const userId = socket.data.user?.user_id;
+      if (!(await isOrgMember(userId, payload.org_id))) return;
+
+      const roomKey = getRoomKey(
+        payload.org_id,
+        payload.project_id,
+        payload.file,
+      );
+      socket.join(roomKey);
+    });
+
+    // Leave a file room — called when the user navigates away
+    socket.on("leave-editor", (payload: JoinPayload) => {
+      if (!isValidJoinPayload(payload)) return;
+
+      const roomKey = getRoomKey(
+        payload.org_id,
+        payload.project_id,
+        payload.file,
+      );
+      socket.leave(roomKey);
+    });
+
+    // Broadcast a successful commit to all OTHER users in the room. Identity
+    // comes from the authenticated session, never from the client payload, so
+    // commit notifications can't be spoofed.
+    socket.on("commit", (payload: CommitPayload) => {
+      const { org_id, project_id, file, action } = payload;
+      const user = socket.data.user;
+
+      if (!org_id || !project_id || !file || !action || !user?.user_id) {
+        socket.emit("commit:error", { message: "Invalid payload." });
+        return;
+      }
+
+      const roomKey = getRoomKey(org_id, project_id, file);
+
+      // Only members currently in the room receive the broadcast, and the
+      // sender must be in the room (joined via join-editor, which checked
+      // membership) to reach it.
+      if (!socket.rooms.has(roomKey)) {
+        socket.emit("commit:error", { message: "Not joined to this file." });
+        return;
+      }
+
+      const broadcast: CommitBroadcast = {
+        file,
+        action,
+        user_id: user.user_id,
+        user_name: user.full_name || "Unknown",
+        committed_at: new Date().toISOString(),
+      };
+
+      forgetHead(project_id);
+
+      // Excludes the sender — they already show their own success toast
+      socket.to(roomKey).emit("commit:completed", broadcast);
+    });
+
+    // Socket.IO auto-removes the socket from all rooms on disconnect.
+    socket.on("disconnect", () => {});
+  });
+}

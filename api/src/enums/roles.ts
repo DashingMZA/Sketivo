@@ -1,0 +1,40 @@
+export const ENUM_ROLE = {
+  ADMIN: "admin",
+  MODERATOR: "moderator",
+  USER: "user",
+} as const;
+
+export const ENUM_ROLE_ORG = {
+  OWNER: "owner",
+  ADMIN: "admin",
+  EDITOR: "editor",
+} as const;
+
+export const ENUM_PERMISSIONS = {
+  MANAGE_ORG: "manage_org",
+  DELETE_ORG: "delete_org",
+  MANAGE_MEMBERS: "manage_members",
+  VIEW_MEMBERS: "view_members",
+  MANAGE_PROJECTS: "manage_projects",
+  VIEW_PROJECTS: "view_projects",
+} as const;
+
+export type TPermission =
+  (typeof ENUM_PERMISSIONS)[keyof typeof ENUM_PERMISSIONS];
+
+export type TOrgRole = (typeof ENUM_ROLE_ORG)[keyof typeof ENUM_ROLE_ORG];
+
+export const ROLE_PERMISSIONS: Record<TOrgRole, readonly TPermission[]> = {
+  [ENUM_ROLE_ORG.OWNER]: Object.values(ENUM_PERMISSIONS),
+  [ENUM_ROLE_ORG.ADMIN]: [
+    ENUM_PERMISSIONS.MANAGE_ORG,
+    ENUM_PERMISSIONS.MANAGE_MEMBERS,
+    ENUM_PERMISSIONS.VIEW_MEMBERS,
+    ENUM_PERMISSIONS.MANAGE_PROJECTS,
+    ENUM_PERMISSIONS.VIEW_PROJECTS,
+  ],
+  [ENUM_ROLE_ORG.EDITOR]: [
+    ENUM_PERMISSIONS.VIEW_PROJECTS,
+    ENUM_PERMISSIONS.VIEW_MEMBERS,
+  ],
+};

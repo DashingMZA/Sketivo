@@ -1,0 +1,774 @@
+import { ENUM_ROLE_ORG } from "../../enums/roles";
+import ApiError from "../../errors/ApiError";
+import { decrypt, encrypt } from "../../lib/encrypt";
+import { decorateOrganization } from "../../lib/extensionGuards";
+import { logger } from "../../lib/logger";
+import { sendMail } from "../../lib/mailer";
+import { nanoId } from "../../lib/nanoId";
+import { assertAssignableRole } from "../../lib/orgRoles";
+import { emailMatcher } from "../../lib/pendingInvites";
+import { deleteFile } from "../../lib/s3-utils";
+import { AgentGrant } from "../agent/agent-grant.model";
+import { forgetAgents } from "../agent/agent.cache";
+import { ProjectContent } from "../project-content/project-content.model";
+import { ProjectLog } from "../project-log/project-log.model";
+import { ProjectPreview } from "../project-preview/project-preview.model";
+import { Project } from "../project/project.model";
+import { User } from "../user/user.model";
+import { Organization } from "./organization.model";
+import {
+  TMember,
+  TOrganizationType,
+  TSandboxIntegration,
+} from "./organization.type";
+
+function decryptOrgSandboxToken<
+  T extends { sandbox?: TSandboxIntegration | null },
+>(org: T): T {
+  if (org?.sandbox?.token) {
+    try {
+      org.sandbox = { ...org.sandbox, token: decrypt(org.sandbox.token) };
+    } catch {
+      // token not encrypted (migration) — leave as-is
+    }
+  }
+  return org;
+}
+
+// get organizations by user
+const getOrganizationsByUserService = async (userId: string) => {
+  // get all organizations by user
+  const orgs = await Organization.aggregate([
+    {
+      $match: {
+        $or: [
+          { owner: userId },
+          { members: { $elemMatch: { user_id: userId } } },
+        ],
+      },
+    },
+    {
+      $lookup: {
+        from: "projects",
+        localField: "org_id",
+        foreignField: "org_id",
+        as: "projects",
+      },
+    },
+    {
+      $lookup: {
+        from: "users",
+        let: { memberIds: "$members.user_id" },
+        pipeline: [
+          {
+            $match: {
+              $expr: { $in: ["$user_id", "$$memberIds"] },
+            },
+          },
+          {
+            $project: {
+              password: 0, // Exclude the password field
+            },
+          },
+        ],
+        as: "members",
+      },
+    },
+    {
+      $lookup: {
+        from: "users",
+        let: { ownerId: "$owner" },
+        pipeline: [
+          {
+            $match: {
+              $expr: { $eq: ["$user_id", "$$ownerId"] },
+            },
+          },
+          {
+            $project: {
+              user_id: 1,
+              email: 1,
+              image: 1,
+              full_name: 1,
+              _id: 0,
+            },
+          },
+        ],
+        as: "ownerData",
+      },
+    },
+    {
+      $addFields: {
+        projectCount: { $size: "$projects" },
+      },
+    },
+  ]);
+
+  for (let index = 0; index < orgs.length; index += 1) {
+    decryptOrgSandboxToken(orgs[index]);
+    orgs[index] = await decorateOrganization(orgs[index]);
+  }
+
+  return orgs;
+};
+
+// get organization by id
+const getOrganizationService = async ({
+  org_id,
+  userId,
+}: {
+  org_id: string;
+  userId?: string;
+}) => {
+  const matchStage =
+    typeof userId === "string"
+      ? { $and: [{ org_id }, { members: { $elemMatch: { user_id: userId } } }] }
+      : { org_id };
+
+  const result = await Organization.aggregate([
+    {
+      $match: matchStage,
+    },
+    {
+      $lookup: {
+        from: "projects",
+        localField: "org_id",
+        foreignField: "org_id",
+        as: "projects",
+      },
+    },
+    {
+      $lookup: {
+        from: "users",
+        localField: "members.user_id",
+        foreignField: "user_id",
+        as: "users",
+      },
+    },
+    {
+      $addFields: {
+        projectCount: { $size: "$projects" },
+        members: {
+          $map: {
+            input: "$members",
+            as: "member",
+            in: {
+              $mergeObjects: [
+                "$$member",
+                {
+                  $cond: [
+                    { $gt: [{ $size: "$users" }, 0] },
+                    {
+                      $let: {
+                        vars: {
+                          userDoc: {
+                            $arrayElemAt: [
+                              {
+                                $filter: {
+                                  input: "$users",
+                                  as: "user",
+                                  cond: {
+                                    $eq: ["$$user.user_id", "$$member.user_id"],
+                                  },
+                                },
+                              },
+                              0,
+                            ],
+                          },
+                        },
+                        in: {
+                          full_name: "$$userDoc.full_name",
+                          image: "$$userDoc.image",
+                          email: "$$userDoc.email",
+                        },
+                      },
+                    },
+                    {},
+                  ],
+                },
+              ],
+            },
+          },
+        },
+      },
+    },
+    {
+      $lookup: {
+        from: "users",
+        let: { ownerId: "$owner" },
+        pipeline: [
+          {
+            $match: {
+              $expr: { $eq: ["$user_id", "$$ownerId"] },
+            },
+          },
+          {
+            $project: {
+              user_id: 1,
+              email: 1,
+              image: 1,
+              full_name: 1,
+              _id: 0,
+            },
+          },
+        ],
+        as: "ownerData",
+      },
+    },
+    {
+      $project: {
+        __v: 0,
+        users: 0,
+        projects: 0,
+      },
+    },
+  ]);
+
+  const singleOrg = result[0] ?? null;
+
+  if (!singleOrg) {
+    return {};
+  }
+
+  decryptOrgSandboxToken(singleOrg);
+
+  return decorateOrganization(singleOrg);
+};
+
+// create organization
+const createOrganizationService = async ({
+  org_name,
+  email,
+  owner,
+  default: isDefault,
+  org_image,
+  org_id,
+}: {
+  org_name: string;
+  email: string;
+  owner: string;
+  default?: boolean;
+  org_image?: string;
+  org_id?: string;
+}): Promise<TOrganizationType | null> => {
+  const existing = await Organization.findOne({ org_name, owner });
+
+  if (existing) {
+    throw new Error("Organization already exists");
+  }
+
+  const generatedOrgId = org_id ?? (await nanoId(10));
+
+  const organizationData: TOrganizationType = {
+    members: [
+      {
+        user_id: owner,
+        role: ENUM_ROLE_ORG.ADMIN,
+        email,
+      },
+    ],
+    org_image: org_image ?? "",
+    org_id: generatedOrgId,
+    org_name,
+    default: isDefault ?? false,
+    status: "active",
+    owner,
+  };
+
+  const newData = new Organization(organizationData);
+  const insertedOrganization = await newData.save();
+  return insertedOrganization;
+};
+
+const isDuplicateKeyError = (error: unknown): error is { code: number } =>
+  typeof error === "object" &&
+  error !== null &&
+  "code" in error &&
+  (error as { code?: unknown }).code === 11000;
+
+/**
+ * Return a user's default organization, creating it when a previous auth hook
+ * did not finish. The partial unique index on `owner` + `default: true` makes
+ * concurrent calls safe; the losing caller simply reads the winning document.
+ */
+const ensureDefaultOrganizationService = async (userId: string) => {
+  const existingDefaultOrg = await Organization.findOne({
+    owner: userId,
+    default: true,
+  });
+
+  if (existingDefaultOrg) {
+    return existingDefaultOrg;
+  }
+
+  const user = await User.findOne({ user_id: userId });
+  if (!user) {
+    throw new Error("User not found");
+  }
+
+  const orgOwnerName = user.full_name?.split(" ")[0] || "User";
+
+  try {
+    return await createOrganizationService({
+      owner: user.user_id,
+      org_name: `${orgOwnerName}'s Org`,
+      email: user.email,
+      default: true,
+    });
+  } catch (error) {
+    if (!isDuplicateKeyError(error)) {
+      throw error;
+    }
+
+    const concurrentDefaultOrg = await Organization.findOne({
+      owner: userId,
+      default: true,
+    });
+
+    if (concurrentDefaultOrg) {
+      return concurrentDefaultOrg;
+    }
+
+    throw error;
+  }
+};
+
+// A member is addressed by user_id once registered, by email while pending.
+const findMember = (
+  organization: { members?: TMember[] } | null,
+  ref: string,
+): TMember | undefined =>
+  (organization?.members ?? []).find(
+    (member) =>
+      (!!member.user_id && member.user_id === ref) ||
+      (!!member.email && emailMatcher(ref).test(member.email)),
+  );
+
+const memberSelector = (member: TMember, ref: string) =>
+  member.user_id
+    ? { "members.user_id": member.user_id }
+    : { "members.email": { $regex: emailMatcher(member.email || ref) } };
+
+//  team member operations
+const addTeamMemberService = async ({
+  org_id,
+  teamMember,
+  loggedInUserId,
+}: {
+  org_id: string;
+  teamMember: TMember;
+  loggedInUserId: string;
+}) => {
+  // Verify admin access
+  const loggedInUser = await Organization.findOne({
+    org_id,
+    members: {
+      $elemMatch: {
+        user_id: loggedInUserId,
+        role: ENUM_ROLE_ORG.ADMIN,
+      },
+    },
+  });
+
+  if (!loggedInUser) {
+    throw Error("Only admins can add team members.");
+  }
+
+  assertAssignableRole(teamMember.role);
+
+  // an invitee with no account is stored by email alone; signup fills the id in
+  const invitedEmail = teamMember.email?.trim().toLowerCase();
+
+  if (!invitedEmail) {
+    throw Error("An email address is required to invite a team member.");
+  }
+
+  const matcher = emailMatcher(invitedEmail);
+  const invitedUser = await User.findOne({ email: { $regex: matcher } });
+  const userId = invitedUser?.user_id;
+
+  const inviter = await User.findOne({ user_id: loggedInUserId });
+
+  if (
+    (userId && loggedInUserId === userId) ||
+    (inviter?.email && matcher.test(inviter.email))
+  ) {
+    throw Error("You cannot add yourself.");
+  }
+
+  // match on both, so a pending invite cannot be duplicated by address
+  const isUserExistOnMember = await Organization.findOne({
+    org_id,
+    $or: [
+      ...(userId ? [{ "members.user_id": userId }] : []),
+      { "members.email": { $regex: matcher } },
+    ],
+  });
+
+  if (isUserExistOnMember) {
+    throw Error("User is already a member of this organization.");
+  }
+
+  const member = await Organization.findOneAndUpdate(
+    { org_id },
+    {
+      $push: {
+        members: {
+          ...(userId ? { user_id: userId } : {}),
+          role: teamMember.role,
+          email: invitedEmail,
+          status: userId ? "active" : "pending",
+        },
+      },
+    },
+  );
+
+  if (!member) {
+    throw Error("Organization not found.");
+  }
+
+  // send mail to the invited member
+  const recipientEmail = invitedUser?.email || teamMember.email;
+
+  if (recipientEmail) {
+    await sendMail({
+      to: recipientEmail,
+      kind: "org_member_added",
+      params: {
+        org_name: member.org_name,
+        role: teamMember.role,
+      },
+    });
+  }
+
+  return teamMember;
+};
+
+const updateRoleService = async ({
+  org_id,
+  teamMember,
+  loggedInUserId,
+}: {
+  org_id: string;
+  teamMember: Omit<TMember, "email">;
+  loggedInUserId: string;
+}) => {
+  // Verify admin access
+  const loggedInUser = await Organization.findOne({
+    org_id,
+    members: {
+      $elemMatch: {
+        user_id: loggedInUserId,
+        role: ENUM_ROLE_ORG.ADMIN,
+      },
+    },
+  });
+
+  if (!loggedInUser) {
+    throw Error("Only admins can update team members.");
+  }
+
+  assertAssignableRole(teamMember.role);
+
+  const memberRef = teamMember.user_id;
+
+  if (!memberRef) {
+    throw Error("A member identifier is required.");
+  }
+
+  if (memberRef === loggedInUserId) {
+    throw Error("You cannot change your own role.");
+  }
+
+  const isUserExistOnMember = await Organization.findOne({ org_id });
+  const target = findMember(isUserExistOnMember, memberRef);
+
+  if (!target) {
+    throw Error("User is not a member of this organization.");
+  }
+
+  if (isUserExistOnMember?.owner === target.user_id) {
+    throw Error("You cannot change the owner's role.");
+  }
+
+  const memberFilter = memberSelector(target, memberRef);
+
+  // update only the role
+  await Organization.findOneAndUpdate(
+    { org_id, ...memberFilter },
+    {
+      $set: {
+        "members.$.role": teamMember.role,
+      },
+    },
+  );
+
+  const recipientUser = await User.findOne({
+    $or: [
+      { user_id: memberRef },
+      { email: { $regex: emailMatcher(memberRef) } },
+    ],
+  });
+  const user = await User.findOne({ user_id: loggedInUserId });
+
+  // send mail only if both users were found and have emails
+  if (recipientUser?.email && user?.email) {
+    await sendMail({
+      to: recipientUser.email,
+      kind: "org_member_updated",
+      params: {
+        org_name: loggedInUser?.org_name,
+        role: teamMember.role,
+      },
+    });
+  }
+
+  return teamMember;
+};
+
+// remove team member
+const removeTeamMemberService = async ({
+  org_id,
+  userId,
+  loggedInUserId,
+}: {
+  org_id: string;
+  userId: string;
+  loggedInUserId: string;
+}) => {
+  // Verify admin access
+  const loggedInUser = await Organization.findOne({
+    org_id,
+    members: {
+      $elemMatch: {
+        user_id: loggedInUserId,
+        role: ENUM_ROLE_ORG.ADMIN,
+      },
+    },
+  });
+
+  if (!loggedInUser) {
+    throw Error("Only admins can remove team members.");
+  }
+
+  if (userId === loggedInUserId) {
+    throw Error("You cannot remove yourself.");
+  }
+
+  const organization = await Organization.findOne({ org_id });
+  const target = findMember(organization, userId);
+
+  if (!target) {
+    throw Error("User is not a member of this organization.");
+  }
+
+  if (organization?.owner === target.user_id) {
+    throw Error("You cannot remove the owner.");
+  }
+
+  const memberFilter = memberSelector(target, userId);
+
+  await Organization.findOneAndUpdate(
+    {
+      org_id,
+      ...memberFilter,
+    },
+    {
+      $pull: {
+        members: target.user_id
+          ? { user_id: target.user_id }
+          : { email: { $regex: emailMatcher(target.email) } },
+      },
+    },
+  );
+  if (target.user_id) forgetAgents({ user_id: target.user_id, org_id });
+
+  const recipientUser = await User.findOne({
+    $or: [{ user_id: userId }, { email: { $regex: emailMatcher(userId) } }],
+  });
+  // send mail only when recipient email exists
+  if (recipientUser?.email) {
+    await sendMail({
+      to: recipientUser.email,
+      kind: "org_member_removed",
+      params: {
+        org_name: loggedInUser.org_name,
+      },
+    });
+  } else {
+    logger.warn("Skipping org removal email: recipient has no email", {
+      userId,
+    });
+  }
+
+  return {
+    user_id: userId,
+    delete: true,
+  };
+};
+
+// leave organization
+const leaveOrganizationService = async ({
+  org_id,
+  loggedInUserId,
+}: {
+  org_id: string;
+  loggedInUserId: string;
+}) => {
+  const organization = await Organization.findOne({
+    org_id,
+    "members.user_id": loggedInUserId,
+  });
+
+  if (!organization) {
+    throw new ApiError("User is not a member of this organization.", 404, "");
+  }
+
+  if (organization.owner === loggedInUserId) {
+    throw new ApiError(
+      "Organization owner cannot leave the organization.",
+      400,
+      "",
+    );
+  }
+
+  await Organization.findOneAndUpdate(
+    {
+      org_id,
+      "members.user_id": loggedInUserId,
+    },
+    {
+      $pull: {
+        members: {
+          user_id: loggedInUserId,
+        },
+      },
+    },
+  );
+  forgetAgents({ user_id: loggedInUserId, org_id });
+
+  return {
+    user_id: loggedInUserId,
+    org_id,
+    left: true,
+  };
+};
+
+// organization update service
+const updateOrganizationService = async ({
+  organization,
+  org_id,
+}: {
+  organization: Partial<TOrganizationType>;
+  org_id: string;
+}) => {
+  // Build a $set payload with only the defined fields
+  const setFields: Record<string, unknown> = {};
+  if (organization.org_name !== undefined)
+    setFields.org_name = organization.org_name;
+  if (organization.org_image !== undefined) {
+    const existingOrg = await Organization.findOne({ org_id });
+    if (
+      existingOrg?.org_image &&
+      existingOrg.org_image !== organization.org_image &&
+      !existingOrg.org_image.startsWith("http")
+    ) {
+      await deleteFile(existingOrg.org_image).catch((err) => {
+        logger.error(
+          `Failed to delete old org image (${existingOrg.org_image})`,
+          err,
+        );
+      });
+    }
+    setFields.org_image = organization.org_image;
+  }
+  if (organization.sandbox !== undefined) {
+    if (organization.sandbox?.token) {
+      setFields.sandbox = {
+        ...organization.sandbox,
+        token: encrypt(organization.sandbox.token),
+      };
+    } else {
+      setFields.sandbox = organization.sandbox;
+    }
+  }
+
+  return await Organization.findOneAndUpdate(
+    { org_id },
+    { $set: setFields },
+    { returnDocument: "after" },
+  );
+};
+
+// update org status (active/archived)
+const updateOrganizationStatusService = async ({
+  org_id,
+  status,
+}: {
+  org_id: string;
+  status: "active" | "archived";
+}) => {
+  const organization = await Organization.findOne({ org_id });
+  if (!organization) {
+    throw new Error("Organization not found");
+  }
+
+  if (status === "archived" && organization.default) {
+    throw new Error("Default organization cannot be archived");
+  }
+
+  return await Organization.findOneAndUpdate(
+    { org_id },
+    { status },
+    { returnDocument: "after" },
+  );
+};
+
+// delete organization
+const deleteOrganizationService = async ({
+  org_id,
+  userId,
+}: {
+  org_id: string;
+  userId?: string;
+}) => {
+  const filter: Record<string, unknown> = { org_id };
+  if (typeof userId === "string") {
+    filter.owner = userId;
+  }
+  const organization = await Organization.findOne(filter);
+  if (!organization) {
+    throw Error("Organization not found");
+  }
+
+  if (organization.default) {
+    throw Error("Default organization cannot be deleted");
+  }
+
+  const projects = await Project.find({ org_id }, { project_id: 1 });
+  const projectIds = projects.map((p) => p.project_id);
+
+  await ProjectLog.deleteMany({ project_id: { $in: projectIds } });
+  await ProjectPreview.deleteMany({ project_id: { $in: projectIds } });
+  await ProjectContent.deleteMany({ project_id: { $in: projectIds } });
+
+  const deleteOrganization = await Organization.findOneAndDelete(filter);
+  await Project.deleteMany({ org_id });
+  await AgentGrant.deleteMany({ org_id });
+  forgetAgents({ org_id });
+  return deleteOrganization;
+};
+
+export const organizationService = {
+  getOrganizationsByUserService,
+  getOrganizationService,
+  createOrganizationService,
+  ensureDefaultOrganizationService,
+  updateOrganizationService,
+  addTeamMemberService,
+  updateRoleService,
+  removeTeamMemberService,
+  leaveOrganizationService,
+  updateOrganizationStatusService,
+  deleteOrganizationService,
+};
