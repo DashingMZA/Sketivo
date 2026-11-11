@@ -1,0 +1,498 @@
+"use client";
+
+import { BRAND_NAME } from "@/lib/brand";
+import { SidebarSkeleton } from "@/components/sidebar-skeleton";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useFeatureAccess } from "@/hooks/use-feature-access";
+import { useGitProvider } from "@/hooks/use-git-provider";
+import { useProjectBranch } from "@/hooks/use-project-branch";
+import { useRepositoryPathSync } from "@/hooks/use-repository-path-sync";
+import { useSafeLocale } from "@/hooks/use-safe-locale";
+import { openUnlockPrompt } from "@/hooks/use-unlock-prompt";
+import { getProjectDashboardMenu, getProjectSettingsMenu } from "@/lib/menu";
+import { cn } from "@/lib/utils/cn";
+import { normalizeGitProvider } from "@/lib/utils/provider-checker";
+import { slugify } from "@/lib/utils/text-converter";
+import { SidebarPageLayout } from "@/partials/sidebar-layout";
+import { resetConfig, selectConfig } from "@/redux/features/config/slice";
+import { useGetOrgsQuery } from "@/redux/features/orgs/org-api";
+import { useGetProjectQuery } from "@/redux/features/project/project-api";
+import { useGetProvidersQuery } from "@/redux/features/provider/provider-api";
+import { useAppDispatch } from "@/redux/store";
+import { TFiles } from "@/types";
+import { FileCode2, FileCog, FileTypeCorner } from "lucide-react";
+import { useTranslations } from "next-intl";
+import Link from "next/link";
+import { notFound, usePathname } from "next/navigation";
+import path from "path";
+import { Suspense, use, useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { GlobalSearch } from "../_components/global-search";
+import CodeMenu from "./_components/code-menu";
+import ConfigMenu from "./_components/config-menu";
+import ContentMenu from "./_components/content-menu";
+import ProjectHeader from "./_components/project-header";
+import ProjectSidebar from "./_components/project-sidebar";
+import RepoAccessBanner from "./_components/repo-access-banner";
+
+export default function Layout(
+  props: LayoutProps<"/[locale]/[orgId]/[projectId]">,
+) {
+  const locale = useSafeLocale();
+  const params = use(props.params);
+  const { children } = props;
+  const dispatch = useAppDispatch();
+  const config = useSelector(selectConfig);
+  const { hasAdvancedFeatures } = useFeatureAccess();
+  const { data: orgs, isLoading: isOrgsLoading } = useGetOrgsQuery();
+  const pathname = usePathname() ?? "";
+  const projectDashboardMenu = getProjectDashboardMenu(locale);
+  const projectSettingsMenu = getProjectSettingsMenu(locale);
+  const tSidebar = useTranslations("navigation.sidebar");
+  const tDashboard = useTranslations("dashboard");
+  const [searchOpen, setSearchOpen] = useState(false);
+
+  const {
+    isLoading: isProjectLoading,
+    data: project,
+    isFetching: isProjectFetching,
+  } = useGetProjectQuery(
+    {
+      orgId: params.orgId.slice(4),
+      projectId: params.projectId,
+    },
+    {
+      refetchOnMountOrArgChange: true,
+    },
+  );
+
+  if (!isProjectLoading && !project) {
+    notFound();
+  }
+
+  useProjectBranch(project);
+
+  useRepositoryPathSync(project);
+
+  const { isLoading: isProviderLoading, isFetching: isProviderFetching } =
+    useGetProvidersQuery(
+      {
+        user_id: project?.user_id,
+        preferredProvider: project?.provider,
+        projectId: project?.project_id,
+      },
+      {
+        skip: !project?.user_id || isProjectFetching,
+        refetchOnMountOrArgChange: true,
+      },
+    );
+
+  const { useGitSiteConfig, useGitTrees } = useGitProvider();
+
+  // The project record and the active config can disagree mid-switch; querying
+  // then would address the wrong provider.
+  const providerMismatch =
+    normalizeGitProvider(config.provider) !==
+    normalizeGitProvider(project?.provider);
+
+  const { isLoading: isSiteSettingLoading, isFetching } = useGitSiteConfig({
+    framework: project?.generator || undefined,
+    refetchOnMountOrArgChange: true,
+    skip:
+      isProjectFetching ||
+      isProviderFetching ||
+      !config.token ||
+      providerMismatch,
+  });
+
+  const {
+    data,
+    isLoading: isTreesLoading,
+    isSuccess: isTreesLoaded,
+  } = useGitTrees("", {
+    recursive: true,
+    skip:
+      !config.token ||
+      !config.branch ||
+      isFetching ||
+      isProviderFetching ||
+      providerMismatch,
+  });
+
+  const { trees = [] } = data || {};
+
+  useEffect(() => {
+    return () => {
+      if (config.repoName) {
+        dispatch(resetConfig());
+      }
+    };
+  }, [dispatch, config.repoName]);
+
+  const isLoading =
+    isOrgsLoading ||
+    isProjectLoading ||
+    isProviderLoading ||
+    isTreesLoading ||
+    isSiteSettingLoading ||
+    !config.token;
+
+  const arrangements = config.arrangement;
+  const folderList = (files: TFiles[]): TFiles[] => {
+    // Guard clause for when files is null/undefined
+    if (!files) {
+      return [];
+    }
+
+    // Guard clause for config
+    if (!config.content) {
+      return [];
+    }
+
+    // If no arrangements or no feature access, return original files
+    if (!hasAdvancedFeatures || !arrangements || arrangements.length <= 0) {
+      return files;
+    }
+
+    return arrangements?.reduce<TFiles[]>((acc, curr) => {
+      if (curr.type === "file" || curr.type === "heading") {
+        const name = curr.groupName;
+        const type = curr.type;
+        const { base: _base, dir: _dir } = path.parse(curr.targetPath);
+        return [
+          ...acc,
+          {
+            name: name,
+            ...(curr.type === "file" && {
+              realPath: `content/${curr.targetPath}`,
+            }),
+            path: curr.groupName
+              ? `content/${slugify(curr.groupName)}${path.extname(curr.targetPath)}`
+              : `content/${curr.targetPath}`,
+            children: [],
+            sha: null,
+            type: type === "heading" ? "heading" : "file",
+            isFile: type === "file",
+          },
+        ];
+      } else if (curr.type === "folder") {
+        return [
+          ...acc,
+          {
+            name: curr.groupName,
+            path: `content/${slugify(curr.groupName)}`,
+            sha: null,
+            isFile: false,
+          },
+        ];
+      }
+      return acc;
+    }, []);
+  };
+
+  let files = [] as TFiles[];
+
+  if (isTreesLoaded) {
+    const rootFolder = trees.find((t) => t.name === "root");
+    files = folderList(rootFolder?.children || []);
+  }
+
+  const isArchived = project?.status === "archived";
+
+  // Blocked child routes when project is archived
+  const blockedSegments = ["/content/", "/media/", "/config/", "/code/"];
+  const isBlockedChildRoute =
+    isArchived &&
+    blockedSegments.some((seg) =>
+      pathname.includes(`/${params.projectId}${seg}`),
+    );
+
+  return (
+    <>
+      <title>{`${project?.project_name} - ${BRAND_NAME}`}</title>
+
+      <SidebarPageLayout
+        sidebar={
+          isLoading ? (
+            <SidebarSkeleton />
+          ) : (
+            <ProjectSidebar
+              globalSearch={
+                <GlobalSearch
+                  open={searchOpen}
+                  setOpen={setSearchOpen}
+                  files={(trees as TFiles[]) || []}
+                  config={config}
+                />
+              }
+              dashboardMenu={projectDashboardMenu}
+              settingsMenu={projectSettingsMenu.filter((item) => {
+                if (!hasAdvancedFeatures && item.name === "Arrangement") {
+                  return false;
+                }
+                return true;
+              })}
+              orgs={orgs!}
+              projectContext={{
+                orgId: params.orgId.slice(4),
+                projectId: params.projectId,
+                projectName: project?.project_name,
+                config,
+              }}
+              navChildren={
+                <>
+                  {/* Content */}
+                  {!isArchived && files.length > 0 && (
+                    <ul
+                      id="sidebar-content-root"
+                      className="sidebar-content-root tree bg-background rounded pe-2"
+                    >
+                      <li>
+                        <Accordion
+                          defaultValue={["config"]}
+                          className={cn("relative")}
+                        >
+                          <AccordionItem value="config" className="border-0">
+                            <Link
+                              className={cn(
+                                "text-foreground w-full rounded pe-0",
+                                pathname.includes(
+                                  `/${params.orgId}/${params.projectId}/content/${config.content}`,
+                                ) ||
+                                  pathname.includes(
+                                    `/${params.orgId}/${params.projectId}/config/${config.content}`,
+                                  )
+                                  ? "text-primary"
+                                  : "",
+                              )}
+                              href={`/${params.orgId}/${params.projectId}/content/${config.content}`}
+                            >
+                              <AccordionTrigger
+                                className={cn(
+                                  "h-auto w-full justify-start gap-1 py-3 ps-3 pe-1 text-sm hover:no-underline",
+                                )}
+                              >
+                                <>
+                                  <FileTypeCorner className="inline-block size-5 stroke-[1.5]" />
+                                  <span
+                                    className={cn(
+                                      "flex-1 text-start",
+                                      config.content.includes("content") &&
+                                        "capitalize",
+                                    )}
+                                  >
+                                    {path.basename(config.content)}
+                                  </span>
+                                </>
+                              </AccordionTrigger>
+                            </Link>
+                            <AccordionContent className="ps-1">
+                              <ul>
+                                <Suspense
+                                  fallback={Array.from(
+                                    { length: 6 },
+                                    (_, index) => (
+                                      <li
+                                        key={index}
+                                        className="mb-3 last:mb-0"
+                                      >
+                                        <Skeleton className="h-3 w-full" />
+                                      </li>
+                                    ),
+                                  )}
+                                >
+                                  <ContentMenu
+                                    files={files}
+                                    config={config}
+                                    orgId={params.orgId.slice(4)}
+                                    projectId={params.projectId}
+                                  />
+                                </Suspense>
+                              </ul>
+                            </AccordionContent>
+                          </AccordionItem>
+                        </Accordion>
+                      </li>
+                    </ul>
+                  )}
+
+                  {/* Code */}
+                  {!isArchived && !hasAdvancedFeatures && (
+                    <ul className="tree bg-background rounded pe-2 [--tree-spacing:2rem]">
+                      <li>
+                        <button
+                          type="button"
+                          onClick={() => openUnlockPrompt("code")}
+                          className={cn(
+                            "text-foreground flex h-auto w-full items-center justify-start gap-2 py-3 ps-3 pe-1 text-sm",
+                          )}
+                        >
+                          <FileCode2 className="inline-block size-5 stroke-[1.5]" />
+                          <span className="flex-1 text-start">
+                            {tSidebar("code")}
+                          </span>
+                        </button>
+                      </li>
+                    </ul>
+                  )}
+                  {!isArchived && hasAdvancedFeatures && (
+                    <ul className="tree bg-background rounded pe-2 [--tree-spacing:2rem]">
+                      <li>
+                        <Accordion className={cn("relative")}>
+                          <AccordionItem value="code" className="border-0">
+                            <AccordionTrigger
+                              className={cn(
+                                "h-auto w-full justify-start gap-2 py-3 ps-3 pe-1 text-sm hover:no-underline",
+                              )}
+                            >
+                              <>
+                                <FileCode2 className="inline-block size-5 stroke-[1.5]" />
+                                <span className="flex-1 text-start">
+                                  {tSidebar("code")}
+                                </span>
+                              </>
+                            </AccordionTrigger>
+                            <AccordionContent className="ps-1">
+                              <ul>
+                                <Suspense
+                                  fallback={Array.from(
+                                    { length: 6 },
+                                    (_, index) => (
+                                      <li
+                                        key={index}
+                                        className="mb-3 last:mb-0"
+                                      >
+                                        <Skeleton className="h-3 w-full" />
+                                      </li>
+                                    ),
+                                  )}
+                                >
+                                  <CodeMenu
+                                    files={
+                                      trees.find((t) => t.name === "code")
+                                        ?.children
+                                    }
+                                    config={config}
+                                    orgId={params.orgId.slice(4)}
+                                    projectId={params.projectId}
+                                  />
+                                </Suspense>
+                              </ul>
+                            </AccordionContent>
+                          </AccordionItem>
+                        </Accordion>
+                      </li>
+                    </ul>
+                  )}
+
+                  {/* Config */}
+                  {!isArchived && config.configs?.length > 0 && (
+                    <ul className="tree bg-background rounded pe-2 [--tree-spacing:2rem]">
+                      <li>
+                        <Accordion className={cn("relative")}>
+                          <AccordionItem value="config" className="border-0">
+                            <Link
+                              className={cn(
+                                "text-foreground w-full rounded pe-0",
+                                pathname.includes(
+                                  `/${params.orgId}/${params.projectId}/config/`,
+                                )
+                                  ? "text-primary"
+                                  : "",
+                              )}
+                              href={""}
+                            >
+                              <AccordionTrigger
+                                className={cn(
+                                  "h-auto w-full justify-start gap-2 py-3 ps-3 pe-1 text-sm hover:no-underline",
+                                )}
+                              >
+                                <>
+                                  <FileCog className="inline-block size-5 stroke-[1.5]" />
+                                  <span className="flex-1 text-start">
+                                    {tSidebar("config")}
+                                  </span>
+                                </>
+                              </AccordionTrigger>
+                            </Link>
+
+                            <AccordionContent className="ps-1">
+                              <ul>
+                                <ConfigMenu
+                                  files={
+                                    trees.find((t) => t.name === "theme")
+                                      ?.children ?? []
+                                  }
+                                  config={config}
+                                  orgId={params.orgId.slice(4)}
+                                  projectId={params.projectId}
+                                />
+                              </ul>
+                            </AccordionContent>
+                          </AccordionItem>
+                        </Accordion>
+                      </li>
+                    </ul>
+                  )}
+                </>
+              }
+            />
+          )
+        }
+        header={
+          <>
+            <ProjectHeader project={project} />
+            {!isArchived && <RepoAccessBanner project={project} />}
+          </>
+        }
+      >
+        {isBlockedChildRoute ? (
+          <ArchiveBlocked
+            orgId={params.orgId}
+            projectId={params.projectId}
+            t={tDashboard}
+          />
+        ) : (
+          children
+        )}
+      </SidebarPageLayout>
+
+      {/*  */}
+    </>
+  );
+}
+
+const ArchiveBlocked = ({
+  orgId,
+  projectId,
+  t,
+}: {
+  orgId: string;
+  projectId: string;
+  t: ReturnType<typeof useTranslations<"project">>;
+}) => (
+  <div className="flex h-full flex-col items-center justify-center p-8 text-center">
+    <div className="bg-card border-border max-w-xl rounded-lg border p-6">
+      <h2 className="mb-2 text-xl font-semibold">
+        {t("archived_project.title")}
+      </h2>
+      <p className="text-muted-foreground mb-4">
+        {t("archived_project.description")}
+      </p>
+      <div className="flex items-center justify-center gap-2">
+        <Link
+          href={`/${orgId}/${projectId}?tab=settings`}
+          className="btn bg-primary text-primary-foreground inline-flex items-center rounded px-4 py-2"
+        >
+          {t("archived_project.open_settings")}
+        </Link>
+      </div>
+    </div>
+  </div>
+);

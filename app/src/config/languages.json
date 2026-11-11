@@ -1,0 +1,62 @@
+[
+  {
+    "code": "en",
+    "name": "English"
+  },
+  {
+    "code": "zh",
+    "name": "中文 (简体)"
+  },
+  {
+    "code": "hi",
+    "name": "हिन्दी"
+  },
+  {
+    "code": "es",
+    "name": "Español"
+  },
+  {
+    "code": "fr",
+    "name": "Français"
+  },
+  {
+    "code": "ar",
+    "name": "العربية"
+  },
+  {
+    "code": "bn",
+    "name": "বাংলা"
+  },
+  {
+    "code": "pt",
+    "name": "Português"
+  },
+  {
+    "code": "ru",
+    "name": "Русский"
+  },
+  {
+    "code": "id",
+    "name": "Bahasa Indonesia"
+  },
+  {
+    "code": "de",
+    "name": "Deutsch"
+  },
+  {
+    "code": "ja",
+    "name": "日本語"
+  },
+  {
+    "code": "vi",
+    "name": "Tiếng Việt"
+  },
+  {
+    "code": "ko",
+    "name": "한국어"
+  },
+  {
+    "code": "it",
+    "name": "Italiano"
+  }
+]
