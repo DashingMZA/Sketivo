@@ -1,0 +1,44 @@
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import readingTime from "@/lib/utils/reading-time";
+import { FileTextIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
+
+export default function ContentAnalysis({ content }: { content: string }) {
+  const tEditorSeo = useTranslations("editor.seo");
+  const wordCount = content?.split(" ").length;
+
+  return (
+    <Accordion>
+      <AccordionItem
+        value="content-analysis"
+        className="border-border rounded-lg border bg-white px-4 last:border-b dark:bg-transparent"
+      >
+        <AccordionTrigger className="text-sm font-normal hover:no-underline">
+          <div className="flex items-center gap-2">
+            <FileTextIcon className="size-4 shrink-0" />
+            <span className="font-medium">
+              {tEditorSeo("content_analysis")}
+            </span>
+          </div>
+        </AccordionTrigger>
+        <AccordionContent>
+          <div className="space-y-2 pb-4">
+            <p className="text-text-default flex items-center justify-between text-sm font-medium">
+              <span>{tEditorSeo("word_count")}</span>
+              <span className="bg-light rounded-md px-2 py-1">{wordCount}</span>
+            </p>
+            <p className="text-text-default flex items-center justify-between text-sm font-medium">
+              <span>{tEditorSeo("reading_time")}</span>
+              <span>~{readingTime(content)}</span>
+            </p>
+          </div>
+        </AccordionContent>
+      </AccordionItem>
+    </Accordion>
+  );
+}

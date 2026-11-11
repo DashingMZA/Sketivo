@@ -1,0 +1,114 @@
+"use client";
+
+import { fetchOgImageAction } from "@/actions/utils/fetch-og";
+import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
+import {
+  clearOldLocalStoragePreviews,
+  getCachedScreenshot,
+  setCachedScreenshot,
+} from "@/lib/utils/indexed-db";
+import { TProject } from "@/redux/features/project/type";
+import { useTranslations } from "next-intl";
+import { useEffect, useState } from "react";
+
+export type ProjectOverviewThumbProps = {
+  project?: TProject;
+};
+
+export function ProjectOverviewThumb({ project }: ProjectOverviewThumbProps) {
+  const tDashboard = useTranslations("dashboard");
+  const siteUrl = project?.site_url;
+
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Clean up legacy localStorage previews once on mount
+  useEffect(() => {
+    clearOldLocalStoragePreviews();
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const load = async () => {
+      if (!siteUrl) {
+        setImageUrl(null);
+        setIsLoading(false);
+        return;
+      }
+
+      setIsLoading(true);
+      const cacheKey = "preview_og_" + siteUrl;
+
+      const cached = await getCachedScreenshot(cacheKey);
+      if (cached) {
+        if (!cancelled) {
+          setImageUrl(cached);
+          setIsLoading(false);
+        }
+        return;
+      }
+
+      const normalizedUrl = siteUrl.startsWith("http")
+        ? siteUrl
+        : "https://" + siteUrl;
+
+      try {
+        const res = await fetchOgImageAction(normalizedUrl);
+        if (res.success && res.url) {
+          await setCachedScreenshot(cacheKey, res.url);
+          if (!cancelled) setImageUrl(res.url);
+        }
+      } catch {
+        // no og:image — the unavailable badge below covers it
+      }
+
+      if (!cancelled) setIsLoading(false);
+    };
+
+    load();
+    return () => {
+      cancelled = true;
+    };
+  }, [siteUrl]);
+
+  const [isImageReady, setIsImageReady] = useState(false);
+
+  if (isLoading) {
+    return <Skeleton className="aspect-video w-full rounded-md" />;
+  }
+
+  if (!imageUrl) {
+    return (
+      <div className="border-border bg-muted/5 flex aspect-video w-full items-center justify-center rounded-md border">
+        <Badge variant="outline" className="text-muted-foreground font-normal">
+          {!siteUrl
+            ? tDashboard("site_url_unavailable")
+            : tDashboard("og_image_unavailable")}
+        </Badge>
+      </div>
+    );
+  }
+
+  return (
+    <div className="relative aspect-video w-full">
+      {!isImageReady && (
+        <Skeleton className="absolute inset-0 h-full w-full rounded-md" />
+      )}
+      <div
+        className="border-border h-full w-full overflow-hidden rounded-md border"
+        style={{ visibility: isImageReady ? "visible" : "hidden" }}
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={imageUrl}
+          alt={`OG image of ${project?.project_name}`}
+          className="h-full w-full object-cover"
+          onLoad={() => setIsImageReady(true)}
+          onError={() => setImageUrl(null)}
+        />
+      </div>
+    </div>
+  );
+}

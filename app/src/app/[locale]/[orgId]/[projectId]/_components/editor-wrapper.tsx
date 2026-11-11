@@ -1,0 +1,463 @@
+"use client";
+
+import { toast } from "@/components/ui/toast";
+import { revertToOriginal } from "@/editor/utils/plate-utils";
+import { CollabBaseContext } from "@/contexts/collab-base-context";
+import { useCommitLogic } from "@/hooks/use-commit-logic";
+import { useFrontmatterSync } from "@/hooks/use-frontmatter-sync";
+import { useIsChanged } from "@/hooks/use-is-changed";
+import { useFeatureAccess } from "@/hooks/use-feature-access";
+import { useSandboxPreview } from "@/hooks/use-sandbox-preview";
+import { useSaveAsDraft } from "@/hooks/use-save-as-draft";
+import { useSnippets } from "@/hooks/use-snippets";
+import { useVercelIntegration } from "@/hooks/use-vercel-integration";
+import { logger } from "@/lib/logger";
+import { contentFormatter, format } from "@/lib/utils/content-serializer";
+import { errorMessageOr } from "@/lib/utils/error";
+import { unwrapValue } from "@/lib/utils/frontmatter-value";
+import { isConfigFile } from "@/lib/utils/is-config-file";
+import { selectConfig } from "@/redux/features/config/slice";
+import { useDeleteProjectContentMutation } from "@/redux/features/project-content/project-content-api";
+import { useAppSelector } from "@/redux/store";
+import { TField, TFrontmatterData, TState } from "@/types";
+import { useTranslations } from "next-intl";
+import { useParams, useRouter } from "next/navigation";
+import { memo, useCallback, useEffect, useRef, useState } from "react";
+import type { Socket } from "socket.io-client";
+import CommitModal from "./commit-modal";
+import EditorHeader from "./editor-header";
+import PreventNavigation from "./prevent-navigation";
+import PublishConflictDialog from "./publish-conflict-dialog";
+import ResponsiveEditorLayout from "./responsive-editor-layout";
+import SeoSetting from "./seo-setting";
+
+type EditorWrapperProps = {
+  socket?: Socket | null;
+  data: TFrontmatterData;
+  content: string;
+  schema: TField[];
+  filePath: string;
+  fmType: format;
+  shouldShowEditor?: boolean;
+  startWith?: string;
+  gitSha?: string;
+  isLoadedFromDbDraft?: boolean;
+  hasSavedDraft?: boolean;
+};
+
+const EditorWrapper: React.FC<EditorWrapperProps> = memo(
+  ({
+    socket,
+    data,
+    content,
+    schema,
+    filePath,
+    fmType,
+    shouldShowEditor = true,
+    startWith,
+    gitSha,
+    isLoadedFromDbDraft = false,
+    hasSavedDraft = false,
+  }) => {
+    // Defensive: schema can be undefined from callers; default to empty array
+    const safeSchema = schema ?? [];
+    const config = useAppSelector(selectConfig);
+    const { snippets } = useSnippets();
+    const tFeedback = useTranslations("common.feedback");
+    const router = useRouter();
+    const params = useParams() as { orgId: string; projectId: string };
+    const orgIdSafe = params.orgId?.startsWith("org-")
+      ? params.orgId.slice(4)
+      : params.orgId;
+    const { hasAdvancedFeatures } = useFeatureAccess();
+    const { vercelToken, vercelTeamId, vercelProjectId } = useVercelIntegration(
+      params.orgId,
+    );
+
+    // State, not a ref: the dirty-state check reads this during render, so a
+    // save has to re-render for the indicator to clear.
+    const [baseline, setBaseline] = useState<TState | undefined>({
+      data,
+      page_content: content ?? "",
+    });
+
+    const [state, setState] = useState<TState | undefined>({
+      data,
+      page_content: content ?? "",
+    });
+
+    const isDraftRef = useRef<boolean>(
+      Boolean(unwrapValue(state?.data?.draft)),
+    );
+    const isResettingRef = useRef<boolean>(false);
+    const previewWindowRef = useRef<Window | null>(null);
+
+    const initRef = useRef(false);
+    const [contentRef, setContentRef] = useState(content || "");
+    const [markdownContent, setMarkdownContent] = useState(content || "");
+
+    // Slug / Rename State
+    const [pendingSlug, setPendingSlug] = useState<string | null>(null);
+
+    const onSlugChange = useCallback((newSlug: string) => {
+      setPendingSlug(newSlug);
+    }, []);
+
+    // Calculate new path if slug is pending
+    const newPath = (() => {
+      if (!pendingSlug) return undefined;
+      // Construct new path from filePath dir + pendingSlug + ext
+      const dir = filePath.split("/").slice(0, -1).join("/");
+      const ext = filePath.split(".").pop();
+      const base = pendingSlug.endsWith(`.${ext}`)
+        ? pendingSlug
+        : `${pendingSlug}.${ext}`;
+      const constructed = dir ? `${dir}/${base}` : base;
+
+      return constructed !== filePath ? constructed : undefined;
+    })();
+
+    const onUpdateMarkdown = useCallback((content: string) => {
+      setMarkdownContent(content);
+    }, []);
+
+    const onReplaceContentRef = useCallback((content: string) => {
+      // conditionally
+      setContentRef(content);
+      setPendingSlug(null);
+      // contentRef.current = content;
+    }, []);
+
+    const onUpdateContentRef = useCallback((content: string) => {
+      // only once
+      if (!initRef.current) {
+        setContentRef(content);
+        initRef.current = true;
+      }
+    }, []);
+
+    const isFrontmatterChange = useIsChanged({ data: state?.data, baseline });
+    const isContentChanged = contentRef !== markdownContent;
+    // Check if slug changed (rename pending)
+    const isRenamePending = !!newPath;
+    // An empty or unchanged slug yields no newPath, but an edited one is still
+    // a change the user needs to be able to reset.
+    const currentSlug =
+      filePath
+        .split("/")
+        .pop()
+        ?.replace(/\.mdx?$/, "") ?? "";
+    const isSlugChanged = pendingSlug !== null && pendingSlug !== currentSlug;
+    const hasChanges =
+      isFrontmatterChange ||
+      isContentChanged ||
+      isRenamePending ||
+      isSlugChanged;
+
+    const onRenameComplete = useCallback(
+      (targetPath: string) => {
+        // Redirect to new path
+        const newUrl = `/${params.orgId}/${params.projectId}/content/${targetPath}`;
+        router.push(newUrl);
+      },
+      [params, router],
+    );
+
+    // Forward-ref so commitLogic (declared first) can call sandboxPreview's
+    // trigger (declared second) once it exists, without ordering gymnastics.
+    const sandboxCommitSyncRef = useRef<() => void>(() => {});
+    const [deleteProjectContent] = useDeleteProjectContentMutation();
+
+    const commitLogic = useCommitLogic({
+      socket,
+      state,
+      setState,
+      filePath,
+      fmType,
+      schema,
+      snippets,
+      startWith,
+      setBaseline,
+      pageContent: markdownContent,
+      onReplaceContentRef,
+      newPath,
+      gitSha,
+      onRenameComplete,
+      onCommitSuccess: () => {
+        sandboxCommitSyncRef.current();
+        deleteProjectContent({
+          projectId: params.projectId,
+          orgId: orgIdSafe,
+          file: filePath,
+        })
+          .unwrap()
+          .catch((err) => logger.error("Failed to delete draft:", err));
+      },
+    });
+
+    const {
+      prepareCommit,
+      handleCommit,
+      showCommitModal,
+      setShowCommitModal,
+      pending,
+      getProcessedStateData,
+      getBaseSha,
+      collabBase,
+      publishConflict,
+      resolvePublishConflict,
+    } = commitLogic;
+
+    useFrontmatterSync(collabBase, state, setState, setBaseline);
+
+    const getUncommittedFile = useCallback(() => {
+      const formattedContent = contentFormatter({
+        data: revertToOriginal(getProcessedStateData()),
+        page_content: markdownContent || "",
+        format: fmType,
+        startWith,
+        originalContent: "",
+      });
+
+      return {
+        path: filePath,
+        content: formattedContent,
+      };
+    }, [getProcessedStateData, markdownContent, fmType, startWith, filePath]);
+
+    const getBaselineFile = useCallback(() => {
+      if (!baseline) return undefined;
+      const formattedContent = contentFormatter({
+        data: revertToOriginal(baseline.data ?? {}),
+        page_content: baseline.page_content ?? contentRef ?? "",
+        format: fmType,
+        startWith,
+        originalContent: "",
+      });
+
+      return {
+        path: filePath,
+        content: formattedContent,
+      };
+    }, [baseline, contentRef, fmType, startWith, filePath]);
+
+    const { triggerCommitSync } = useSandboxPreview({
+      // Debounce restarts whenever editable state changes.
+      contentVersion: `${markdownContent}|${JSON.stringify(state?.data ?? null)}`,
+      getUncommittedFile,
+      previewWindowRef,
+      vercelToken,
+      vercelTeamId,
+      vercelProjectId,
+      spProjectId: params.projectId,
+    });
+
+    useEffect(() => {
+      sandboxCommitSyncRef.current = triggerCommitSync;
+    }, [triggerCommitSync]);
+
+    const handleSubmit = useCallback(
+      (isDraft?: boolean) => {
+        isDraftRef.current = !!isDraft;
+        const passedIsDraft = isDraftRef.current;
+        const shouldCommitManual = config.customCommit && hasAdvancedFeatures;
+        prepareCommit(shouldCommitManual, passedIsDraft);
+      },
+      [config.customCommit, hasAdvancedFeatures, prepareCommit],
+    );
+
+    // Push to Git as draft (replaces the old "Save as Draft" Git behaviour)
+    const handlePushAsDraft = useCallback(() => {
+      handleSubmit(true);
+    }, [handleSubmit]);
+
+    // Get the formatted content for DB-only save
+    const getFormattedContent = useCallback(() => {
+      return contentFormatter({
+        data: revertToOriginal(getProcessedStateData()),
+        page_content: markdownContent || "",
+        format: fmType,
+        startWith,
+        originalContent: "",
+      });
+    }, [getProcessedStateData, markdownContent, fmType, startWith]);
+
+    const { saveAsDraft: handleSaveAsDraft, isSavingDraft } = useSaveAsDraft({
+      projectId: params.projectId,
+      orgId: orgIdSafe,
+      filePath,
+      getFormattedContent,
+      getGitSha: getBaseSha,
+      onSuccess: useCallback(() => {
+        // Sync the saved baseline so hasChanges resets to false
+        const cloned = (() => {
+          if (!state) return state;
+          try {
+            return JSON.parse(JSON.stringify(state));
+          } catch {
+            return state;
+          }
+        })();
+        if (cloned) cloned.page_content = markdownContent;
+        setBaseline(cloned);
+        onReplaceContentRef(markdownContent);
+      }, [state, markdownContent, onReplaceContentRef]),
+    });
+
+    const [isDiscardingSavedDraft, setIsDiscardingSavedDraft] = useState(false);
+    const [hasSavedDraftState, setHasSavedDraftState] = useState(hasSavedDraft);
+
+    useEffect(() => {
+      setHasSavedDraftState(hasSavedDraft);
+    }, [hasSavedDraft]);
+
+    const handleDiscardSavedDraft = useCallback(async () => {
+      if (!hasSavedDraftState || isDiscardingSavedDraft) return;
+
+      setIsDiscardingSavedDraft(true);
+      try {
+        await deleteProjectContent({
+          projectId: params.projectId,
+          orgId: orgIdSafe,
+          file: filePath,
+        }).unwrap();
+        setHasSavedDraftState(false);
+        toast.success(tFeedback("draft_discard_success"));
+      } catch (err) {
+        logger.error("Failed to discard saved draft:", err);
+        toast.error(errorMessageOr(err, tFeedback("draft_discard_error")));
+      } finally {
+        setIsDiscardingSavedDraft(false);
+      }
+    }, [
+      hasSavedDraftState,
+      isDiscardingSavedDraft,
+      deleteProjectContent,
+      params.projectId,
+      orgIdSafe,
+      filePath,
+      tFeedback,
+    ]);
+
+    const [resetKey, setResetKey] = useState(0);
+    const [isSeoSidebarOpen, setIsSeoSidebarOpen] = useState(false);
+    const [autoGenerateCommitAi, setAutoGenerateCommitAi] = useState(false);
+
+    useEffect(() => {
+      const handleAiCommit = (e: Event) => {
+        e.preventDefault();
+        setAutoGenerateCommitAi(true);
+        setShowCommitModal(true);
+      };
+
+      const handleAiSeo = (e: Event) => {
+        e.preventDefault();
+        setIsSeoSidebarOpen(true);
+      };
+
+      window.addEventListener("sketivo:ai-commit", handleAiCommit);
+      window.addEventListener("sketivo:ai-seo-autofill", handleAiSeo);
+      return () => {
+        window.removeEventListener("sketivo:ai-commit", handleAiCommit);
+        window.removeEventListener("sketivo:ai-seo-autofill", handleAiSeo);
+      };
+    }, [setShowCommitModal]);
+
+    const handleReset = useCallback(() => {
+      isResettingRef.current = true;
+      setMarkdownContent(contentRef);
+      setResetKey((prev) => prev + 1);
+      setPendingSlug(null); // Reset pending slug
+
+      if (baseline) {
+        setState(JSON.parse(JSON.stringify(baseline)));
+      }
+    }, [contentRef, baseline]);
+
+    const isDraft = isDraftRef.current;
+
+    return (
+      <CollabBaseContext.Provider value={collabBase}>
+        <PreventNavigation isDirty={hasChanges} resetData={handleReset} />
+
+        <div>
+          <EditorHeader
+            handleSubmit={handleSubmit}
+            handleSaveAsDraft={handleSaveAsDraft}
+            handlePushAsDraft={handlePushAsDraft}
+            isSavingDraft={isSavingDraft}
+            isDiscardingSavedDraft={isDiscardingSavedDraft}
+            hasSavedDraft={hasSavedDraftState}
+            handleDiscardSavedDraft={handleDiscardSavedDraft}
+            shouldShowEditor={shouldShowEditor}
+            isDraft={isDraft}
+            isLoadedFromDbDraft={isLoadedFromDbDraft && hasSavedDraftState}
+            resetValue={handleReset}
+            hasChanges={hasChanges}
+            pending={pending}
+            showDraftButton={!isConfigFile(filePath)}
+            filePath={filePath}
+            getUncommittedFile={getUncommittedFile}
+            previewWindowRef={previewWindowRef}
+          >
+            {shouldShowEditor && (
+              <SeoSetting
+                data={state?.data ?? {}}
+                schema={safeSchema.filter((field) => field.type !== "object")}
+                setState={setState}
+                content={markdownContent}
+                onSlugChange={onSlugChange}
+                onUpdateContent={onUpdateMarkdown}
+                resetKey={resetKey}
+                isSidebarOpen={isSeoSidebarOpen}
+                onSidebarOpenChange={setIsSeoSidebarOpen}
+              />
+            )}
+          </EditorHeader>
+
+          <ResponsiveEditorLayout
+            key={resetKey}
+            shouldShowEditor={shouldShowEditor}
+            schema={safeSchema}
+            data={state?.data ?? {}}
+            setData={setState}
+            filePath={filePath}
+            onUpdateMarkdown={onUpdateMarkdown}
+            markdownContent={markdownContent}
+            onUpdateContentRef={onUpdateContentRef}
+            seoSidebarOpen={isSeoSidebarOpen}
+          />
+        </div>
+
+        <CommitModal
+          isOpen={showCommitModal}
+          onClose={() => {
+            setShowCommitModal(false);
+            setAutoGenerateCommitAi(false);
+          }}
+          onCommit={handleCommit}
+          isLoading={pending}
+          filePath={filePath}
+          getUncommittedContent={getUncommittedFile}
+          getBaselineContent={getBaselineFile}
+          autoGenerateAi={autoGenerateCommitAi}
+        />
+
+        <PublishConflictDialog
+          open={publishConflict !== null}
+          filePath={filePath}
+          remoteContent={publishConflict?.remoteContent}
+          remoteDeleted={publishConflict?.remoteDeleted ?? false}
+          localContent={publishConflict?.data.content ?? ""}
+          pending={pending}
+          onOverwrite={() => resolvePublishConflict("overwrite")}
+          onCancel={() => resolvePublishConflict("cancel")}
+        />
+      </CollabBaseContext.Provider>
+    );
+  },
+);
+
+EditorWrapper.displayName = "EditorWrapper";
+
+export default EditorWrapper;

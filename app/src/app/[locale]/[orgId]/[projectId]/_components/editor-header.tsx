@@ -1,0 +1,466 @@
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
+import {
+  ButtonGroup,
+  ButtonGroupSeparator,
+} from "@/components/ui/button-group";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { useDeploymentStatusPollingInterval } from "@/hooks/use-deployment-status-polling";
+import { useFeatureAccess } from "@/hooks/use-feature-access";
+import { useGitProvider } from "@/hooks/use-git-provider";
+import { usePresence } from "@/hooks/use-presence";
+import { openUnlockPrompt } from "@/hooks/use-unlock-prompt";
+import { useVercelIntegration } from "@/hooks/use-vercel-integration";
+import {
+  getDeploymentStatusClass,
+  getDeploymentStatusI18nKey,
+  isDisplayableDeploymentStatus,
+} from "@/lib/utils/deployment-status";
+import { selectConfig } from "@/redux/features/config/slice";
+import { commitStatusState } from "@/redux/features/git/provider-adapter";
+import { useAppSelector } from "@/redux/store";
+import {
+  ArrowLeft,
+  ChevronDown,
+  PanelLeft,
+  RotateCcw,
+  TriangleAlert,
+} from "lucide-react";
+import { useTranslations } from "next-intl";
+import { useParams, usePathname, useRouter } from "next/navigation";
+import { RefObject, useEffect, useRef, useState } from "react";
+import ConfigActions from "./config-actions";
+import PresenceAvatars from "./presence-avatars";
+import PreviewButton from "./preview-button";
+
+export default function EditorHeader({
+  shouldShowEditor,
+  isDraft,
+  isLoadedFromDbDraft,
+  resetValue,
+  hasChanges,
+  pending,
+  handleSubmit,
+  handleSaveAsDraft,
+  handlePushAsDraft,
+  handleDiscardSavedDraft,
+  hasSavedDraft,
+  isDiscardingSavedDraft,
+  isSavingDraft,
+  children,
+  showDraftButton = true,
+  filePath,
+  getUncommittedFile,
+  previewWindowRef,
+}: {
+  shouldShowEditor: boolean;
+  isDraft: boolean;
+  isLoadedFromDbDraft?: boolean;
+  resetValue: () => void;
+  hasChanges: boolean;
+  pending: boolean;
+  handleSubmit: (isDraft?: boolean) => void;
+  /** Saves content to the database (no Git push). */
+  handleSaveAsDraft: () => void;
+  /** Commits to Git with draft flag (was old "Save as Draft"). */
+  handlePushAsDraft: () => void;
+  /** Deletes saved DB draft for this file. */
+  handleDiscardSavedDraft: () => void;
+  /** Whether a saved DB draft exists for this file. */
+  hasSavedDraft?: boolean;
+  /** Loading state for deleting saved DB draft. */
+  isDiscardingSavedDraft?: boolean;
+  /** Loading state from the DB-only save — independent of `pending`. */
+  isSavingDraft?: boolean;
+  children: React.ReactNode;
+  showDraftButton?: boolean;
+  filePath: string;
+  getUncommittedFile?: () => { path: string; content: string };
+  previewWindowRef?: RefObject<Window | null>;
+}) {
+  const router = useRouter();
+  const params = useParams() as { orgId: string; projectId: string };
+  const config = useAppSelector(selectConfig);
+  const tEditorHeader = useTranslations("editor.header");
+  const tCommon = useTranslations("common");
+  const { hasAdvancedFeatures } = useFeatureAccess();
+  const [showResetDialog, setShowResetDialog] = useState(false);
+  const isDbDraftLoaded = Boolean(isLoadedFromDbDraft && hasSavedDraft);
+  const canUseDraftSave = hasAdvancedFeatures;
+  const defaultActionType: "save" | "draft" | "publish" =
+    isDbDraftLoaded && canUseDraftSave ? "save" : isDraft ? "draft" : "publish";
+
+  // The dropdown lets the author override this; the default reasserts itself
+  // only when the underlying draft state actually changes.
+  const [actionType, setActionType] = useState(defaultActionType);
+  const [syncedActionType, setSyncedActionType] = useState(defaultActionType);
+  if (syncedActionType !== defaultActionType) {
+    setSyncedActionType(defaultActionType);
+    setActionType(defaultActionType);
+  }
+  const { activeUsers } = usePresence(params.orgId, params.projectId, filePath);
+  const { vercelToken, vercelTeamId, vercelProjectId } = useVercelIntegration(
+    params.orgId,
+  );
+
+  const [statusState, setStatusState] = useState<string | undefined>(undefined);
+  const pollingInterval = useDeploymentStatusPollingInterval(statusState);
+
+  const { useGitCommitStatus } = useGitProvider();
+  const { data: rawStatus, refetch: refetchStatus } = useGitCommitStatus({
+    skip: !config.owner || !config.branch || !hasAdvancedFeatures,
+    pollingInterval,
+  });
+  const statusStateFromData = commitStatusState(rawStatus);
+
+  // When a commit push completes (pending: true → false), force-refetch the
+  // status query to bypass the RTK Query cache and pick up the new deployment.
+  // Without this, the cached terminal status would immediately re-populate state
+  // and stop polling before the new pending/running status is ever seen.
+  const prevPendingRef = useRef(pending);
+  useEffect(() => {
+    if (prevPendingRef.current && !pending) {
+      setStatusState(undefined);
+      if (hasAdvancedFeatures) refetchStatus();
+    }
+    prevPendingRef.current = pending;
+  }, [pending, hasAdvancedFeatures, refetchStatus]);
+
+  // The polling interval feeds the status query's options, so the query result
+  // cannot be passed straight to the interval hook. Mirroring it during render
+  // breaks that cycle without the extra commit an effect would cause.
+  if (statusState !== statusStateFromData) {
+    setStatusState(statusStateFromData);
+  }
+
+  const deploymentStatus = statusStateFromData;
+
+  useEffect(() => {
+    const classNames = [
+      "px-0!",
+      "py-0!",
+      ...(shouldShowEditor ? ["max-h-svh"] : []),
+    ];
+
+    if (typeof window !== "undefined") {
+      document.querySelector("#main")?.classList.add(...classNames);
+    }
+    return () => {
+      document.querySelector("#main")?.classList.remove(...classNames);
+    };
+  }, [shouldShowEditor]);
+
+  const handleOpenSidebar = () => {
+    const sidebar = document.getElementById("mobile-header-trigger");
+
+    if (sidebar) {
+      sidebar.click();
+    }
+  };
+
+  const handleResetWithConfirmation = () => {
+    if (!hasChanges) {
+      return;
+    }
+    setShowResetDialog(true);
+  };
+
+  const pathname = usePathname();
+  const isConfigPath = Boolean(pathname && pathname.includes("/config/"));
+
+  const confirmReset = () => {
+    resetValue();
+    setShowResetDialog(false);
+  };
+
+  const isSaveDisabled = !hasChanges || isSavingDraft || pending;
+
+  const isDraftDisabled = pending || (isDraft && !hasChanges && !hasSavedDraft);
+  const isPublishDisabled =
+    pending || (!isDraft && !hasChanges && !hasSavedDraft);
+
+  const effectiveActionType: "save" | "draft" | "publish" =
+    (!isDbDraftLoaded || !canUseDraftSave) && actionType === "save"
+      ? isDraft
+        ? "draft"
+        : "publish"
+      : actionType;
+
+  const handleSaveAsDraftClick = () => {
+    if (!canUseDraftSave) {
+      openUnlockPrompt("default");
+      return;
+    }
+    handleSaveAsDraft();
+  };
+
+  const isMainButtonDisabledEffective =
+    effectiveActionType === "save"
+      ? isSaveDisabled
+      : effectiveActionType === "draft"
+        ? isDraftDisabled
+        : isPublishDisabled;
+
+  const isShowingSavedState =
+    effectiveActionType === "save" && !hasChanges && !isSavingDraft;
+
+  return (
+    <>
+      <AlertDialog open={showResetDialog} onOpenChange={setShowResetDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center">
+              <TriangleAlert className="text-destructive me-2" />
+              {tEditorHeader("reset_dialog_title")}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {tEditorHeader("reset_dialog_desc")}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{tCommon("actions.cancel")}</AlertDialogCancel>
+            <AlertDialogAction variant="destructive" onClick={confirmReset}>
+              {tCommon("actions.reset")}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Duplicate handled by DuplicateConfig component */}
+
+      <header className="border-border bg-light sticky inset-s-0 top-0 z-50 flex items-center justify-between border-b px-2.5 py-2.5 sm:px-4 sm:py-4 lg:px-6">
+        <div className="flex w-full scrollbar-none items-center justify-between gap-1.5 overflow-x-auto sm:gap-4 [&::-webkit-scrollbar]:hidden">
+          <div className="flex shrink-0 items-center gap-1 sm:gap-2">
+            <Button
+              onClick={handleOpenSidebar}
+              variant="ghost"
+              size="icon-lg"
+              className="size-9 p-0 sm:size-auto sm:px-2.5 xl:hidden"
+              type="button"
+            >
+              <PanelLeft className="cn-rtl-flip size-4.5 sm:size-5" />
+            </Button>
+
+            <div className="flex items-center gap-1 sm:gap-3">
+              <Button
+                variant="ghost"
+                size="icon-lg"
+                className="flex size-9 items-center gap-1.5 p-0 sm:size-auto sm:px-2.5"
+                type="button"
+                onClick={router.back}
+              >
+                <ArrowLeft className="cn-rtl-flip size-4" />
+                <span className="hidden md:inline">
+                  {tCommon("actions.back")}
+                </span>
+              </Button>
+
+              {hasAdvancedFeatures &&
+                isDisplayableDeploymentStatus(deploymentStatus) && (
+                  <div className="flex min-w-0 items-center gap-1 sm:gap-2">
+                    {/* Mobile: Just colored dot */}
+                    <div className="flex items-center md:hidden">
+                      <Tooltip>
+                        <TooltipTrigger
+                          type="button"
+                          className={`size-2 rounded-full ${getDeploymentStatusClass(deploymentStatus)}`}
+                        />
+                        <TooltipContent className="text-xs">
+                          {tEditorHeader(
+                            getDeploymentStatusI18nKey(deploymentStatus),
+                          )}
+                        </TooltipContent>
+                      </Tooltip>
+                    </div>
+
+                    {/* Desktop: Full status badge */}
+                    <span
+                      className={`hidden rounded-full px-2 py-0.5 text-xs font-medium whitespace-nowrap md:inline-flex ${getDeploymentStatusClass(deploymentStatus)}`}
+                    >
+                      {tEditorHeader(
+                        getDeploymentStatusI18nKey(deploymentStatus),
+                      )}
+                    </span>
+                  </div>
+                )}
+            </div>
+          </div>
+
+          <div className="flex shrink-0 items-center gap-1.5 sm:gap-2.5">
+            <PresenceAvatars users={activeUsers} />
+            {config.repoName && config.branch && config.token && (
+              <PreviewButton
+                repository={
+                  config.repoName.includes("/")
+                    ? config.repoName
+                    : `${config.owner}/${config.repoName}`
+                }
+                branch={config.branch}
+                token={config.token}
+                provider={config.provider}
+                generator={config.framework}
+                getUncommittedFile={getUncommittedFile}
+                previewWindowRef={previewWindowRef}
+                vercelToken={vercelToken}
+                vercelTeamId={vercelTeamId}
+                vercelProjectId={vercelProjectId}
+                spProjectId={params.projectId}
+              />
+            )}
+            {children}
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="icon-lg"
+                  className="size-9 gap-1.5 p-0 sm:size-auto sm:h-9 sm:px-2.5"
+                  type="button"
+                  onClick={handleResetWithConfirmation}
+                  disabled={!hasChanges || pending}
+                >
+                  <RotateCcw className="size-4" />
+                  <span className="hidden sm:inline">
+                    {tCommon("actions.reset")}
+                  </span>
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>{tEditorHeader("reset_tooltip")}</TooltipContent>
+            </Tooltip>
+            {/* Combined Publish/Draft button with dropdown */}
+            {showDraftButton ? (
+              <ButtonGroup className="h-9">
+                <Button
+                  size="default"
+                  className="h-9 px-2.5 text-xs font-medium sm:px-3 sm:text-sm"
+                  type="button"
+                  onClick={
+                    effectiveActionType === "save"
+                      ? handleSaveAsDraftClick
+                      : effectiveActionType === "draft"
+                        ? handlePushAsDraft
+                        : () => handleSubmit()
+                  }
+                  isLoading={
+                    effectiveActionType === "save" ? isSavingDraft : pending
+                  }
+                  disabled={isMainButtonDisabledEffective}
+                >
+                  {effectiveActionType === "save"
+                    ? isShowingSavedState
+                      ? tCommon("status.saved")
+                      : tEditorHeader("save_btn")
+                    : effectiveActionType === "draft"
+                      ? tEditorHeader("draft_btn")
+                      : tEditorHeader("publish_btn")}
+                </Button>
+
+                <ButtonGroupSeparator orientation="vertical" />
+
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      aria-label={tCommon("actions.more_options")}
+                      size="icon-lg"
+                      className="h-9 w-7 px-0 sm:w-8"
+                    >
+                      <ChevronDown className="size-3.5 sm:size-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="[--radius:1rem]">
+                    <DropdownMenuItem
+                      className="cursor-pointer"
+                      disabled={isDraftDisabled}
+                      onSelect={() => {
+                        setActionType("draft");
+                        setTimeout(() => handlePushAsDraft(), 0);
+                      }}
+                    >
+                      {tEditorHeader("push_as_draft_button")}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      className="cursor-pointer"
+                      disabled={isPublishDisabled}
+                      onSelect={() => {
+                        setActionType("publish");
+                        setTimeout(() => handleSubmit(), 0);
+                      }}
+                    >
+                      {tEditorHeader("publish_now_btn")}
+                    </DropdownMenuItem>
+
+                    <DropdownMenuSeparator />
+
+                    <DropdownMenuItem
+                      className="cursor-pointer"
+                      disabled={isSaveDisabled}
+                      onSelect={() => {
+                        if (isDbDraftLoaded && canUseDraftSave) {
+                          setActionType("save");
+                        }
+                        setTimeout(() => handleSaveAsDraftClick(), 0);
+                      }}
+                    >
+                      {tEditorHeader("save_as_draft_btn")}
+                    </DropdownMenuItem>
+
+                    {hasSavedDraft && (
+                      <DropdownMenuItem
+                        className="text-destructive focus:text-destructive cursor-pointer"
+                        disabled={
+                          pending || isSavingDraft || isDiscardingSavedDraft
+                        }
+                        onSelect={() => {
+                          setTimeout(() => handleDiscardSavedDraft(), 0);
+                        }}
+                      >
+                        {tEditorHeader("discard_saved_btn")}
+                      </DropdownMenuItem>
+                    )}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </ButtonGroup>
+            ) : (
+              <Button
+                isLoading={pending && !isDraft}
+                disabled={!hasChanges || pending}
+                size="default"
+                className="h-9 px-3 text-xs sm:px-4 sm:text-sm"
+                type="button"
+                onClick={() => handleSubmit()}
+              >
+                {tCommon("actions.save")}
+              </Button>
+            )}
+            {isConfigPath && (
+              <ConfigActions
+                pathname={pathname}
+                config={config}
+                pending={pending}
+              />
+            )}
+          </div>
+        </div>
+      </header>
+    </>
+  );
+}

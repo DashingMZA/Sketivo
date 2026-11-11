@@ -1,0 +1,179 @@
+"use client";
+
+import Avatar from "@/components/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { useFeatureAccess } from "@/hooks/use-feature-access";
+import { openUnlockPrompt } from "@/hooks/use-unlock-prompt";
+import { usePermission } from "@/hooks/use-permission";
+import { ENUM_PERMISSIONS } from "@/lib/roles";
+import {
+  getDeploymentStatusVariant,
+  isDisplayableDeploymentStatus,
+} from "@/lib/utils/deployment-status";
+import { isGitHubProvider, TGitProvider } from "@/lib/utils/provider-checker";
+import { TGitCommit } from "@/redux/features/git/provider-args";
+import { formatDistanceToNow } from "date-fns";
+import { Clock, History, RotateCcw } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { useState } from "react";
+import { toast } from "@/components/ui/toast";
+import { RevertConfirmDialog } from "./git-revert";
+
+type CommitItemProps = {
+  provider: TGitProvider;
+  commit: TGitCommit;
+  onSuccess?: () => void;
+  isLatest?: boolean;
+  deploymentStatus?: string | null;
+};
+
+export function GitCommitItem({
+  provider,
+  commit,
+  onSuccess,
+  isLatest,
+  deploymentStatus,
+}: CommitItemProps) {
+  const tProjectGit = useTranslations("project.git");
+  const { hasAdvancedFeatures } = useFeatureAccess();
+  const canRestore = usePermission(ENUM_PERMISSIONS.MANAGE_PROJECTS);
+
+  const [revertDialog, setRevertDialog] = useState<"reset" | "revert" | null>(
+    null,
+  );
+
+  const handleActionClick = (type: "reset" | "revert") => {
+    if (!hasAdvancedFeatures) {
+      openUnlockPrompt("git");
+      return;
+    }
+
+    if (type === "reset" && !canRestore) {
+      toast.error(tProjectGit("admin_only"));
+      return;
+    }
+
+    setRevertDialog(type);
+  };
+
+  // Extract display data based on provider
+  const isGitHub = isGitHubProvider(provider);
+  const authorName = isGitHub
+    ? commit.commit?.author?.name
+    : commit.author_name;
+  const authorEmail = isGitHub ? commit.author?.email : commit.author_email;
+  const avatarUrl = isGitHub ? commit.author?.avatar_url : "";
+  const commitMessage = isGitHub ? commit.commit?.message : commit.title;
+  const commitUrl = isGitHub ? commit.html_url : commit.web_url;
+  const commitDate = isGitHub
+    ? commit.commit?.author?.date
+    : commit.committed_date;
+
+  return (
+    <>
+      <div className="border-b-border hover:bg-muted/50 relative flex gap-3 border-b p-4 transition-colors">
+        <Avatar
+          email={authorEmail!}
+          src={avatarUrl!}
+          alt=""
+          width={40}
+          height={40}
+          className="mt-1 hidden size-8! rounded-full sm:flex"
+        />
+        <div className="min-w-0 flex-1">
+          <p className="text-text-strong truncate pe-20 text-sm font-medium">
+            {authorName}
+          </p>
+          <a
+            href={commitUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-muted-foreground mt-2 block truncate text-sm hover:underline"
+          >
+            {commitMessage}
+          </a>
+          <div className="text-muted-foreground mt-2 flex items-center gap-3 text-sm">
+            <div className="flex items-center gap-1">
+              <Clock className="h-4 w-4" />
+              <span>
+                {commitDate
+                  ? formatDistanceToNow(new Date(commitDate), {
+                      addSuffix: true,
+                    })
+                  : ""}
+              </span>
+            </div>
+          </div>
+
+          <div className="mt-3 flex flex-wrap gap-2">
+            {canRestore && (
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => handleActionClick("reset")}
+                disabled={isLatest}
+                className="h-8 w-full sm:w-auto"
+              >
+                <History className="me-1 h-3 w-3" />
+                {tProjectGit("restore_version")}
+              </Button>
+            )}
+            {isGitHub && (
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => handleActionClick("revert")}
+                className="h-8 w-full sm:w-auto"
+              >
+                <RotateCcw className="me-1 h-3 w-3" />
+                {tProjectGit("undo_commit")}
+              </Button>
+            )}
+          </div>
+        </div>
+        {isDisplayableDeploymentStatus(deploymentStatus) && (
+          <Badge
+            variant={getDeploymentStatusVariant(deploymentStatus)}
+            className="absolute inset-e-4 top-4 capitalize"
+          >
+            {deploymentStatus}
+          </Badge>
+        )}
+      </div>
+
+      <RevertConfirmDialog
+        isOpen={revertDialog === "reset"}
+        onClose={() => setRevertDialog(null)}
+        onSuccess={onSuccess}
+        provider={provider}
+        commit={commit}
+        type="reset"
+        title={tProjectGit("restore_title")}
+        description={
+          isGitHub
+            ? tProjectGit("restore_description_github")
+            : tProjectGit("restore_description_gitlab")
+        }
+        warningText={
+          isGitHub
+            ? tProjectGit("restore_warning_github")
+            : tProjectGit("restore_warning_gitlab")
+        }
+      />
+      {isGitHub && (
+        <RevertConfirmDialog
+          isOpen={revertDialog === "revert"}
+          onClose={() => setRevertDialog(null)}
+          onSuccess={onSuccess}
+          provider="Github"
+          commit={commit}
+          type="revert"
+          title={tProjectGit("undo_title")}
+          description={tProjectGit("undo_description")}
+          warningText={tProjectGit("undo_warning")}
+        />
+      )}
+    </>
+  );
+}
