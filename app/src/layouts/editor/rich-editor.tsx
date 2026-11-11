@@ -1,0 +1,542 @@
+import { toast } from "@/components/ui/toast";
+import { useCollabBase } from "@/contexts/collab-base-context";
+import { useDebouncedCallback } from "@/hooks/use-debounce-callback";
+import useMounted from "@/hooks/use-mounted";
+import { authClient } from "@/lib/auth/auth-client";
+import { logger } from "@/lib/logger";
+import { setCursorOffset, setRawMode } from "@/redux/features/config/slice";
+import { useAppDispatch, useAppSelector } from "@/redux/store";
+import { MarkdownPlugin } from "@platejs/markdown";
+import { useTranslations } from "next-intl";
+import { usePathname } from "next/navigation";
+import { KEYS, TElement } from "platejs";
+import { Plate, usePlateEditor } from "platejs/react";
+import { useEffect, useRef } from "react";
+import { Editor, EditorContainer } from "./plate-ui/editor";
+import { EditorKit, MyEditor } from "./plugins/editor-kit";
+import { YjsKit } from "./plugins/yjs.kit";
+import { joinCollabRoom } from "./utils/join-collab-room";
+import {
+  applyMarkdownToEditor,
+  editorBlockKeys,
+  editorPointAtMarkdownOffset,
+  patchMarkdownFromEditor,
+} from "./utils/raw-collab";
+import { RichTextType } from "./utils/plate-types";
+
+const CURSOR_MARKER = "\uE000"; // Private Use Area character as a marker
+
+type RichEditorProps = RichTextType & {
+  onUpdateMarkdown: (content: string) => void;
+  markdownContent: string;
+  isMobile?: boolean;
+  onUpdateContentRef: (content: string) => void;
+};
+
+const colors = [
+  "#f87171",
+  "#fb923c",
+  "#fbbf24",
+  "#a3e635",
+  "#4ade80",
+  "#2dd4bf",
+  "#22d3ee",
+  "#38bdf8",
+  "#818cf8",
+  "#a78bfa",
+  "#c084fc",
+  "#e879f9",
+  "#f472b6",
+  "#fb7185",
+];
+
+const getColor = () => {
+  return colors[Math.floor(Math.random() * colors.length)];
+};
+
+type TSlateNode = {
+  type?: string;
+  text?: string;
+  children?: TSlateNode[];
+  [key: string]: unknown;
+};
+
+const recursiveFilter = (nodes: TSlateNode[]): TSlateNode[] => {
+  return nodes
+    .filter((n) => n.type !== "slash_input" && n.type !== KEYS.aiChat)
+    .map((n) =>
+      n.children ? { ...n, children: recursiveFilter(n.children) } : n,
+    );
+};
+
+export const serializeEditor = (editor: MyEditor, value: TElement[]) => {
+  // 1. Recursively remove internal nodes like slash_input
+  const filteredValue = recursiveFilter(value as TSlateNode[]);
+
+  // 2. Clean up "spacer" paragraphs
+  const cleanValue = filteredValue.filter((node: TSlateNode) => {
+    if (node.type === "p" || node.type === "paragraph") {
+      // If the paragraph has ANY non-text children (like JSX inlines or images),
+      // we MUST keep it even if its text content appears empty.
+      // An empty text leaf has `text: ""`; only elements lack the property.
+      const hasNonTextChildren = (node.children || []).some(
+        (c: TSlateNode) => typeof c.text !== "string" && c.type !== "text",
+      );
+      if (hasNonTextChildren) return true;
+
+      const text = (node.children || [])
+        .map((c: TSlateNode) => c.text || "")
+        .join("");
+      // Only strip if it's pure text AND that text is just whitespace/ZWSP.
+      return text.replace(/[\u200B\u200C\u200D\uFEFF]/g, "").trim().length > 0;
+    }
+    return true;
+  });
+
+  const mdContent = editor.getApi(MarkdownPlugin).markdown.serialize({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    value: cleanValue as any,
+    preserveEmptyParagraphs: false,
+  }) as string;
+
+  // Strip the cursor marker if it somehow leaked in
+  return mdContent.replaceAll(CURSOR_MARKER, "");
+};
+
+export const RichEditor = ({
+  markdownContent,
+  isMobile,
+  onUpdateMarkdown,
+  onUpdateContentRef,
+}: RichEditorProps) => {
+  const tEditorRich = useTranslations("editor.rich");
+  const dispatch = useAppDispatch();
+  const { cursorOffset, isRawMode } = useAppSelector((state) => state.config);
+  const mounted = useMounted();
+  const pathname = usePathname();
+  const { data: session } = authClient.useSession();
+  const selectionTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const scrollTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isAliveRef = useRef(true);
+  const collab = useCollabBase();
+
+  useEffect(() => {
+    isAliveRef.current = true;
+    return () => {
+      isAliveRef.current = false;
+      if (selectionTimerRef.current) {
+        clearTimeout(selectionTimerRef.current);
+        selectionTimerRef.current = null;
+      }
+      if (scrollTimerRef.current) {
+        clearTimeout(scrollTimerRef.current);
+        scrollTimerRef.current = null;
+      }
+    };
+  }, []);
+
+  const editor = usePlateEditor({
+    plugins: [
+      ...EditorKit,
+      ...YjsKit({
+        name: session?.user?.full_name || "Anonymous",
+        color: getColor(),
+        document_id: pathname,
+      }),
+    ],
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    value: (editorRef: any) => {
+      try {
+        const plateContent = editorRef
+          .getApi(MarkdownPlugin)
+          .markdown.deserialize(markdownContent, { withoutMdx: true });
+        return plateContent.length > 0
+          ? plateContent
+          : [
+              {
+                children: [{ text: "" }],
+                type: "p",
+              },
+            ];
+      } catch {
+        toast.error(tEditorRich("error_parsing"));
+        dispatch(setRawMode(true));
+        return [
+          {
+            children: [{ text: "" }],
+            type: "p",
+          },
+        ];
+      }
+    },
+  });
+
+  useEffect(() => {
+    // Ensure component is mounted and editor is ready
+    if (!mounted) return;
+
+    const documentId = pathname || "";
+    const initialValue = editor
+      .getApi(MarkdownPlugin)
+      .markdown.deserialize(markdownContent, { withoutMdx: true });
+
+    // Initialize Yjs connection, sync document, and set initial editor state
+    const { ready, leave } = joinCollabRoom(editor, {
+      id: documentId,
+      value: initialValue,
+      collab,
+    });
+    ready.catch((error) =>
+      logger.error("Failed to join the collaborative room", error),
+    );
+
+    // Clean up: Destroy connection when component unmounts
+    return leave;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [editor, mounted, pathname]);
+
+  const isRemoteUpdate = useRef(false);
+  // Track actual raw→rich transitions; initialized to current value so the
+  // initial mount run (and StrictMode's double-invoke) never triggers a sync.
+  const prevIsRawMode = useRef(isRawMode);
+
+  // While in raw mode: the markdown the editor last matched, and its block
+  // keys then. Changes on either side are applied to the other per block.
+  const rawSyncRef = useRef<{ markdown: string; keys: string[] } | null>(null);
+
+  const startRawSync = () => {
+    const markdown = serializeEditor(editor, editor.children as TElement[]);
+    rawSyncRef.current = { markdown, keys: editorBlockKeys(editor) };
+    onUpdateMarkdown(markdown);
+  };
+
+  // Raw edits reach the room through this hidden editor.
+  useEffect(() => {
+    const sync = rawSyncRef.current;
+    if (!isRawMode || !sync || markdownContent === sync.markdown) return;
+    applyMarkdownToEditor(editor, markdownContent);
+    rawSyncRef.current = {
+      markdown: markdownContent,
+      keys: editorBlockKeys(editor),
+    };
+  }, [editor, isRawMode, markdownContent]);
+
+  // Collaborators see a raw-mode author's caret through this hidden editor's
+  // selection, so keep it on the Monaco cursor.
+  const followRawCursor = useDebouncedCallback((offset: number) => {
+    const sync = rawSyncRef.current;
+    if (!sync) return;
+    const point = editorPointAtMarkdownOffset(editor, sync.markdown, offset);
+    if (point) editor.tf.select(point);
+  }, 150);
+
+  useEffect(() => {
+    if (isRawMode && cursorOffset !== undefined) followRawCursor(cursorOffset);
+  }, [isRawMode, cursorOffset, markdownContent, followRawCursor]);
+
+  // Sync cursor from Redux to Plate — only on genuine raw → rich transitions
+  useEffect(() => {
+    const wasRawMode = prevIsRawMode.current;
+    prevIsRawMode.current = isRawMode;
+
+    if (!wasRawMode && isRawMode) {
+      startRawSync();
+      return;
+    }
+    // Guard: only run when actually switching FROM raw TO rich
+    if (!(wasRawMode === true && !isRawMode)) return;
+    rawSyncRef.current = null;
+    if (!editor || cursorOffset === undefined) return;
+
+    // 1. Insert marker in markdown to find cursor position
+    const mdWithMarker =
+      markdownContent.slice(0, cursorOffset) +
+      CURSOR_MARKER +
+      markdownContent.slice(cursorOffset);
+
+    try {
+      const nodesWithMarker = editor
+        .getApi(MarkdownPlugin)
+        .markdown.deserialize(mdWithMarker, { withoutMdx: true });
+
+      // 2. Raw edits were applied as they happened; this only catches the
+      //    last one. Replacing everything would wipe collaborators' edits.
+      isRemoteUpdate.current = true;
+      applyMarkdownToEditor(editor, markdownContent);
+
+      // 3. Find marker in the nodes-with-marker tree
+      let markerOffset = 0;
+      const findMarker = (
+        nodes: TSlateNode[],
+        path: number[],
+      ): number[] | null => {
+        for (let i = 0; i < nodes.length; i++) {
+          const node = nodes[i];
+          const currentPath = [...path, i];
+          if (node.text && node.text.includes(CURSOR_MARKER)) {
+            markerOffset = node.text.indexOf(CURSOR_MARKER);
+            return currentPath;
+          }
+          if (node.children) {
+            const found = findMarker(node.children, currentPath);
+            if (found) return found;
+          }
+        }
+        return null;
+      };
+
+      const markerPath = findMarker(nodesWithMarker, []);
+
+      // Validate path exists in new editor children
+      let isValidPath = false;
+      if (markerPath) {
+        isValidPath = true;
+        let currentNode: TSlateNode | undefined = {
+          children: editor.children as TSlateNode[],
+        };
+        for (const index of markerPath) {
+          // Guard: leaf text nodes have no .children; stop traversal here
+          if (!currentNode || !currentNode.children) {
+            // We've reached a leaf — if index is 0 it's still valid (text node)
+            isValidPath = false;
+            break;
+          }
+          if (!currentNode.children[index]) {
+            isValidPath = false;
+            break;
+          }
+          currentNode = currentNode.children[index];
+        }
+        // Final node must be a text leaf for the path to be usable
+        if (isValidPath && typeof currentNode.text !== "string") {
+          isValidPath = false;
+        }
+      }
+
+      // 4. Restore cursor position after DOM reconciliation
+      if (selectionTimerRef.current) {
+        clearTimeout(selectionTimerRef.current);
+      }
+
+      selectionTimerRef.current = setTimeout(() => {
+        if (!isAliveRef.current) {
+          isRemoteUpdate.current = false;
+          return;
+        }
+
+        try {
+          if (markerPath && isValidPath) {
+            editor.tf.select({
+              anchor: { path: markerPath, offset: markerOffset },
+              focus: { path: markerPath, offset: markerOffset },
+            });
+          } else {
+            editor.tf.select(editor.api.end([]));
+          }
+
+          if (cursorOffset > 0) {
+            editor.tf.focus();
+          }
+
+          // Scroll cursor into view
+          if (scrollTimerRef.current) {
+            clearTimeout(scrollTimerRef.current);
+          }
+
+          scrollTimerRef.current = setTimeout(() => {
+            if (!isAliveRef.current) return;
+            const selection = window.getSelection();
+            if (selection && selection.rangeCount > 0) {
+              const range = selection.getRangeAt(0);
+              const node = range.startContainer.parentElement;
+              if (node) {
+                node.scrollIntoView({ block: "center", behavior: "smooth" });
+              }
+            }
+          }, 50);
+        } catch (selectErr) {
+          logger.error("Failed to restore selection in Rich Editor", selectErr);
+        }
+
+        isRemoteUpdate.current = false;
+      }, 50);
+    } catch (e) {
+      logger.error("Failed to sync cursor to Rich Editor", e);
+      isRemoteUpdate.current = false;
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isRawMode]);
+
+  // Listen for programmatic external content updates (e.g. AI SEO content fixes)
+  useEffect(() => {
+    const handleContentUpdate = (e: Event) => {
+      const customEvent = e as CustomEvent<{
+        content: string;
+        mode?: "replace" | "append";
+      }>;
+      if (!editor || !customEvent.detail?.content) return;
+      try {
+        const newMd = customEvent.detail.content;
+        const cleanNodes = editor
+          .getApi(MarkdownPlugin)
+          .markdown.deserialize(newMd, { withoutMdx: true });
+
+        const newChildren =
+          cleanNodes.length > 0
+            ? cleanNodes
+            : [{ children: [{ text: "" }], type: "p" }];
+
+        isRemoteUpdate.current = true;
+        editor.tf.withoutNormalizing(() => {
+          for (let i = editor.children.length - 1; i >= 0; i--) {
+            editor.tf.removeNodes({ at: [i] });
+          }
+          newChildren.forEach((node: TSlateNode, i: number) => {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            editor.tf.insertNodes(node as any, { at: [i] });
+          });
+        });
+
+        onUpdateMarkdown(newMd);
+        setTimeout(() => {
+          isRemoteUpdate.current = false;
+        }, 100);
+      } catch (err) {
+        logger.error(
+          "Failed to update rich editor content from external event",
+          err,
+        );
+      }
+    };
+
+    window.addEventListener(
+      "sketivo:editor-content-update",
+      handleContentUpdate,
+    );
+    return () => {
+      window.removeEventListener(
+        "sketivo:editor-content-update",
+        handleContentUpdate,
+      );
+    };
+  }, [editor, onUpdateMarkdown]);
+
+  const onSerialize = useDebouncedCallback(
+    (editor: MyEditor, value: TElement[]) => {
+      const cleanMd = serializeEditor(editor, value);
+      onUpdateMarkdown(cleanMd);
+      onUpdateContentRef(cleanMd);
+    },
+    200,
+  );
+
+  const onSyncCursor = useDebouncedCallback((editor: MyEditor) => {
+    if (!editor.selection || isRawMode || isRemoteUpdate.current) return;
+
+    try {
+      // 1. Deep clone the children to avoid mutating the actual editor
+      const childrenClone = JSON.parse(JSON.stringify(editor.children));
+      const { selection } = editor;
+
+      // 2. Find the node at the selection path in the clone
+      let targetNode: TSlateNode | null = { children: childrenClone };
+      const path = selection.focus.path;
+
+      // Traverse to the parent of the text node
+      for (let i = 0; i < path.length; i++) {
+        const index = path[i];
+        if (
+          !targetNode ||
+          !targetNode.children ||
+          !targetNode.children[index]
+        ) {
+          targetNode = null;
+          break;
+        }
+        targetNode = targetNode.children[index];
+      }
+
+      if (targetNode && typeof targetNode.text === "string") {
+        const marker = CURSOR_MARKER;
+        const offset = selection.focus.offset;
+
+        // 3. Insert marker in the clone
+        targetNode.text =
+          targetNode.text.slice(0, offset) +
+          marker +
+          targetNode.text.slice(offset);
+
+        // 4. Filter out internal nodes (recursive) before serialization
+        const filteredClone = recursiveFilter(childrenClone);
+
+        // 5. Serialize the clone
+        const mdWithMarker = editor.getApi(MarkdownPlugin).markdown.serialize({
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          value: filteredClone as any,
+          preserveEmptyParagraphs: false,
+        }) as string;
+
+        const markerOffset = mdWithMarker.indexOf(marker);
+        if (markerOffset !== -1) {
+          dispatch(setCursorOffset(markerOffset));
+        }
+      }
+    } catch (e) {
+      logger.error("Failed to sync cursor", e);
+    }
+  }, 300);
+
+  return (
+    <>
+      <Plate
+        onChange={(options) => {
+          const { editor } = options;
+
+          // Track cursor position if selection changed
+          if (editor.selection) {
+            onSyncCursor(editor);
+          }
+
+          // Runs regardless of isRemoteUpdate: a collaborator's change skipped
+          // here would be reverted by the next raw keystroke.
+          if (isRawMode) {
+            const sync = rawSyncRef.current;
+            if (!sync) {
+              startRawSync();
+              return;
+            }
+            const keys = editorBlockKeys(editor);
+            if (keys.join("\u0000") === sync.keys.join("\u0000")) return;
+            const markdown = patchMarkdownFromEditor(
+              editor,
+              sync.markdown,
+              sync.keys,
+            );
+            rawSyncRef.current = { markdown, keys };
+            if (markdown !== sync.markdown) onUpdateMarkdown(markdown);
+            return;
+          }
+
+          if (isRemoteUpdate.current) return;
+
+          onSerialize(editor, options.value);
+          // @LOG: this is log for debugging
+          // console.log(mdContent);
+          // console.log(options.value);
+        }}
+        editor={editor}
+      >
+        <EditorContainer
+          className={`relative h-full overflow-x-hidden ${isMobile ? "" : "p-4 lg:p-6"}`}
+        >
+          <Editor
+            dir="auto"
+            className={`relative min-h-[calc(100%-42px)] ps-6 pe-2 sm:ps-7 ${isMobile ? "pt-4" : "pt-0"} pb-20`}
+            variant="none"
+            placeholder={tEditorRich("placeholder")}
+          />
+        </EditorContainer>
+      </Plate>
+    </>
+  );
+};

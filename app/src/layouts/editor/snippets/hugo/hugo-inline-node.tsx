@@ -1,0 +1,59 @@
+"use client";
+
+import { PlateElement, useEditorRef, withRef } from "platejs/react";
+import { BaseInlineSnippet } from "../common/base-inline-node";
+import { EditableTagLine } from "../common/editable-tag-line";
+import type { TText } from "platejs";
+
+// Hugo-specific theme colors
+const getHugoShortcodeTheme = () => {
+  return {
+    type: "Hugo",
+    bg: "bg-purple-50/80 dark:bg-purple-950/20",
+    border: "border-purple-200 dark:border-purple-800",
+    text: "text-purple-800 dark:text-purple-200",
+    badge: "bg-purple-500",
+    tagText: "text-purple-600 dark:text-purple-400",
+  };
+};
+
+export const HugoInlineElement = withRef<typeof PlateElement>(
+  ({ className, ...props }, ref) => {
+    const { children, element } = props;
+    const editor = useEditorRef();
+    const theme = getHugoShortcodeTheme();
+
+    const updateInlineText = (text: string) => {
+      const path = editor.api.findPath(element);
+      if (path) {
+        // Replace the content of the inline shortcode
+        const range = editor.api.range(path);
+        editor.tf.insertText(text, { at: range });
+      }
+    };
+
+    const text = (
+      element.children?.map((c) => (c as TText).text).join("") || ""
+    ).replace(/\n/g, "");
+
+    return (
+      <BaseInlineSnippet
+        ref={ref}
+        theme={theme}
+        className={className}
+        {...props}
+        head={
+          <EditableTagLine
+            text={text}
+            propName="inline"
+            theme={theme}
+            onChange={updateInlineText}
+          />
+        }
+      >
+        {/* Hide actual children but keep them for Slate data model stability */}
+        <span className="hidden">{children}</span>
+      </BaseInlineSnippet>
+    );
+  },
+);

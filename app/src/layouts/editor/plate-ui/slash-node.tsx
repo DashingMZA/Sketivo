@@ -1,0 +1,212 @@
+"use client";
+
+import { STORAGE_PREFIX } from "@/lib/brand";
+import { insertBlock } from "@/editor/utils/transforms";
+import { useIsEditorAiEnabled } from "@/hooks/use-ai-access";
+import { useFeatureAccess } from "@/hooks/use-feature-access";
+import { AIChatPlugin } from "@platejs/ai/react";
+import {
+  Code2,
+  Heading1Icon,
+  Heading2Icon,
+  Heading3Icon,
+  ListIcon,
+  ListOrdered,
+  PilcrowIcon,
+  Quote,
+  SparklesIcon,
+  Table,
+} from "lucide-react";
+import { useTranslations } from "next-intl";
+import { type TComboboxInputElement, KEYS } from "platejs";
+import type { PlateEditor, PlateElementProps } from "platejs/react";
+import { PlateElement } from "platejs/react";
+import * as React from "react";
+import { useLockedAiSlashItem } from "./ai-slash-locked";
+import {
+  InlineCombobox,
+  InlineComboboxContent,
+  InlineComboboxEmpty,
+  InlineComboboxGroup,
+  InlineComboboxGroupLabel,
+  InlineComboboxInput,
+  InlineComboboxItem,
+} from "./inline-combobox";
+
+type Group = {
+  group: string;
+  items: {
+    icon: React.ReactNode;
+    value: string;
+    onSelect: (editor: PlateEditor, value: string) => void;
+    className?: string;
+    focusEditor?: boolean;
+    keywords?: string[];
+    label: string;
+  }[];
+};
+
+const groups: Group[] = [
+  {
+    group: "ai",
+    items: [
+      {
+        focusEditor: false,
+        icon: <SparklesIcon />,
+        label: "ai",
+        value: "AI",
+        onSelect: (editor) => {
+          if (
+            !localStorage.getItem(`${STORAGE_PREFIX}-ai-model`) ||
+            !localStorage.getItem(`${STORAGE_PREFIX}-ai-apiKey`)
+          ) {
+            window.open("/dashboard/ai-agent", "_blank");
+            return;
+          }
+
+          const aiChat = editor.getApi(AIChatPlugin).aiChat;
+
+          // Force focus before showing chat
+          // editor.tf.focus();
+
+          aiChat.show();
+        },
+      },
+    ],
+  },
+  {
+    group: "basic_blocks",
+    items: [
+      {
+        icon: <PilcrowIcon />,
+        keywords: ["paragraph"],
+        label: "text",
+        value: KEYS.p,
+      },
+      {
+        icon: <Heading1Icon />,
+        keywords: ["title", "h1"],
+        label: "h1",
+        value: KEYS.h1,
+      },
+      {
+        icon: <Heading2Icon />,
+        keywords: ["subtitle", "h2"],
+        label: "h2",
+        value: KEYS.h2,
+      },
+      {
+        icon: <Heading3Icon />,
+        keywords: ["subtitle", "h3"],
+        label: "h3",
+        value: KEYS.h3,
+      },
+      {
+        icon: <ListIcon />,
+        keywords: ["unordered", "ul", "-"],
+        label: "bullet_list",
+        value: KEYS.ul,
+      },
+      {
+        icon: <ListOrdered />,
+        keywords: ["ordered", "ol", "1"],
+        label: "num_list",
+        value: KEYS.ol,
+      },
+      {
+        icon: <Code2 />,
+        keywords: ["```"],
+        label: "code_block",
+        value: KEYS.codeBlock,
+      },
+      {
+        icon: <Table />,
+        label: "table",
+        value: KEYS.table,
+      },
+      {
+        icon: <Quote />,
+        keywords: ["citation", "blockquote", "quote", ">"],
+        label: "blockquote",
+        value: KEYS.blockquote,
+      },
+    ].map((item) => ({
+      ...item,
+      onSelect: (editor, value) => {
+        insertBlock(editor, value, { upsert: true });
+      },
+    })),
+  },
+];
+
+export function SlashInputElement(
+  props: PlateElementProps<TComboboxInputElement>,
+) {
+  const tEditorSlash = useTranslations("editor.slash");
+  const { editor, element } = props;
+  const { hasAdvancedFeatures: canAccessAi } = useFeatureAccess();
+  const aiUpsellItem = useLockedAiSlashItem();
+
+  const editorAi = useIsEditorAiEnabled();
+  const availableGroups = editorAi
+    ? groups
+    : groups.filter((group) => group.group !== "ai");
+
+  const displayGroups =
+    !canAccessAi && aiUpsellItem && editorAi
+      ? availableGroups.map((group) => {
+          if (group.group === "ai") {
+            return {
+              ...group,
+              items: [aiUpsellItem],
+            };
+          }
+          return group;
+        })
+      : availableGroups;
+
+  return (
+    <PlateElement {...props} as="span">
+      <InlineCombobox element={element} trigger="/">
+        <InlineComboboxInput className="border-border w-50 ring-0" />
+
+        <InlineComboboxContent>
+          <InlineComboboxEmpty>
+            {tEditorSlash("no_results")}
+          </InlineComboboxEmpty>
+
+          {displayGroups.map(({ group, items }) => (
+            <InlineComboboxGroup key={group} className="">
+              <InlineComboboxGroupLabel>
+                {tEditorSlash(group)}
+              </InlineComboboxGroupLabel>
+
+              {items.map((item) => {
+                const { focusEditor, keywords, label, value, onSelect } = item;
+                // locked items carry a pre-translated label
+                const text =
+                  (item as { labelText?: string }).labelText ??
+                  tEditorSlash(label);
+                return (
+                  <InlineComboboxItem
+                    key={value}
+                    value={value}
+                    onClick={() => onSelect(editor, value)}
+                    label={text}
+                    focusEditor={focusEditor}
+                    group={group}
+                    keywords={keywords}
+                  >
+                    {text}
+                  </InlineComboboxItem>
+                );
+              })}
+            </InlineComboboxGroup>
+          ))}
+        </InlineComboboxContent>
+      </InlineCombobox>
+
+      {props.children}
+    </PlateElement>
+  );
+}

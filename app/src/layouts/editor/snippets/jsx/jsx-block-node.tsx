@@ -1,0 +1,147 @@
+"use client";
+
+import { toast } from "@/components/ui/toast";
+import { useTranslations } from "next-intl";
+import { useEditorRef } from "platejs/react";
+import { ComponentProps, useEffect } from "react";
+import { BaseSnippetBlock, SnippetTheme } from "../common/base-block-node";
+import { EditableTagLine } from "../common/editable-tag-line";
+import { parseJsxString } from "./jsx-parser";
+import type { JsxSlateElement } from "./jsx-serialization";
+
+const getJsxShortcodeTheme = (): SnippetTheme => {
+  return {
+    type: "JSX",
+    bg: "bg-blue-50/80 dark:bg-blue-950/20",
+    border: "border-blue-200 dark:border-blue-800",
+    text: "text-blue-800 dark:text-blue-200",
+    badge: "bg-blue-500",
+    tagText: "text-blue-600 dark:text-blue-400",
+  };
+};
+
+export const JsxBlockElement = ({
+  className,
+  theme: _theme,
+  ...props
+}: ComponentProps<typeof BaseSnippetBlock>) => {
+  const t = useTranslations("editor.snippets");
+  const { children } = props;
+  const element = props.element as JsxSlateElement;
+  const { name } = element;
+  const content = element.content;
+  const editor = useEditorRef();
+  const theme = getJsxShortcodeTheme();
+
+  const isSelfClosing = element?.isSelfClosing as boolean;
+
+  // For self-closing elements, use the content directly since children no longer contain the JSX string
+  useEffect(() => {
+    if (!isSelfClosing || !content) return;
+
+    // Parse the JSX string to extract name and attributes
+    const parsed = parseJsxString(content);
+
+    // Check if name or attributes have changed
+    const currentName = element.name;
+    const currentAttributes = element.attributes || {};
+
+    const nameChanged = parsed.name && parsed.name !== currentName;
+    const attributesChanged =
+      JSON.stringify(parsed.attributes) !== JSON.stringify(currentAttributes);
+
+    if (nameChanged || attributesChanged) {
+      // Update the element with new name and attributes
+      try {
+        const path = editor.api.findPath(element);
+        if (path) {
+          editor.tf.setNodes(
+            {
+              name: parsed.name || currentName,
+              attributes: parsed.attributes,
+            },
+            { at: path },
+          );
+        }
+      } catch {
+        // Element might not be in the editor tree yet
+        toast.warning(t("error_updating_jsx"));
+      }
+    }
+  }, [content, element, isSelfClosing, editor, t]);
+
+  if (isSelfClosing) {
+    const { children: _children, ...restProps } = props;
+    return (
+      <BaseSnippetBlock
+        theme={theme}
+        label="CODE"
+        className={className}
+        contentClassName="border-none ps-0"
+        {...restProps}
+      >
+        <div className="min-w-0">
+          <EditableTagLine
+            text={content || `<${name} />`}
+            propName="opening"
+            theme={theme}
+            onChange={(val) => {
+              const parsed = parseJsxString(val);
+              const path = editor.api.findPath(element);
+              if (path) {
+                editor.tf.setNodes(
+                  {
+                    name: parsed.name || name,
+                    attributes: parsed.attributes,
+                    content: val,
+                  },
+                  { at: path },
+                );
+              }
+            }}
+          />
+        </div>
+      </BaseSnippetBlock>
+    );
+  }
+
+  return (
+    <BaseSnippetBlock
+      theme={theme}
+      label="BLOCK"
+      className={className}
+      {...props}
+      headerContent={
+        <EditableTagLine
+          text={content || `<${name}>`}
+          propName="opening"
+          theme={theme}
+          onChange={(val) => {
+            const parsed = parseJsxString(val);
+            const path = editor.api.findPath(element);
+            if (path) {
+              editor.tf.setNodes(
+                {
+                  name: parsed.name || name,
+                  attributes: parsed.attributes,
+                  content: val,
+                },
+                { at: path },
+              );
+            }
+          }}
+        />
+      }
+      footerContent={
+        <EditableTagLine
+          text={`</${name || "Component"}>`}
+          propName="closing"
+          theme={theme}
+          onChange={() => {}}
+        />
+      }
+    >
+      <div className="jsx-block-content w-full min-w-0">{children}</div>
+    </BaseSnippetBlock>
+  );
+};

@@ -1,0 +1,162 @@
+"use client";
+
+import { useFeatureAccess } from "@/hooks/use-feature-access";
+import { useSnippets } from "@/hooks/use-snippets";
+import { logger } from "@/lib/logger";
+import { cn } from "@/lib/utils/cn";
+import { MarkdownPlugin } from "@platejs/markdown";
+import { Plus, Trash } from "lucide-react";
+import type { TElement } from "platejs";
+import { useEditorRef } from "platejs/react";
+import { useTranslations } from "next-intl";
+import { useMemo, useState } from "react";
+import { SnippetSaveDialog } from "./snippet-save-dialog";
+
+interface SnippetControlsProps {
+  element: TElement & { code?: string };
+  onDelete?: () => void;
+  isBlock?: boolean;
+  className?: string;
+  code?: string;
+  extraControls?: React.ReactNode;
+}
+
+export function SnippetControls({
+  element,
+  onDelete,
+  isBlock = true,
+  className = "",
+  code: codeProp,
+  extraControls,
+}: SnippetControlsProps) {
+  const t = useTranslations("editor.snippets");
+  const [showSaveDialog, setShowSaveDialog] = useState(false);
+  const { snippets } = useSnippets();
+  const editor = useEditorRef();
+  const { hasAdvancedFeatures } = useFeatureAccess();
+
+  // Determine the content/code of the current element
+  const code = useMemo(() => {
+    if (codeProp !== undefined) return codeProp;
+    if (typeof element.code === "string" && element.code) return element.code;
+
+    try {
+      const api = editor.getApi(MarkdownPlugin);
+      // An inline node can't be serialized at the root.
+      const value = isBlock ? [element] : [{ type: "p", children: [element] }];
+      return api.markdown.serialize({ value }).trim();
+    } catch (e) {
+      logger.error("Failed to serialize snippet node:", e);
+      const fallback = element.value ?? element.content;
+      return typeof fallback === "string" ? fallback : "";
+    }
+  }, [codeProp, element, editor, isBlock]);
+
+  // Check if this code already exists in snippets
+  // We compare normalized strings to avoid whitespace issues if possible
+  const normalizeCode = (str: string) => {
+    return str
+      .replace(/[\u200B-\u200D\uFEFF]/g, "") // Remove zero-width spaces and other invisible chars
+      .trim()
+      .replace(/\r\n/g, "\n")
+      .replace(/[ \t]+/g, " ") // Normalize horizontal whitespace
+      .replace(/\n+/g, "\n"); // Collapse multiple newlines
+  };
+
+  const getTag = (str: string) => {
+    const trimmed = str.trim();
+    // Hugo: {{< tag ... >}} or {{% tag ... %}}
+    const hugoMatch = trimmed.match(/^\{\{[<%]\s*([a-zA-Z0-9_-]+)/);
+    if (hugoMatch) return hugoMatch[1];
+
+    // JSX/HTML: <tag ... >
+    const htmlMatch = trimmed.match(/^<([a-zA-Z0-9_-]+)/);
+    if (htmlMatch) return htmlMatch[1];
+
+    return null;
+  };
+
+  const exists = snippets.some((s) => {
+    const normalizedTarget = normalizeCode(code || "");
+    const normalizedSnippet = normalizeCode(s.code);
+
+    if (normalizedTarget === normalizedSnippet) return true;
+
+    const targetTag = getTag(normalizedTarget);
+    const snippetTag = getTag(normalizedSnippet);
+
+    if (targetTag && snippetTag && targetTag === snippetTag) return true;
+
+    return false;
+  });
+
+  const handleDelete = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (onDelete) {
+      onDelete();
+      return;
+    }
+
+    const path = editor.api.findPath(element);
+    if (path) {
+      editor.tf.removeNodes({ at: path });
+    }
+  };
+
+  const Root = isBlock ? "div" : "span";
+  const pad = isBlock ? "p-1" : "p-0.5";
+
+  return (
+    <Root
+      className={cn(
+        "flex shrink-0 items-center gap-0.5",
+        isBlock
+          ? // Sits in the block header row, so it never covers the tag text.
+            "ms-auto -me-1"
+          : "relative top-[-0.07em] mx-1 inline-flex align-middle",
+        className,
+      )}
+      contentEditable={false}
+    >
+      {extraControls}
+      {hasAdvancedFeatures && !exists && code && (
+        <>
+          <button
+            type="button"
+            aria-label={t("save_snippet_aria")}
+            onMouseDown={(e) => e.stopPropagation()}
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowSaveDialog(true);
+            }}
+            className={cn(
+              "text-muted-foreground hover:bg-primary/10 hover:text-primary rounded-sm transition-colors",
+              pad,
+            )}
+          >
+            <Plus className={isBlock ? "size-3.5" : "size-3"} />
+          </button>
+          <SnippetSaveDialog
+            open={showSaveDialog}
+            onOpenChange={setShowSaveDialog}
+            code={code}
+            onSuccess={() => setShowSaveDialog(false)}
+          />
+        </>
+      )}
+
+      <button
+        type="button"
+        aria-label={t("delete_block_aria")}
+        onMouseDown={(e) => e.stopPropagation()}
+        onClick={handleDelete}
+        className={cn(
+          "text-muted-foreground hover:bg-destructive hover:text-destructive-foreground rounded-sm transition-colors",
+          pad,
+        )}
+      >
+        <Trash className={isBlock ? "size-3.5" : "size-3"} />
+      </button>
+    </Root>
+  );
+}
