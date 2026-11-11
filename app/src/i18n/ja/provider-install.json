@@ -1,0 +1,35 @@
+{
+  "provider-install": {
+    "authenticating_aria": "認証中",
+    "request_title": "インストールリクエストを送信しました",
+    "auth_title": "{provider}で認証中",
+    "request_description": "組織の所有者にインストールリクエストが送信されました。通知が届き、リポジトリへのアクセスを承認できます。",
+    "auth_description": "{provider}との認証を完了しています。処理が完了すると、このウィンドウは自動的に閉じます。",
+    "manual_close_hint": "このウィンドウが自動で閉じない場合は、手動で閉じて構いません。",
+    "providers": {
+      "github": "GitHub",
+      "gitlab": "GitLab"
+    },
+    "github_integration": {
+      "title": "GitHubアカウントを連携",
+      "description": "{brand}がブランチを作成しコンテンツを同期するためにアクセス権が必要です。",
+      "allow_all_repos": "すべてのリポジトリへのアクセスを許可する",
+      "connect_btn": "GitHubと連携",
+      "grant_access_link": "特定のリポジトリのみにアクセスを制限する",
+      "selective_title": "個別リポジトリへのアクセス許可",
+      "selective_desc1": "個別のアクセス許可を選択した場合、リポジトリの自動作成機能はご利用いただけません。",
+      "selective_desc2": "ご安心ください！以下の手順に従って手動でセットアップできます:",
+      "step_download": "テンプレートを手動でダウンロードします。",
+      "step_fork": "リポジトリを手動でフォーク（Fork）します。",
+      "step_push": "ソースコードをご自身のGitHubリポジトリにプッシュします。",
+      "step_go_to": "{brand}に移動します。",
+      "step_new_site": "右上の「+ 新規サイト」ボタンをクリックします。",
+      "step_grant_access": "GitHubを選択し、リポジトリへのアクセス権を付与します。",
+      "step_grant_forked": "GitHubを選択し、フォークしたリポジトリのみアクセス権を付与します。",
+      "step_final": "必要な情報を入力し、「サイトを作成」をクリックします。",
+      "revoke_access": "アクセス権はGitHubの設定からいつでも取り消すことができます",
+      "watch_tutorial": "短い解説動画を見る",
+      "close": "閉じる"
+    }
+  }
+}

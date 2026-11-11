@@ -1,0 +1,182 @@
+{
+  "dashboard": {
+    "preference": {
+      "title": "Preferências",
+      "coauthor": {
+        "title": "Co-autoria no Git",
+        "description": "Escolha qual identidade usar para ações no repositório.",
+        "as_you": "Agindo como Você",
+        "as_you_desc": "Os commits são feitos pelo bot e creditam você na mensagem: como coautor se você entrou com sua conta Git, caso contrário pelo seu nome. Seu e-mail do {brand} nunca é publicado.",
+        "as_you_fallback": "Automaticamente retorna para o bot se as permissões pessoais forem insuficientes para garantir que as tarefas sejam concluídas.",
+        "as_bot": "Agindo como o Bot",
+        "as_bot_desc": "Todas as ações no repositório serão atribuídas ao bot do sistema. Isso garante uma trilha de auditoria consistente e é a configuração recomendada para fluxos de trabalho automatizados.",
+        "updated": "Preferência de co-autor atualizada",
+        "error": "Falha ao atualizar preferência de representação"
+      },
+      "language": {
+        "title": "Idioma",
+        "description": "Escolha seu idioma preferido para a interface. As alterações são aplicadas imediatamente.",
+        "label": "Idioma da interface"
+      },
+      "theme": {
+        "title": "Tema",
+        "description": "Escolha seu tema de cor preferido.",
+        "updated_success": "Tema atualizado com sucesso",
+        "updated_failed": "Falha ao atualizar tema"
+      }
+    },
+    "account": {
+      "title": "Conta",
+      "profile": {
+        "title": "Atualizar Nome de Exibição",
+        "description": "Este é o nome que será exibido em seu perfil.",
+        "full_name": "Nome Completo",
+        "submit": "Atualizar Conta",
+        "success": "Detalhes do usuário atualizados com sucesso",
+        "error": "Falha ao atualizar, Por favor tente novamente",
+        "demo_error": "Esta ação está desabilitada no modo demo."
+      },
+      "password": {
+        "title": "Alterar Senha",
+        "description": "Atualize sua senha regularmente para manter sua conta segura e protegida contra acesso não autorizado.",
+        "current_password": "Senha Atual",
+        "new_password": "Nova Senha",
+        "submit": "Atualizar Senha",
+        "success": "Senha atualizada com sucesso",
+        "error": "Falha ao atualizar, Por favor tente novamente"
+      },
+      "set_password": {
+        "title": "Definir Senha",
+        "description": "Você fez login com um provedor social. Crie uma senha para habilitar opções de segurança adicionais e métodos de login alternativos.",
+        "new_password": "Nova Senha",
+        "submit": "Adicionar Senha",
+        "success": "Senha adicionada com sucesso",
+        "error": "Algo deu errado! Tente novamente mais tarde"
+      },
+      "avatar": {
+        "title": "Atualizar Foto de Perfil",
+        "description": "Torne seu espaço de trabalho profissional adicionando uma foto.",
+        "success": "Detalhes do usuário atualizados com sucesso",
+        "error": "Falha ao atualizar, Por favor tente novamente"
+      },
+      "newsletter": {
+        "title": "Assinatura de Newsletter",
+        "description": "Enviaremos e-mails ocasionais sobre novos recursos, atualizações e ofertas. Você pode cancelar a inscrição a qualquer momento.",
+        "label": "Receber newsletter e atualizações de produtos",
+        "submit": "Salvar Preferências",
+        "success_sub": "Inscrito com sucesso na Newsletter",
+        "success_unsub": "Desinscrito com sucesso da Newsletter",
+        "error": "Falha ao atualizar, Por favor tente novamente"
+      },
+      "delete": {
+        "title": "Deletar Conta",
+        "description": "Aviso: Esta ação não pode ser desfeita. Isso irá deletar permanentemente sua conta e remover todos os seus dados de nossos servidores.",
+        "confirm_label": "Digite <strong>DELETAR</strong> para confirmar",
+        "confirm_placeholder": "Digite DELETAR aqui",
+        "button": "Deletar Conta",
+        "reason_title": "Qual é a razão principal para deletar sua conta?",
+        "other_reason_label": "Outra razão (máx 200 caracteres)",
+        "other_reason_placeholder": "Diga-nos mais (máx 200 caracteres)",
+        "reasons": {
+          "complex": "Muito complexo ou difícil de usar",
+          "not_work": "Não funcionou para meu site",
+          "poor_design": "Design ou experiência do usuário ruim",
+          "bugs": "Muitos bugs",
+          "missing_features": "Recursos ausentes que preciso",
+          "better_alternative": "Encontrei uma alternativa melhor",
+          "other": "Outro"
+        },
+        "feedback": {
+          "demo_disabled": "Deletar conta está desabilitado no modo demo.",
+          "success": "Conta deletada com sucesso",
+          "error": "Por favor, tente novamente mais tarde."
+        }
+      }
+    },
+    "ai_agent": {
+      "title": "Agente de IA",
+      "description": "Configure seu provedor de IA para ativar sugestões de conteúdo inteligentes e recursos de preenchimento automático.",
+      "provider_label": "Provedor",
+      "provider_placeholder": "Selecionar Provedor",
+      "model_label": "Modelo",
+      "model_placeholder": "Selecionar Modelo",
+      "api_key_label": "Chave de API",
+      "api_key_placeholder": "Digite sua chave de API",
+      "show": "Mostrar",
+      "hide": "Ocultar",
+      "copilot_title": "Sugestão de preenchimento automático",
+      "copilot_description": "Sugere um preenchimento automático para a linha atual enquanto você digita no editor.",
+      "delete_key": "Deletar Chave",
+      "delete_key_success": "Chave de API excluída com sucesso",
+      "save_changes": "Salvar Alterações",
+      "test_key": "Testar chave",
+      "test_success": "Conexão bem-sucedida. Sua chave de API e o modelo estão funcionando.",
+      "test_error": "Não foi possível conectar ao provedor de IA.",
+      "save_success": "Configurações salvas com sucesso",
+      "save_error": "Algo deu errado!",
+      "security_title": "Aviso de Segurança Importante",
+      "security1": "Nós **não armazenamos sua chave de API** em nosso banco de dados para garantir sua privacidade e conformidade com políticas de segurança.",
+      "security2": "Sua chave é armazenada localmente apenas no seu navegador. Se você trocar de navegador ou limpar seus dados, a chave será perdida.",
+      "security3": "Por favor, mantenha sua chave de API segura e acessível a você, pois não conseguimos recuperá-la para você.",
+      "custom_model": "Inserir manualmente",
+      "custom_model_input_label": "ID do Modelo",
+      "custom_model_input_placeholder": "Insira o ID do modelo personalizado",
+      "find_model_id": "Encontre o ID do seu modelo",
+      "editor_ai_title": "Assistente de IA do editor",
+      "editor_ai_description": "Habilita comandos de escrita de IA, ações na barra de ferramentas e assistência de código.",
+      "copilot_enabled": "Sugestão de preenchimento automático ativada",
+      "copilot_disabled": "Sugestão de preenchimento automático desativada",
+      "editor_ai_enabled": "Assistente de IA do editor ativado",
+      "editor_ai_disabled": "Assistente de IA do editor desativado",
+      "code_ai_title": "Assistente de IA do editor de código",
+      "code_ai_description": "Habilita o copiloto de IA, correção de bugs e explicações de código no editor de código.",
+      "commit_ai_title": "Gerador de commits do Git",
+      "commit_ai_description": "Gera mensagens e descrições convencionais de commit na caixa de diálogo de confirmação.",
+      "seo_ai_title": "Assistente de SEO e metadados",
+      "seo_ai_description": "Habilita o preenchimento automático de frontmatter com 1 clique e recomendações do SEO Doctor.",
+      "code_ai_enabled": "Assistente de IA do editor de código ativado",
+      "code_ai_disabled": "Assistente de IA do editor de código desativado",
+      "commit_ai_enabled": "Gerador de commits do Git ativado",
+      "commit_ai_disabled": "Gerador de commits do Git desativado",
+      "seo_ai_enabled": "Assistente de SEO e metadados ativado",
+      "seo_ai_disabled": "Assistente de SEO e metadados desativado",
+      "search_ai_title": "Search AI Copilot",
+      "search_ai_description": "Enables AI Copilot directly in the global search palette to ask questions and navigate content.",
+      "search_ai_enabled": "Copiloto de IA de pesquisa ativado",
+      "search_ai_disabled": "Copiloto de IA de pesquisa desativado"
+    },
+    "sidebar": {
+      "back": "Voltar"
+    },
+    "site_url_unavailable": "URL do site indisponível",
+    "og_image_unavailable": "Imagem OG indisponível",
+    "website": "Site",
+    "edit_website": "Editar Site",
+    "build_status": "Status de Compilação",
+    "last_updated": "Última Atualização",
+    "source": "Fonte",
+    "recently": "recentemente",
+    "last_updated_by": "há {distance} por {author}",
+    "switcher": {
+      "default_site": "Selecionar Site",
+      "search": "Buscar...",
+      "not_found": "Nenhum projeto encontrado.",
+      "add_new": "Adicionar Novo Site"
+    },
+    "archived_project": {
+      "title": "Projeto arquivado",
+      "description": "Este projeto foi arquivado e a maior parte da funcionalidade está desabilitada. Você ainda pode acessar as configurações do projeto para restaurá-lo ou alterar seu status.",
+      "open_settings": "Abrir Configurações"
+    },
+    "repo_access": {
+      "title": "O {brand} não consegue acessar <repo>{repository}</repo>",
+      "github_description": "Dê acesso ao GitHub App {app} ou verifique se ele não foi renomeado ou excluído.",
+      "gitlab_description": "Sua conta do GitLab precisa de acesso Developer ou superior, ou o projeto foi renomeado ou excluído.",
+      "manage_access": "Conceder acesso",
+      "retry": "Verificar novamente"
+    },
+    "project_overview": {
+      "preview_alt": "Visualização ao vivo de {name}"
+    }
+  }
+}

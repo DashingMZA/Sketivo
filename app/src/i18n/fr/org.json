@@ -1,0 +1,180 @@
+{
+  "org": {
+    "create": {
+      "add_org_btn": "Ajouter une organisation",
+      "dialog_title": "Créer une organisation",
+      "dialog_desc": "Ajoutez une nouvelle organisation à votre compte.",
+      "demo_error": "Impossible de créer une organisation en mode démo.",
+      "success": "Organisation créée avec succès. Vous pouvez maintenant ajouter des membres.",
+      "name_label": "Nom de l'organisation",
+      "submit_btn": "Créer l'organisation"
+    },
+    "switcher": {
+      "default_org": "Organisation",
+      "search": "Rechercher...",
+      "not_found": "Aucune organisation trouvée.",
+      "add_new": "Ajouter une organisation"
+    },
+    "general": {
+      "form": {
+        "title": "Nom de l'organisation",
+        "description": "Mettez à jour le nom de votre organisation",
+        "update_btn": "Mettre à jour l'organisation",
+        "demo_error": "Impossible de modifier l'organisation en mode démo.",
+        "success": "Organisation mise à jour avec succès."
+      },
+      "archive": {
+        "title_archive": "Archiver l'organisation",
+        "title_restore": "Restaurer l'organisation",
+        "desc_archive": "Archiver cette organisation — elle sera masquée des listes actives mais pourra être restaurée plus tard.",
+        "desc_restore": "Cette organisation est archivée. Vous pouvez la restaurer pour la réactiver.",
+        "archive_btn": "Archiver l'organisation",
+        "restore_btn": "Restaurer l'organisation",
+        "dialog_title_archive": "Archiver l'organisation",
+        "dialog_title_restore": "Restaurer l'organisation",
+        "dialog_desc_archive": "L'archivage masquera l'organisation des listes actives. Vous pourrez la restaurer à tout moment.",
+        "dialog_desc_restore": "Restaurez cette organisation pour la réactiver. Tous les contenus et paramètres sont préservés.",
+        "success_archive": "Organisation archivée avec succès.",
+        "success_restore": "Organisation réactivée avec succès.",
+        "error": "Échec de la mise à jour. Veuillez réessayer plus tard."
+      },
+      "delete": {
+        "title": "Supprimer l'organisation",
+        "description": "La suppression de votre organisation effacera définitivement tous les projets, membres et paramètres. Cette action est irréversible.",
+        "delete_org_btn": "Supprimer l'organisation",
+        "dialog_title": "Êtes-vous sûr ?",
+        "dialog_desc": "La suppression effacera définitivement tous les projets, membres et paramètres de l'organisation.",
+        "placeholder": "Saisissez CONFIRM pour confirmer",
+        "demo_error": "Vous ne pouvez pas supprimer l'organisation de démonstration.",
+        "success": "Organisation supprimée avec succès",
+        "error": "Une erreur est survenue"
+      },
+      "avatar": {
+        "title": "Miniature de l'organisation",
+        "description": "Personnalisez votre organisation en ajoutant une image de profil.",
+        "demo_error": "Impossible de modifier l'organisation en mode démo.",
+        "success": "Miniature de l'organisation mise à jour avec succès."
+      },
+      "leave": {
+        "title": "Leave Organization",
+        "description": "Revoke your access to this organization. You will need an invite from an owner or admin to rejoin.",
+        "leave_org_btn": "Leave Organization",
+        "dialog_title": "Leave Organization?",
+        "dialog_desc": "Are you sure you want to leave this organization? You will immediately lose access to all its projects, media, and settings.",
+        "placeholder": "type CONFIRM to confirm",
+        "demo_error": "You cannot leave organizations in demo mode.",
+        "success": "You have left the organization.",
+        "error": "Failed to leave the organization."
+      }
+    },
+    "members": {
+      "title": "Membres de l'équipe",
+      "description": "Gérez les membres de votre équipe et leurs autorisations",
+      "anonymous": "Anonyme",
+      "roles": {
+        "owner": "Propriétaire",
+        "admin": "Admin",
+        "editor": "Éditeur"
+      },
+      "add_member": {
+        "add_member_btn": "Ajouter un membre",
+        "dialog_title": "Ajouter un membre à l'équipe",
+        "dialog_desc": "Invitez un nouveau membre dans votre organisation.",
+        "email_label": "Adresse e-mail",
+        "email_placeholder": "Saisissez l'adresse e-mail",
+        "role_label": "Rôle",
+        "role_placeholder": "Sélectionnez un rôle",
+        "roles_group": "Rôles",
+        "demo_error": "Cette fonctionnalité n'est pas disponible en mode démo.",
+        "error": "Impossible d'ajouter le membre à l'organisation."
+      },
+      "actions": {
+        "delete_user": "Supprimer l'utilisateur",
+        "remove_member": "Retirer le membre",
+        "make": "Définir comme",
+        "are_you_sure": "Êtes-vous sûr ?",
+        "delete_warning": "Cette action est irréversible et supprimera définitivement cet élément.",
+        "placeholder": "Saisissez CONFIRM pour confirmer",
+        "demo_error_delete": "Impossible de supprimer des utilisateurs en mode démo.",
+        "demo_error_update": "Cette fonctionnalité n'est pas disponible en mode démo.",
+        "success_delete": "Utilisateur supprimé avec succès.",
+        "error_delete_suffix": "Vous n'êtes pas autorisé à supprimer cet utilisateur.",
+        "error_update_fn": "Fonction de mise à jour indisponible",
+        "success_update": "Rôle du membre mis à jour avec succès.",
+        "error_generic": "Une erreur est survenue",
+        "leave_org": "Leave Organization",
+        "leave_warning": "Are you sure you want to leave this organization? You will immediately lose access to all projects and settings in this organization.",
+        "demo_error_leave": "You cannot leave organizations in demo mode.",
+        "success_leave": "You have left the organization."
+      }
+    },
+    "sandbox": {
+      "title": "Bac à sable Vercel (Sandbox)",
+      "description": "Connectez un jeton d'accès Vercel pour activer les aperçus en direct pour vos projets.",
+      "connected": "Connecté",
+      "account": "Compte",
+      "project": "Projet (facturation)",
+      "project_label": "Projet",
+      "disconnect_btn": "Déconnecter",
+      "disconnecting": "Déconnexion en cours...",
+      "token_label": "Jeton d'accès Vercel",
+      "token_placeholder": "Collez votre jeton d'accès Vercel",
+      "create_token_link": "Créer un jeton d'accès Vercel",
+      "step1": "Créez un jeton d'accès Vercel avec une portée complète sur le compte.",
+      "step2": "Collez-le ci-dessous et cliquez sur Connecter.",
+      "step3": "Un projet de bac à sable dédié sera automatiquement créé sur votre compte Vercel.",
+      "connect_btn": "Connecter",
+      "connecting": "Connexion en cours...",
+      "save_token_btn": "Enregistrer le jeton",
+      "update_token_btn": "Mettre à jour le jeton",
+      "cancel_btn": "Annuler",
+      "status_validating": "Validation du jeton",
+      "status_creating_project": "Création du projet bac à sable",
+      "status_saving": "Enregistrement des paramètres",
+      "disconnect_confirm_title": "Déconnecter le bac à sable Vercel ?",
+      "disconnect_confirm_desc": "Les aperçus de bac à sable cesseront de fonctionner pour tous les projets de cette organisation.",
+      "disconnect_confirm_btn": "Déconnecter",
+      "disconnect_cancel_btn": "Annuler",
+      "toast_token_required": "Saisissez votre jeton d'accès Vercel",
+      "toast_connect_success": "Bac à sable connecté",
+      "toast_connect_success_desc": "Les aperçus s'exécuteront désormais sur le compte Vercel de {username}.",
+      "toast_connect_error": "Échec de la connexion au bac à sable",
+      "toast_disconnect_success": "Bac à sable déconnecté",
+      "toast_disconnect_error": "Échec de la déconnexion",
+      "no_permission": "Seuls les propriétaires et administrateurs peuvent gérer les paramètres du bac à sable.",
+      "select_team_title": "Sélectionner le compte Vercel",
+      "personal_account": "Compte personnel",
+      "team_label": "Équipe",
+      "change_token": "Modifier le jeton",
+      "security_title": "Sécurité et confidentialité",
+      "security0": "Le bac à sable exécute le **script `dev`** de votre projet (ex. `npm run dev`).",
+      "security1": "Votre jeton est **chiffré avec AES-256-GCM** avant d'être stocké.",
+      "security2": "**Compatible avec tous les comptes Vercel** — personnel ou d'équipe, gratuit ou payant.",
+      "security3": "Le jeton sert **uniquement** à créer et gérer les déploiements de prévisualisation.",
+      "security4": "Vous pouvez **déconnecter le service à tout moment** pour supprimer immédiatement le jeton de nos serveurs.",
+      "security5": "Chaque organisation dispose d'un **projet bac à sable dédié et isolé** sur Vercel."
+    }
+  },
+  "org-sites": {
+    "no_sites_found": "Aucun site trouvé",
+    "try_adjusting": "Essayez d'ajuster vos critères de recherche",
+    "archived": "Archivé",
+    "private": "Privé",
+    "add_site_url": "Ajouter l’URL du site",
+    "edited": "Modifié {time}",
+    "edited_by": "par {name}",
+    "added": "Ajouté {time}",
+    "open_editor": "Ouvrir l’éditeur",
+    "visit_site": "Visiter le site",
+    "view_repository": "Voir sur {provider}",
+    "settings": "Paramètres",
+    "site_actions": "Actions du site"
+  },
+  "org-archived": {
+    "title": "Organisation archivée",
+    "desc_full": "Cette organisation a été archivée. Tous les contenus sont en lecture seule et la plupart des fonctionnalités de gestion sont désactivées.",
+    "desc_banner": "Cette organisation est actuellement archivée.",
+    "org_settings": "Paramètres de l'organisation",
+    "view_settings": "Voir les paramètres"
+  }
+}

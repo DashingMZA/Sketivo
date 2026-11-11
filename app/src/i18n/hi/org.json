@@ -1,0 +1,180 @@
+{
+  "org": {
+    "create": {
+      "add_org_btn": "नया संगठन जोड़ें",
+      "dialog_title": "नया संगठन बनाएं",
+      "dialog_desc": "अपने खाते में एक नया संगठन जोड़ें।",
+      "demo_error": "आप डेमो मोड में नया संगठन नहीं बना सकते।",
+      "success": "संगठन सफलतापूर्वक बनाया गया। अब आप सदस्य जोड़ सकते हैं।",
+      "name_label": "संगठन का नाम",
+      "submit_btn": "संगठन बनाएं"
+    },
+    "switcher": {
+      "default_org": "संगठन",
+      "search": "खोजें...",
+      "not_found": "कोई संगठन नहीं मिला।",
+      "add_new": "नया संगठन जोड़ें"
+    },
+    "general": {
+      "form": {
+        "title": "संगठन का नाम",
+        "description": "अपना संगठन नाम अपडेट करें",
+        "update_btn": "संगठन अपडेट करें",
+        "demo_error": "आप डेमो मोड में संगठन को अपडेट नहीं कर सकते।",
+        "success": "संगठन सफलतापूर्वक अपडेट किया गया।"
+      },
+      "archive": {
+        "title_archive": "संगठन को संग्रहित करें",
+        "title_restore": "संगठन को पुनर्स्थापित करें",
+        "desc_archive": "इस संगठन को संग्रहित करें — इसे सक्रिय सूचियों से हटा दिया जाएगा लेकिन बाद में पुनर्स्थापित किया जा सकता है।",
+        "desc_restore": "यह संगठन संग्रहित है। इसे पुनः सक्रिय करने के लिए पुनर्स्थापित कर सकते हैं।",
+        "archive_btn": "संगठन को संग्रहित करें",
+        "restore_btn": "संगठन को पुनर्स्थापित करें",
+        "dialog_title_archive": "संगठन को संग्रहित करें",
+        "dialog_title_restore": "संगठन को पुनर्स्थापित करें",
+        "dialog_desc_archive": "संग्रहित करने से संगठन सक्रिय सूची से छिप जाएगा।",
+        "dialog_desc_restore": "इस संगठन को पुनर्स्थापित करें और इसे फिर से सक्रिय बनाएं।",
+        "success_archive": "संगठन सफलतापूर्वक संग्रहित किया गया।",
+        "success_restore": "संगठन को सक्रिय स्थिति में पुनर्स्थापित किया गया।",
+        "error": "संगठन को अपडेट करने में विफल। कृपया बाद में पुन: प्रयास करें।"
+      },
+      "delete": {
+        "title": "संगठन हटाएं",
+        "description": "संगठन हटाने से सभी प्रोजेक्ट, सदस्य और सेटिंग्स हमेशा के लिए हट जाएंगे।",
+        "delete_org_btn": "संगठन हटाएं",
+        "dialog_title": "क्या आप सुनिश्चित हैं?",
+        "dialog_desc": "संगठन हटाने से सभी प्रोजेक्ट, सदस्य और सेटिंग्स हमेशा के लिए हट जाएंगे। यह क्रिया पूर्ववत नहीं की जा सकती।",
+        "placeholder": "पुष्टि के लिए CONFIRM टाइप करें",
+        "demo_error": "आप डेमो संगठन को नहीं हटा सकते।",
+        "success": "संगठन सफलतापूर्वक हटा दिया गया",
+        "error": "कुछ गड़बड़ हुई"
+      },
+      "avatar": {
+        "title": "संगठन का थंबनेल / लोगो",
+        "description": "फ़ोटो जोड़कर अपने संगठन को विशिष्ट बनाएं।",
+        "demo_error": "आप डेमो मोड में संगठन को अपडेट नहीं कर सकते।",
+        "success": "संगठन थंबनेल सफलतापूर्वक अपडेट किया गया।"
+      },
+      "leave": {
+        "title": "Leave Organization",
+        "description": "Revoke your access to this organization. You will need an invite from an owner or admin to rejoin.",
+        "leave_org_btn": "Leave Organization",
+        "dialog_title": "Leave Organization?",
+        "dialog_desc": "Are you sure you want to leave this organization? You will immediately lose access to all its projects, media, and settings.",
+        "placeholder": "type CONFIRM to confirm",
+        "demo_error": "You cannot leave organizations in demo mode.",
+        "success": "You have left the organization.",
+        "error": "Failed to leave the organization."
+      }
+    },
+    "members": {
+      "title": "टीम के सदस्य",
+      "description": "अपनी टीम के सदस्यों और अनुमतियों को प्रबंधित करें",
+      "anonymous": "गुमनाम",
+      "roles": {
+        "owner": "स्वामी (Owner)",
+        "admin": "व्यवस्थापक (Admin)",
+        "editor": "संपादक (Editor)"
+      },
+      "add_member": {
+        "add_member_btn": "सदस्य जोड़ें",
+        "dialog_title": "टीम सदस्य जोड़ें",
+        "dialog_desc": "अपने संगठन में एक नया सदस्य जोड़ें।",
+        "email_label": "ईमेल",
+        "email_placeholder": "ईमेल दर्ज करें",
+        "role_label": "भूमिका (Role)",
+        "role_placeholder": "भूमिका चुनें",
+        "roles_group": "भूमिकाएं",
+        "demo_error": "यह सुविधा डेमो मोड में उपलब्ध नहीं है।",
+        "error": "सदस्य को संगठन में नहीं जोड़ा जा सका।"
+      },
+      "actions": {
+        "delete_user": "उपयोगकर्ता हटाएं",
+        "remove_member": "सदस्य हटाएं",
+        "make": "बनाएं",
+        "are_you_sure": "क्या आप सुनिश्चित हैं?",
+        "delete_warning": "इस क्रिया को वापस नहीं लिया जा सकता।",
+        "placeholder": "पुष्टि के लिए CONFIRM टाइप करें",
+        "demo_error_delete": "आप डेमो मोड में उपयोगकर्ताओं को नहीं हटा सकते।",
+        "demo_error_update": "यह सुविधा डेमो मोड में उपलब्ध नहीं है।",
+        "success_delete": "उपयोगकर्ता को सफलतापूर्वक हटा दिया गया है।",
+        "error_delete_suffix": "आप इस उपयोगकर्ता को हटाने के लिए अधिकृत नहीं हैं।",
+        "error_update_fn": "अपडेट फ़ंक्शन अनुपलब्ध है",
+        "success_update": "सदस्य की भूमिका सफलतापूर्वक अपडेट की गई है।",
+        "error_generic": "कुछ गड़बड़ हुई",
+        "leave_org": "Leave Organization",
+        "leave_warning": "Are you sure you want to leave this organization? You will immediately lose access to all projects and settings in this organization.",
+        "demo_error_leave": "You cannot leave organizations in demo mode.",
+        "success_leave": "You have left the organization."
+      }
+    },
+    "sandbox": {
+      "title": "Vercel सैंडबॉक्स",
+      "description": "लाइव पूर्वावलोकन सक्षम करने के लिए एक Vercel एक्सेस टोकन कनेक्ट करें।",
+      "connected": "कनेक्टेड",
+      "account": "खाता",
+      "project": "प्रोजेक्ट (बिलिंग)",
+      "project_label": "प्रोजेक्ट",
+      "disconnect_btn": "डिस्कनेक्ट करें",
+      "disconnecting": "डिस्कनेक्ट हो रहा है...",
+      "token_label": "Vercel एक्सेस टोकन",
+      "token_placeholder": "अपना Vercel एक्सेस टोकन पेस्ट करें",
+      "create_token_link": "Vercel एक्सेस टोकन बनाएं",
+      "step1": "पूर्ण खाता अनुमति के साथ Vercel एक्सेस टोकन बनाएं।",
+      "step2": "इसे नीचे पेस्ट करें और कनेक्ट पर क्लिक करें।",
+      "step3": "आपके Vercel खाते पर एक समर्पित सैंडबॉक्स प्रोजेक्ट स्वचालित रूप से बन जाएगा।",
+      "connect_btn": "कनेक्ट करें",
+      "connecting": "कनेक्ट हो रहा है...",
+      "save_token_btn": "टोकन सहेजें",
+      "update_token_btn": "टोकन अपडेट करें",
+      "cancel_btn": "रद्द करें",
+      "status_validating": "टोकन मान्य किया जा रहा है",
+      "status_creating_project": "सैंडबॉक्स प्रोजेक्ट बनाया जा रहा है",
+      "status_saving": "सेटिंग्स सहेजी जा रही हैं",
+      "disconnect_confirm_title": "Vercel सैंडबॉक्स डिस्कनेक्ट करें?",
+      "disconnect_confirm_desc": "इस संगठन के सभी प्रोजेक्ट्स के लिए सैंडबॉक्स पूर्वावलोकन बंद हो जाएगा।",
+      "disconnect_confirm_btn": "डिस्कनेक्ट करें",
+      "disconnect_cancel_btn": "रद्द करें",
+      "toast_token_required": "अपना Vercel एक्सेस टोकन दर्ज करें",
+      "toast_connect_success": "सैंडबॉक्स कनेक्ट हो गया",
+      "toast_connect_success_desc": "सैंडबॉक्स पूर्वावलोकन अब {username} के Vercel खाते पर चलेगा।",
+      "toast_connect_error": "सैंडबॉक्स कनेक्ट करने में विफल",
+      "toast_disconnect_success": "सैंडबॉक्स डिस्कनेक्ट हो गया",
+      "toast_disconnect_error": "डिस्कनेक्ट करने में विफल",
+      "no_permission": "केवल संगठन के स्वामी और व्यवस्थापक सैंडबॉक्स सेटिंग्स प्रबंधित कर सकते हैं।",
+      "select_team_title": "Vercel खाता चुनें",
+      "personal_account": "व्यक्तिगत खाता",
+      "team_label": "टीम",
+      "change_token": "टोकन बदलें",
+      "security_title": "सुरक्षा और गोपनीयता",
+      "security0": "सैंडबॉक्स आपके प्रोजेक्ट की **`dev` स्क्रिप्ट** चलाता है (जैसे `npm run dev`)।",
+      "security1": "आपका एक्सेस टोकन सहेजने से पहले **AES-256-GCM से एन्क्रिप्ट** किया जाता है।",
+      "security2": "**कोई भी Vercel खाता समर्थित है** — व्यक्तिगत या टीम, मुफ़्त या सशुल्क।",
+      "security3": "टोकन का उपयोग केवल सैंडबॉक्स प्रोजेक्ट बनाने और पूर्वावलोकन प्रबंधित करने के लिए किया जाता है।",
+      "security4": "टोकन को हमारे सर्वर से तुरंत हटाने के लिए **किसी भी समय डिस्कनेक्ट** करें।",
+      "security5": "प्रत्येक संगठन को Vercel पर अपना **समर्पित सैंडबॉक्स प्रोजेक्ट** मिलता है।"
+    }
+  },
+  "org-sites": {
+    "no_sites_found": "कोई साइट नहीं मिली",
+    "try_adjusting": "अपने खोज शब्दों को बदलने का प्रयास करें",
+    "archived": "संग्रहीत",
+    "private": "निजी",
+    "add_site_url": "साइट URL जोड़ें",
+    "edited": "संपादित {time}",
+    "edited_by": "{name} द्वारा",
+    "added": "जोड़ा गया {time}",
+    "open_editor": "एडिटर खोलें",
+    "visit_site": "साइट देखें",
+    "view_repository": "{provider} पर देखें",
+    "settings": "सेटिंग्स",
+    "site_actions": "साइट क्रियाएँ"
+  },
+  "org-archived": {
+    "title": "संगठन संग्रहीत है",
+    "desc_full": "यह संगठन संग्रहीत कर दिया गया है। सभी सामग्री केवल पढ़ने के लिए है और प्रबंधन कार्य अक्षम हैं।",
+    "desc_banner": "यह संगठन वर्तमान में संग्रहीत है।",
+    "org_settings": "संगठन सेटिंग्स",
+    "view_settings": "सेटिंग्स देखें"
+  }
+}

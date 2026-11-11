@@ -1,0 +1,136 @@
+{
+  "schema": {
+    "types": {
+      "string": "Testo (String)",
+      "number": "Numero (Number)",
+      "boolean": "Booleano (Boolean)",
+      "media": "Media",
+      "gallery": "Galleria (Gallery)",
+      "array": "Array",
+      "date": "Data (Date)",
+      "object": "Oggetto (Object)"
+    },
+    "fields": {
+      "label": "Etichetta (Label)",
+      "name": "Nome campo",
+      "type": "Tipo di campo",
+      "placeholder": {
+        "type": "Scegli tipo",
+        "label": "es. Titolo",
+        "name": "generato_automaticamente"
+      },
+      "description": "Descrizione",
+      "default_value": "Valore predefinito",
+      "boolean": {
+        "true": "Vero (True)",
+        "false": "Falso (False)"
+      },
+      "input_style": {
+        "label": "Stile di input",
+        "placeholder": "Scegli stile di input",
+        "options": {
+          "standard_text": "Casella di testo standard",
+          "standard_table": "Tabella standard",
+          "dropdown": "Menu a discesa",
+          "multi_dropdown": "Menu a discesa a selezione multipla"
+        }
+      }
+    },
+    "configuration": {
+      "title": "Configurazione campo",
+      "dropdown": {
+        "title": "Configurazione menu a discesa",
+        "multi_title": "Configurazione selezione multipla",
+        "source": "Origine dati",
+        "source_placeholder": "Scegli origine",
+        "sources": {
+          "static": "Opzioni statiche",
+          "folder": "File da cartella",
+          "file": "Dati da file"
+        },
+        "static": {
+          "placeholder": "Inserisci il valore dell'opzione"
+        },
+        "folder": {
+          "path": "Percorso cartella",
+          "path_placeholder": "Seleziona una cartella",
+          "display_field": "Campo di visualizzazione (chiave Frontmatter)",
+          "field_placeholder": "es. title (predefinito nome file)",
+          "loading_fields": "Caricamento campi...",
+          "default_field": "nome file (predefinito)",
+          "include_pattern": "Modello di inclusione (Glob)",
+          "include_placeholder": "es. *.md",
+          "exclude_pattern": "Modello di esclusione (Glob)",
+          "exclude_placeholder": "es. index.md"
+        },
+        "file": {
+          "path": "Percorso file (JSON/YAML/TOML)",
+          "path_placeholder": "Seleziona un file",
+          "data_key": "Chiave dati (campo da estrarre)",
+          "key_placeholder": "es. categories o name",
+          "default_key": "Estrai l'intero file/array"
+        }
+      }
+    },
+    "array": {
+      "label": "Array di tipo",
+      "placeholder": "Scegli sottotipo"
+    },
+    "nested": {
+      "title": "Campi nidificati",
+      "add_button": "Aggiungi campo nidificato"
+    },
+    "date": {
+      "default_value": "Valore predefinito",
+      "mode_placeholder": "Scegli modalità",
+      "static": "Data fissa",
+      "dynamic": "Data corrente (dinamica)",
+      "empty": "Vuoto",
+      "select_initial": "Seleziona data iniziale",
+      "today": "Oggi"
+    },
+    "actions": {
+      "add_option": "Aggiungi opzione",
+      "add_field": "Aggiungi campo",
+      "update_field": "Aggiorna campo",
+      "enter_option": "Inserisci opzione",
+      "include": "Includi",
+      "ignore": "Ignora"
+    },
+    "builder": {
+      "add_new_field": "Aggiungi nuovo campo",
+      "configure_properties": "Configura le proprietà del campo",
+      "field_settings": "Impostazioni campo",
+      "required": "Obbligatorio",
+      "show": "Mostra",
+      "hide": "Nascondi",
+      "no_field_selected": "Nessun campo selezionato",
+      "select_to_edit": "Seleziona un campo dall'elenco per modificarne le impostazioni",
+      "no_fields": "Nessun campo presente",
+      "add_first_field": "Aggiungi il tuo primo campo qui sotto",
+      "back_to_fields": "Torna ai campi",
+      "field_count": "{count, plural, =0 {0 campi} one {1 campo} other {# campi}}",
+      "configure_field": "Configura le proprietà del nuovo campo",
+      "select_field_desc": "Seleziona un campo dall'elenco per modificarne le impostazioni",
+      "no_fields_yet": "Nessun campo presente",
+      "type_string": "Testo",
+      "type_number": "Numero",
+      "type_boolean": "Booleano",
+      "type_media": "Media",
+      "type_gallery": "Galleria",
+      "type_array": "Array",
+      "type_date": "Data",
+      "type_object": "Oggetto",
+      "opt_static": "Opzioni statiche",
+      "opt_folder": "File da cartella",
+      "opt_file": "Dati da file",
+      "placeholder_subtype": "Scegli sottotipo",
+      "placeholder_default": "Seleziona valore predefinito",
+      "placeholder_style": "Scegli stile di input"
+    },
+    "errors": {
+      "name_required": "Il nome del campo è obbligatorio",
+      "name_exists": "Il nome del campo esiste già"
+    }
+  }
+}

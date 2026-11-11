@@ -1,0 +1,28 @@
+{
+  "add-site": {
+    "add_new_site": "Aggiungi nuovo sito",
+    "create_new_site": "Crea nuovo sito",
+    "import_site_desc": "Scegli come importare il tuo sito.",
+    "add_to_org_desc": "Aggiungi un nuovo sito alla tua organizzazione.",
+    "connected": "Connesso",
+    "not_connected": "Non connesso",
+    "site_name_label": "Nome del sito",
+    "site_name_placeholder": "Nome del sito",
+    "git_provider_label": "Provider Git",
+    "choose_provider_placeholder": "Scegli il tuo provider",
+    "repository_label": "Repository",
+    "select_repository_placeholder": "Seleziona un repository",
+    "branch_label": "Branch",
+    "please_wait": "Attendere prego",
+    "choose_branch_placeholder": "Scegli il branch",
+    "no_repository_found": "Nessun repository trovato",
+    "cant_see_repo": "Non trovi il tuo repository qui?",
+    "configure_on": "Configura su {provider}",
+    "site_url_label": "URL del sito (facoltativo)",
+    "site_url_placeholder": "https://example.com",
+    "back": "Indietro",
+    "create_site": "Crea sito",
+    "project_created_success": "Progetto creato con successo",
+    "something_went_wrong": "Si è verificato un errore!"
+  }
+}

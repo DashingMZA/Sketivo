@@ -1,0 +1,182 @@
+{
+  "dashboard": {
+    "preference": {
+      "title": "Preferensi",
+      "coauthor": {
+        "title": "Penulisan Bersama Git",
+        "description": "Pilih identitas mana yang akan digunakan untuk tindakan repositori.",
+        "as_you": "Bertindak sebagai Anda",
+        "as_you_desc": "Commit dibuat oleh bot dan mencantumkan Anda di pesannya: sebagai rekan penulis jika Anda masuk dengan akun Git, jika tidak dengan nama Anda. Email {brand} Anda tidak pernah dipublikasikan.",
+        "as_you_fallback": "Secara otomatis kembali ke bot jika izin pribadi tidak cukup untuk memastikan tugas diselesaikan.",
+        "as_bot": "Bertindak sebagai Bot",
+        "as_bot_desc": "Semua tindakan repositori akan dikaitkan dengan bot sistem. Hal ini memastikan jejak audit yang konsisten dan merupakan pengaturan yang direkomendasikan untuk alur kerja otomatis.",
+        "updated": "Preferensi rekan penulis diperbarui",
+        "error": "Gagal memperbarui preferensi yang meniru identitas"
+      },
+      "language": {
+        "title": "Bahasa",
+        "description": "Pilih bahasa pilihan Anda untuk antarmuka. Perubahan segera berlaku.",
+        "label": "Bahasa antarmuka"
+      },
+      "theme": {
+        "title": "Tema",
+        "description": "Pilih tema warna pilihan Anda.",
+        "updated_success": "Tema berhasil diperbarui",
+        "updated_failed": "Gagal memperbarui tema"
+      }
+    },
+    "account": {
+      "title": "Akun",
+      "profile": {
+        "title": "Perbarui Nama Tampilan",
+        "description": "Ini adalah nama yang akan ditampilkan di profil Anda.",
+        "full_name": "Nama Lengkap",
+        "submit": "Perbarui Akun",
+        "success": "Detail pengguna berhasil diperbarui",
+        "error": "Gagal memperbarui, Silakan coba lagi",
+        "demo_error": "Tindakan ini dinonaktifkan dalam mode demo."
+      },
+      "password": {
+        "title": "Ubah Kata Sandi",
+        "description": "Perbarui kata sandi Anda secara berkala untuk menjaga akun Anda tetap aman dan terlindungi dari akses tidak sah.",
+        "current_password": "Kata Sandi Saat Ini",
+        "new_password": "Kata Sandi Baru",
+        "submit": "Perbarui Kata Sandi",
+        "success": "Kata sandi berhasil diperbarui",
+        "error": "Gagal memperbarui, Silakan coba lagi"
+      },
+      "set_password": {
+        "title": "Tetapkan Kata Sandi",
+        "description": "Anda masuk dengan penyedia sosial. Buat kata sandi untuk mengaktifkan opsi keamanan tambahan dan metode login alternatif.",
+        "new_password": "Kata Sandi Baru",
+        "submit": "Tambahkan Kata Sandi",
+        "success": "Kata sandi berhasil ditambahkan",
+        "error": "Ada yang tidak beres! Coba lagi nanti"
+      },
+      "avatar": {
+        "title": "Perbarui Gambar Tampilan",
+        "description": "Jadikan ruang kerja Anda profesional dengan menambahkan foto.",
+        "success": "Detail pengguna berhasil diperbarui",
+        "error": "Gagal memperbarui, Silakan coba lagi"
+      },
+      "newsletter": {
+        "title": "Berlangganan Buletin",
+        "description": "Kami akan mengirimkan email sesekali tentang fitur, pembaruan, dan penawaran baru. Anda dapat berhenti berlangganan kapan saja.",
+        "label": "Menerima buletin dan pembaruan produk",
+        "submit": "Simpan Preferensi",
+        "success_sub": "Berhasil berlangganan Buletin",
+        "success_unsub": "Berhasil berhenti berlangganan Buletin",
+        "error": "Gagal memperbarui, Silakan coba lagi"
+      },
+      "delete": {
+        "title": "Hapus Akun",
+        "description": "Peringatan: Tindakan ini tidak dapat dibatalkan. Ini akan menghapus akun Anda secara permanen dan menghapus semua data Anda dari server kami.",
+        "confirm_label": "Ketik <strong>HAPUS</strong> untuk mengonfirmasi",
+        "confirm_placeholder": "Ketik HAPUS di sini",
+        "button": "Hapus Akun",
+        "reason_title": "Apa alasan utama Anda menghapus akun Anda?",
+        "other_reason_label": "Alasan lain (maks 200 karakter)",
+        "other_reason_placeholder": "Beritahu kami lebih lanjut (maks 200 karakter)",
+        "reasons": {
+          "complex": "Terlalu rumit atau sulit digunakan",
+          "not_work": "Tidak berfungsi untuk situs web saya",
+          "poor_design": "Desain atau pengalaman pengguna yang buruk",
+          "bugs": "Terlalu banyak bug",
+          "missing_features": "Fitur yang saya perlukan tidak ada",
+          "better_alternative": "Menemukan alternatif yang lebih baik",
+          "other": "Lainnya"
+        },
+        "feedback": {
+          "demo_disabled": "Hapus akun dinonaktifkan dalam mode demo.",
+          "success": "Akun berhasil dihapus",
+          "error": "Silakan coba lagi nanti."
+        }
+      }
+    },
+    "ai_agent": {
+      "title": "Agen AI",
+      "description": "Konfigurasikan penyedia AI Anda untuk mengaktifkan saran konten cerdas dan fitur pelengkapan otomatis.",
+      "provider_label": "Penyedia",
+      "provider_placeholder": "Pilih Penyedia",
+      "model_label": "Model",
+      "model_placeholder": "Pilih Model",
+      "api_key_label": "Kunci API",
+      "api_key_placeholder": "Masukkan kunci API Anda",
+      "show": "Tunjukkan",
+      "hide": "Sembunyikan",
+      "copilot_title": "Saran Pelengkapan Otomatis",
+      "copilot_description": "Menyarankan pelengkapan otomatis untuk baris saat ini ketika Anda mengetik di editor.",
+      "delete_key": "Hapus Kunci",
+      "delete_key_success": "Kunci API berhasil dihapus",
+      "save_changes": "Simpan Perubahan",
+      "test_key": "Uji Kunci",
+      "test_success": "Koneksi berhasil. Kunci API dan model Anda berfungsi.",
+      "test_error": "Tidak dapat terhubung ke penyedia AI.",
+      "save_success": "Pengaturan berhasil disimpan",
+      "save_error": "Ada yang tidak beres!",
+      "security_title": "Pemberitahuan Keamanan Penting",
+      "security1": "Kami **tidak menyimpan kunci API Anda** di database kami untuk memastikan privasi Anda dan mematuhi kebijakan keamanan.",
+      "security2": "Kunci Anda disimpan secara lokal di browser Anda saja. Jika Anda mengganti atau menghapus browser Anda, kuncinya akan hilang.",
+      "security3": "Harap simpan kunci API Anda dengan aman dan dapat diakses oleh Anda sendiri, karena kami tidak dapat memulihkannya untuk Anda.",
+      "custom_model": "Masukkan secara manual",
+      "custom_model_input_label": "ID Model",
+      "custom_model_input_placeholder": "Masukkan ID model kustom",
+      "find_model_id": "Temukan ID model Anda",
+      "editor_ai_title": "Asisten AI Editor",
+      "editor_ai_description": "Mengaktifkan perintah penulisan AI, tindakan toolbar, dan bantuan kode di editor.",
+      "copilot_enabled": "Saran pelengkapan otomatis diaktifkan",
+      "copilot_disabled": "Saran pelengkapan otomatis dinonaktifkan",
+      "editor_ai_enabled": "Asisten AI editor diaktifkan",
+      "editor_ai_disabled": "Asisten AI editor dinonaktifkan",
+      "code_ai_title": "Asisten AI Editor Kode",
+      "code_ai_description": "Mengaktifkan copilot AI, perbaikan bug, dan penjelasan kode di editor kode.",
+      "commit_ai_title": "Generator Git Commit",
+      "commit_ai_description": "Menghasilkan pesan dan deskripsi commit konvensional di dialog commit.",
+      "seo_ai_title": "Asisten SEO & Metadata",
+      "seo_ai_description": "Mengaktifkan isi otomatis frontmatter 1-klik dan rekomendasi SEO Doctor.",
+      "code_ai_enabled": "Asisten AI editor kode diaktifkan",
+      "code_ai_disabled": "Asisten AI editor kode dinonaktifkan",
+      "commit_ai_enabled": "Generator Git commit diaktifkan",
+      "commit_ai_disabled": "Generator Git commit dinonaktifkan",
+      "seo_ai_enabled": "Asisten SEO & metadata diaktifkan",
+      "seo_ai_disabled": "Asisten SEO & metadata dinonaktifkan",
+      "search_ai_title": "Search AI Copilot",
+      "search_ai_description": "Enables AI Copilot directly in the global search palette to ask questions and navigate content.",
+      "search_ai_enabled": "AI Copilot pencarian diaktifkan",
+      "search_ai_disabled": "AI Copilot pencarian dinonaktifkan"
+    },
+    "sidebar": {
+      "back": "Kembali"
+    },
+    "site_url_unavailable": "URL situs tidak tersedia",
+    "og_image_unavailable": "Gambar OG tidak tersedia",
+    "website": "Situs web",
+    "edit_website": "Sunting Situs Web",
+    "build_status": "Bangun Status",
+    "last_updated": "Terakhir Diperbarui",
+    "source": "Sumber",
+    "recently": "baru-baru ini",
+    "last_updated_by": "{distance} lalu oleh {author}",
+    "switcher": {
+      "default_site": "Pilih Situs",
+      "search": "Cari...",
+      "not_found": "Tidak ada proyek yang ditemukan.",
+      "add_new": "Tambahkan Situs Baru"
+    },
+    "archived_project": {
+      "title": "Proyek diarsipkan",
+      "description": "Proyek ini telah diarsipkan dan sebagian besar fungsinya dinonaktifkan. Anda masih dapat mengakses pengaturan proyek untuk memulihkan atau mengubah status proyek.",
+      "open_settings": "Buka Pengaturan"
+    },
+    "repo_access": {
+      "title": "{brand} tidak dapat mengakses <repo>{repository}</repo>",
+      "github_description": "Berikan akses ke GitHub App {app}, atau pastikan repositori tidak diganti nama atau dihapus.",
+      "gitlab_description": "Akun GitLab Anda memerlukan akses Developer atau lebih tinggi, atau proyek telah diganti nama atau dihapus.",
+      "manage_access": "Berikan akses",
+      "retry": "Periksa lagi"
+    },
+    "project_overview": {
+      "preview_alt": "Pratinjau langsung {name}"
+    }
+  }
+}

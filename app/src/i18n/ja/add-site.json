@@ -1,0 +1,28 @@
+{
+  "add-site": {
+    "add_new_site": "サイトを追加",
+    "create_new_site": "サイトを新規作成",
+    "import_site_desc": "サイトのインポート方法を選択してください。",
+    "add_to_org_desc": "組織に新しいサイトを追加します。",
+    "connected": "接続済み",
+    "not_connected": "未接続",
+    "site_name_label": "サイト名",
+    "site_name_placeholder": "サイト名",
+    "git_provider_label": "Gitプロバイダー",
+    "choose_provider_placeholder": "プロバイダーを選択",
+    "repository_label": "リポジトリ",
+    "select_repository_placeholder": "リポジトリを選択",
+    "branch_label": "ブランチ",
+    "please_wait": "しばらくお待ちください",
+    "choose_branch_placeholder": "ブランチを選択",
+    "no_repository_found": "リポジトリが見つかりません",
+    "cant_see_repo": "リポジトリが表示されませんか？",
+    "configure_on": "{provider}でアクセス権を設定",
+    "site_url_label": "サイトURL（任意）",
+    "site_url_placeholder": "https://example.com",
+    "back": "戻る",
+    "create_site": "サイトを作成",
+    "project_created_success": "プロジェクトが正常に作成されました",
+    "something_went_wrong": "エラーが発生しました。"
+  }
+}

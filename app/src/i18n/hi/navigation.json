@@ -1,0 +1,58 @@
+{
+  "navigation": {
+    "menu": {
+      "footer_account": {
+        "account": "खाता",
+        "updates": "अपडेट्स",
+        "support": "सहायता",
+        "ai_agent": "एआई एजेंट",
+        "mcp_connection": "MCP कनेक्शन",
+        "preferences": "प्राथमिकताएं",
+        "source_code": "सोर्स कोड"
+      },
+      "user_dashboard": {
+        "overview": "अवलोकन",
+        "account": "खाता",
+        "preferences": "प्राथमिकताएं",
+        "ai_agent": "एआई एजेंट",
+        "mcp_connection": "MCP कनेक्शन"
+      },
+      "org_dashboard": {
+        "websites": "वेबसाइटें",
+        "settings": "सेटिंग्स"
+      },
+      "org_settings": {
+        "general": "सामान्य",
+        "members": "सदस्य",
+        "sandbox": "सैंडबॉक्स"
+      },
+      "project_dashboard": {
+        "overview": "अवलोकन",
+        "media": "मीडिया",
+        "settings": "सेटिंग्स"
+      },
+      "project_settings": {
+        "general": "सामान्य",
+        "configure": "कॉन्फ़िगरेशन",
+        "git": "Git",
+        "schemas": "स्कीमा",
+        "snippets": "स्निपेट्स",
+        "arrangement": "व्यवस्था"
+      }
+    },
+    "sidebar": {
+      "open_menu": "मेनू खोलें",
+      "code": "कोड",
+      "config": "कॉन्फ़िग",
+      "actions": {
+        "close": "बंद करें"
+      },
+      "sidebar_trigger_mobile": {
+        "title": "कंटेंट सूची",
+        "description": "साइडबार से अपनी सभी कंटेंट फ़ाइलें देखें",
+        "message": "अपना कंटेंट ढूंढ रहे हैं? सभी फ़ाइलें देखने के लिए साइडबार खोलें।",
+        "open_sidebar": "साइडबार खोलें"
+      }
+    }
+  }
+}

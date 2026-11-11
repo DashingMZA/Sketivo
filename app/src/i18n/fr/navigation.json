@@ -1,0 +1,58 @@
+{
+  "navigation": {
+    "menu": {
+      "footer_account": {
+        "account": "Compte",
+        "updates": "Nouveautés",
+        "support": "Assistance",
+        "ai_agent": "Agent IA",
+        "mcp_connection": "Connexion MCP",
+        "preferences": "Préférences",
+        "source_code": "Code source"
+      },
+      "user_dashboard": {
+        "overview": "Vue d'ensemble",
+        "account": "Compte",
+        "preferences": "Préférences",
+        "ai_agent": "Agent IA",
+        "mcp_connection": "Connexion MCP"
+      },
+      "org_dashboard": {
+        "websites": "Sites web",
+        "settings": "Paramètres"
+      },
+      "org_settings": {
+        "general": "Général",
+        "members": "Membres",
+        "sandbox": "Bac à sable"
+      },
+      "project_dashboard": {
+        "overview": "Vue d'ensemble",
+        "media": "Médias",
+        "settings": "Paramètres"
+      },
+      "project_settings": {
+        "general": "Général",
+        "configure": "Configuration",
+        "git": "Git",
+        "schemas": "Schémas",
+        "snippets": "Extraits",
+        "arrangement": "Disposition"
+      }
+    },
+    "sidebar": {
+      "open_menu": "Ouvrir le menu",
+      "code": "Code",
+      "config": "Config",
+      "actions": {
+        "close": "Fermer"
+      },
+      "sidebar_trigger_mobile": {
+        "title": "Liste des contenus",
+        "description": "Afficher tous vos fichiers de contenu dans la barre latérale",
+        "message": "Vous cherchez vos contenus ? Ouvrez la barre latérale pour voir tous les fichiers.",
+        "open_sidebar": "Ouvrir la barre latérale"
+      }
+    }
+  }
+}

@@ -1,0 +1,182 @@
+{
+  "dashboard": {
+    "preference": {
+      "title": "設定",
+      "coauthor": {
+        "title": "Git 共同作成者",
+        "description": "リポジトリの操作に使用するアイデンティティを選択してください。",
+        "as_you": "あなたとして操作",
+        "as_you_desc": "コミットはボットが作成し、メッセージにあなたを記載します。Git アカウントでサインインしている場合は共同作成者として、そうでない場合は名前で記載されます。{brand} のメールアドレスが公開されることはありません。",
+        "as_you_fallback": "個人の権限が不十分な場合は、タスクを完了するために自動的にボットにフォールバックします。",
+        "as_bot": "ボットとして操作",
+        "as_bot_desc": "すべてのリポジトリ操作はシステムボットに帰属されます。これにより一貫した監査証跡が確保され、自動化ワークフローに推奨される設定です。",
+        "updated": "共同作成者の設定が更新されました",
+        "error": "なりすまし設定の更新に失敗しました"
+      },
+      "language": {
+        "title": "言語",
+        "description": "インターフェースの言語を選択してください。変更は即座に反映されます。",
+        "label": "インターフェース言語"
+      },
+      "theme": {
+        "title": "テーマ",
+        "description": "お好みのカラーテーマを選択してください。",
+        "updated_success": "テーマが正常に更新されました",
+        "updated_failed": "テーマの更新に失敗しました"
+      }
+    },
+    "account": {
+      "title": "アカウント",
+      "profile": {
+        "title": "表示名の更新",
+        "description": "プロフィールに表示される名前です。",
+        "full_name": "氏名",
+        "submit": "アカウントを更新",
+        "success": "ユーザー情報が正常に更新されました",
+        "error": "更新に失敗しました。再試行してください",
+        "demo_error": "この操作はデモモードでは無効です。"
+      },
+      "password": {
+        "title": "パスワードの変更",
+        "description": "定期的にパスワードを更新して、アカウントを安全に保護してください。",
+        "current_password": "現在のパスワード",
+        "new_password": "新しいパスワード",
+        "submit": "パスワードを更新",
+        "success": "パスワードが正常に更新されました",
+        "error": "更新に失敗しました。再試行してください"
+      },
+      "set_password": {
+        "title": "パスワードの設定",
+        "description": "ソーシャルプロバイダーでサインインしました。追加のセキュリティオプションと代替ログイン方法を有効にするためのパスワードを作成してください。",
+        "new_password": "新しいパスワード",
+        "submit": "パスワードを追加",
+        "success": "パスワードが正常に追加されました",
+        "error": "エラーが発生しました！後でもう一度お試しください"
+      },
+      "avatar": {
+        "title": "プロフィール画像の更新",
+        "description": "写真を追加してワークスペースをプロフェッショナルにしましょう。",
+        "success": "ユーザー情報が正常に更新されました",
+        "error": "更新に失敗しました。再試行してください"
+      },
+      "newsletter": {
+        "title": "ニュースレターの購読",
+        "description": "新機能、アップデート、オファーに関するメールをお送りします。いつでも登録解除できます。",
+        "label": "ニュースレターと製品アップデートを受け取る",
+        "submit": "設定を保存",
+        "success_sub": "ニュースレターへの登録が完了しました",
+        "success_unsub": "ニュースレターの登録解除が完了しました",
+        "error": "更新に失敗しました。再試行してください"
+      },
+      "delete": {
+        "title": "アカウントの削除",
+        "description": "警告：この操作は元に戻せません。アカウントが完全に削除され、すべてのデータがサーバーから削除されます。",
+        "confirm_label": "<strong>DELETE</strong> と入力して確認",
+        "confirm_placeholder": "DELETE と入力してください",
+        "button": "アカウントを削除",
+        "reason_title": "アカウントを削除する主な理由は何ですか？",
+        "other_reason_label": "その他の理由（最大200文字）",
+        "other_reason_placeholder": "詳しく教えてください（最大200文字）",
+        "reasons": {
+          "complex": "複雑すぎる、または使いにくい",
+          "not_work": "ウェブサイトで機能しなかった",
+          "poor_design": "デザインやユーザー体験が悪い",
+          "bugs": "バグが多すぎる",
+          "missing_features": "必要な機能が不足している",
+          "better_alternative": "より良い代替品を見つけた",
+          "other": "その他"
+        },
+        "feedback": {
+          "demo_disabled": "デモモードではアカウントの削除が無効です。",
+          "success": "アカウントが正常に削除されました",
+          "error": "後でもう一度お試しください。"
+        }
+      }
+    },
+    "ai_agent": {
+      "title": "AIエージェント",
+      "description": "AI プロバイダーを設定して、インテリジェントなコンテンツ提案とオートコンプリート機能を有効にしてください。",
+      "provider_label": "プロバイダー",
+      "provider_placeholder": "プロバイダーを選択",
+      "model_label": "モデル",
+      "model_placeholder": "モデルを選択",
+      "api_key_label": "API Key",
+      "api_key_placeholder": "API Key を入力",
+      "show": "表示",
+      "hide": "非表示",
+      "copilot_title": "オートコンプリート候補",
+      "copilot_description": "エディタで入力中に、現在の行のオートコンプリートを提案します。",
+      "delete_key": "キーを削除",
+      "delete_key_success": "APIキーが正常に削除されました",
+      "save_changes": "変更を保存",
+      "test_key": "キーをテスト",
+      "test_success": "接続に成功しました。APIキーとモデルは正常に動作しています。",
+      "test_error": "AIプロバイダーに接続できませんでした。",
+      "save_success": "設定が正常に保存されました",
+      "save_error": "エラーが発生しました！",
+      "security_title": "重要なセキュリティに関するお知らせ",
+      "security1": "プライバシーを保護しセキュリティポリシーに準拠するため、**API Key はデータベースに保存しておりません**。",
+      "security2": "キーはブラウザのローカルストレージにのみ保存されます。ブラウザを切り替えたりクリアしたりすると、キーは失われます。",
+      "security3": "API Key は安全に管理してください。弊社では回復することができません。",
+      "custom_model": "手動で入力",
+      "custom_model_input_label": "モデルID",
+      "custom_model_input_placeholder": "カスタムモデルIDを入力",
+      "find_model_id": "モデルIDを検索",
+      "editor_ai_title": "エディターAIアシスタント",
+      "editor_ai_description": "エディタでのAI作成コマンド、ツールバーアクション、コードアシストを有効にします。",
+      "copilot_enabled": "自動補完の提案が有効になりました",
+      "copilot_disabled": "自動補完の提案が無効になりました",
+      "editor_ai_enabled": "エディターAIアシスタントが有効になりました",
+      "editor_ai_disabled": "エディターAIアシスタントが無効になりました",
+      "code_ai_title": "コードエディターAIアシスタント",
+      "code_ai_description": "コードエディターでAIコパイロット、バグ修正、コード解説を有効にします。",
+      "commit_ai_title": "Gitコミットジェネレーター",
+      "commit_ai_description": "コミットダイアログで規約に基づいたコミットメッセージと説明を自動生成します。",
+      "seo_ai_title": "SEO・メタデータアシスタント",
+      "seo_ai_description": "1クリックでのフロントマター自動入力とSEO Doctor推奨事項を有効にします。",
+      "code_ai_enabled": "コードエディターAIアシスタントを有効にしました",
+      "code_ai_disabled": "コードエディターAIアシスタントを無効にしました",
+      "commit_ai_enabled": "Gitコミットジェネレーターを有効にしました",
+      "commit_ai_disabled": "Gitコミットジェネレーターを無効にしました",
+      "seo_ai_enabled": "SEO・メタデータアシスタントを有効にしました",
+      "seo_ai_disabled": "SEO・メタデータアシスタントを無効にしました",
+      "search_ai_title": "Search AI Copilot",
+      "search_ai_description": "Enables AI Copilot directly in the global search palette to ask questions and navigate content.",
+      "search_ai_enabled": "検索AIコパイロットを有効にしました",
+      "search_ai_disabled": "検索AIコパイロットを無効にしました"
+    },
+    "sidebar": {
+      "back": "戻る"
+    },
+    "site_url_unavailable": "サイトURLが利用できません",
+    "og_image_unavailable": "OG画像を利用できません",
+    "website": "ウェブサイト",
+    "edit_website": "ウェブサイトを編集",
+    "build_status": "ビルドステータス",
+    "last_updated": "最終更新",
+    "source": "ソース",
+    "recently": "最近",
+    "last_updated_by": "{distance} 前、{author} によって更新",
+    "switcher": {
+      "default_site": "サイトを選択",
+      "search": "検索...",
+      "not_found": "プロジェクトが見つかりません。",
+      "add_new": "新しいサイトを追加"
+    },
+    "archived_project": {
+      "title": "プロジェクトはアーカイブ済みです",
+      "description": "このプロジェクトはアーカイブされており、ほとんどの機能が無効になっています。プロジェクト設定にアクセスして、復元またはプロジェクトステータスの変更を行えます。",
+      "open_settings": "設定を開く"
+    },
+    "repo_access": {
+      "title": "{brand} は <repo>{repository}</repo> にアクセスできません",
+      "github_description": "{app} GitHub App にアクセス権を付与するか、名前の変更や削除がされていないか確認してください。",
+      "gitlab_description": "GitLab アカウントに Developer 以上の権限が必要です。またはプロジェクトの名前が変更されたか削除されています。",
+      "manage_access": "アクセスを付与",
+      "retry": "再確認"
+    },
+    "project_overview": {
+      "preview_alt": "{name} のライブプレビュー"
+    }
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "add-site": {
+    "add_new_site": "Tambah Situs Baru",
+    "create_new_site": "Buat Situs Baru",
+    "import_site_desc": "Pilih cara untuk mengimpor situs Anda.",
+    "add_to_org_desc": "Tambahkan situs baru ke organisasi Anda.",
+    "connected": "Terhubung",
+    "not_connected": "Tidak terhubung",
+    "site_name_label": "Nama Situs",
+    "site_name_placeholder": "Nama situs",
+    "git_provider_label": "Penyedia Git",
+    "choose_provider_placeholder": "Pilih penyedia Anda",
+    "repository_label": "Repositori",
+    "select_repository_placeholder": "Pilih repositori",
+    "branch_label": "Branch",
+    "please_wait": "Mohon tunggu",
+    "choose_branch_placeholder": "Pilih branch",
+    "no_repository_found": "Repositori tidak ditemukan",
+    "cant_see_repo": "Tidak menemukan repositori Anda di sini?",
+    "configure_on": "Konfigurasikan di {provider}",
+    "site_url_label": "URL Situs (opsional)",
+    "site_url_placeholder": "https://example.com",
+    "back": "Kembali",
+    "create_site": "Buat Situs",
+    "project_created_success": "Proyek berhasil dibuat",
+    "something_went_wrong": "Terjadi kesalahan!"
+  }
+}

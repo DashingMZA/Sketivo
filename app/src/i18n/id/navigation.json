@@ -1,0 +1,58 @@
+{
+  "navigation": {
+    "menu": {
+      "footer_account": {
+        "account": "Akun",
+        "updates": "Pembaruan",
+        "support": "Bantuan",
+        "ai_agent": "Agen AI",
+        "mcp_connection": "Koneksi MCP",
+        "preferences": "Preferensi",
+        "source_code": "Kode sumber"
+      },
+      "user_dashboard": {
+        "overview": "Ringkasan",
+        "account": "Akun",
+        "preferences": "Preferensi",
+        "ai_agent": "Agen AI",
+        "mcp_connection": "Koneksi MCP"
+      },
+      "org_dashboard": {
+        "websites": "Situs Web",
+        "settings": "Pengaturan"
+      },
+      "org_settings": {
+        "general": "Umum",
+        "members": "Anggota",
+        "sandbox": "Sandbox"
+      },
+      "project_dashboard": {
+        "overview": "Ringkasan",
+        "media": "Media",
+        "settings": "Pengaturan"
+      },
+      "project_settings": {
+        "general": "Umum",
+        "configure": "Konfigurasi",
+        "git": "Git",
+        "schemas": "Skema",
+        "snippets": "Cuplikan Kode",
+        "arrangement": "Tata Letak"
+      }
+    },
+    "sidebar": {
+      "open_menu": "Buka menu",
+      "code": "Kode",
+      "config": "Konfig",
+      "actions": {
+        "close": "Tutup"
+      },
+      "sidebar_trigger_mobile": {
+        "title": "Daftar Konten",
+        "description": "Lihat semua file konten dari bilah sisi",
+        "message": "Mencari konten Anda? Buka bilah sisi untuk melihat semua file.",
+        "open_sidebar": "Buka bilah sisi"
+      }
+    }
+  }
+}

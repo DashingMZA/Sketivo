@@ -1,0 +1,58 @@
+{
+  "navigation": {
+    "menu": {
+      "footer_account": {
+        "account": "Conta",
+        "updates": "Novidades",
+        "support": "Suporte",
+        "ai_agent": "Agente IA",
+        "mcp_connection": "Conexão MCP",
+        "preferences": "Preferências",
+        "source_code": "Código-fonte"
+      },
+      "user_dashboard": {
+        "overview": "Visão geral",
+        "account": "Conta",
+        "preferences": "Preferências",
+        "ai_agent": "Agente IA",
+        "mcp_connection": "Conexão MCP"
+      },
+      "org_dashboard": {
+        "websites": "Sites",
+        "settings": "Configurações"
+      },
+      "org_settings": {
+        "general": "Geral",
+        "members": "Membros",
+        "sandbox": "Sandbox"
+      },
+      "project_dashboard": {
+        "overview": "Visão geral",
+        "media": "Mídia",
+        "settings": "Configurações"
+      },
+      "project_settings": {
+        "general": "Geral",
+        "configure": "Configuração",
+        "git": "Git",
+        "schemas": "Esquemas",
+        "snippets": "Snippets",
+        "arrangement": "Organização"
+      }
+    },
+    "sidebar": {
+      "open_menu": "Abrir menu",
+      "code": "Código",
+      "config": "Config",
+      "actions": {
+        "close": "Fechar"
+      },
+      "sidebar_trigger_mobile": {
+        "title": "Lista de conteúdos",
+        "description": "Veja todos os arquivos de conteúdo na barra lateral",
+        "message": "Procurando seu conteúdo? Abra a barra lateral para ver todos os arquivos.",
+        "open_sidebar": "Abrir barra lateral"
+      }
+    }
+  }
+}

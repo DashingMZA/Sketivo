@@ -1,0 +1,58 @@
+{
+  "navigation": {
+    "menu": {
+      "footer_account": {
+        "account": "アカウント",
+        "updates": "アップデート",
+        "support": "サポート",
+        "ai_agent": "AIエージェント",
+        "mcp_connection": "MCP 接続",
+        "preferences": "環境設定",
+        "source_code": "ソースコード"
+      },
+      "user_dashboard": {
+        "overview": "概要",
+        "account": "アカウント",
+        "preferences": "環境設定",
+        "ai_agent": "AIエージェント",
+        "mcp_connection": "MCP 接続"
+      },
+      "org_dashboard": {
+        "websites": "Webサイト",
+        "settings": "設定"
+      },
+      "org_settings": {
+        "general": "一般",
+        "members": "メンバー",
+        "sandbox": "サンドボックス"
+      },
+      "project_dashboard": {
+        "overview": "概要",
+        "media": "メディア",
+        "settings": "設定"
+      },
+      "project_settings": {
+        "general": "一般",
+        "configure": "構成",
+        "git": "Git",
+        "schemas": "スキーマ",
+        "snippets": "スニペット",
+        "arrangement": "並び順"
+      }
+    },
+    "sidebar": {
+      "open_menu": "メニューを開く",
+      "code": "コード",
+      "config": "設定",
+      "actions": {
+        "close": "閉じる"
+      },
+      "sidebar_trigger_mobile": {
+        "title": "コンテンツ一覧",
+        "description": "サイドバーからすべてのコンテンツファイルを表示",
+        "message": "コンテンツをお探しですか？サイドバーを開いてファイル一覧を確認できます。",
+        "open_sidebar": "サイドバーを開く"
+      }
+    }
+  }
+}
