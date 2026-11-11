@@ -1,0 +1,42 @@
+import { configureStore } from "@reduxjs/toolkit";
+import { setupListeners } from "@reduxjs/toolkit/query";
+import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
+import { api } from "./features/api-slice";
+import gitMetaReducer from "./features/config/meta-slice";
+import { configSlice } from "./features/config/slice";
+import { githubApi } from "./features/github/github-api";
+import { gitlabApi } from "./features/gitlab/gitlab-api";
+import mediaSlice from "./features/media/slice";
+import { extraReducers } from "./extra-reducers";
+
+/** Factory so tests (and any future SSR entry) can build an isolated store. */
+export const makeStore = () =>
+  configureStore({
+    reducer: {
+      [configSlice.name]: configSlice.reducer,
+      [mediaSlice.name]: mediaSlice.reducer,
+      [api.reducerPath]: api.reducer,
+      [githubApi.reducerPath]: githubApi.reducer,
+      [gitlabApi.reducerPath]: gitlabApi.reducer,
+      gitMeta: gitMetaReducer,
+      ...extraReducers,
+    },
+    middleware: (getDefaultMiddleware) =>
+      getDefaultMiddleware({
+        serializableCheck: false,
+        immutableCheck: false,
+      }).concat(githubApi.middleware, gitlabApi.middleware, api.middleware),
+    devTools: process.env.NODE_ENV !== "production",
+  });
+
+export const store = makeStore();
+
+setupListeners(store.dispatch);
+export type AppStore = ReturnType<typeof makeStore>;
+export type AppDispatch = typeof store.dispatch;
+export type RootState = ReturnType<typeof store.getState>;
+export const useAppDispatch: () => AppDispatch = useDispatch;
+export const useTypedSelector: TypedUseSelectorHook<RootState> = useSelector;
+export const useAppSelector = <TSelected = unknown>(
+  selector: (state: RootState) => TSelected,
+): TSelected => useSelector<RootState, TSelected>(selector);

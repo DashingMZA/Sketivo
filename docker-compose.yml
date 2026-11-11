@@ -1,0 +1,94 @@
+# One-command local/self-hosted stack: MongoDB + API + web.
+#
+#   cp api/.env.example api/.env      # fill in secrets + media bucket
+#   cp app/.env.example app/.env
+#   docker compose up --build
+#
+# Web:  http://localhost:3000
+# API:  http://localhost:4000  (health: /healthz)
+#
+# Media storage (S3-compatible) still has to be configured in api/.env —
+# see the README. MongoDB runs in the `mongo` service below.
+#
+# NEXT_PUBLIC_* values are baked into the web image at build time, and compose
+# reads them from the shell or a root-level .env file (not app/.env).
+
+services:
+  mongo:
+    image: mongo:7
+    # Single-node replica set: better-auth and the services use transactions.
+    command: ["--replSet", "rs0", "--bind_ip_all"]
+    restart: unless-stopped
+    volumes:
+      - mongo-data:/data/db
+    ports:
+      - "27017:27017"
+    healthcheck:
+      # Initiates the set on first run; healthy once this node is primary.
+      test:
+        [
+          "CMD",
+          "mongosh",
+          "--quiet",
+          "--eval",
+          "var s; try { s = rs.status().myState } catch (e) { rs.initiate({ _id: 'rs0', members: [{ _id: 0, host: 'mongo:27017' }] }) } quit(s === 1 ? 0 : 1)",
+        ]
+      interval: 5s
+      timeout: 10s
+      retries: 20
+
+  api:
+    build:
+      context: .
+      dockerfile: api/Dockerfile
+    restart: unless-stopped
+    env_file:
+      - api/.env
+    environment:
+      # Point the API at the compose Mongo unless api/.env overrides it.
+      MONGO_URI: ${MONGO_URI:-mongodb://mongo:27017/sketivo?replicaSet=rs0}
+      NODE_ENV: production
+      PORT: "4000"
+    depends_on:
+      mongo:
+        condition: service_healthy
+    ports:
+      - "4000:4000"
+
+  web:
+    build:
+      context: .
+      dockerfile: app/Dockerfile
+      args:
+        NEXT_PUBLIC_BACKEND_URL: ${NEXT_PUBLIC_BACKEND_URL:-http://localhost:4000/api/v1}
+        NEXT_PUBLIC_HP_WS_URL: ${NEXT_PUBLIC_HP_WS_URL:-ws://localhost:4000/api/v1/editor/collab}
+        NEXT_PUBLIC_BUCKET_URL: ${NEXT_PUBLIC_BUCKET_URL:-}
+        NEXT_PUBLIC_BRAND_NAME: ${NEXT_PUBLIC_BRAND_NAME:-Sketivo}
+        NEXT_PUBLIC_BRAND_URL: ${NEXT_PUBLIC_BRAND_URL:-https://sketivo.com}
+        NEXT_PUBLIC_GIT_APP_NAME: ${NEXT_PUBLIC_GIT_APP_NAME:-}
+        NEXT_PUBLIC_GITLAB_CLIENT_ID: ${NEXT_PUBLIC_GITLAB_CLIENT_ID:-}
+        NEXT_PUBLIC_BRAND_SLUG: ${NEXT_PUBLIC_BRAND_SLUG:-sketivo}
+        NEXT_PUBLIC_BRAND_LOGO: ${NEXT_PUBLIC_BRAND_LOGO:-/images/logo.svg}
+        NEXT_PUBLIC_BRAND_LOGO_DARK: ${NEXT_PUBLIC_BRAND_LOGO_DARK:-/images/logo-white.svg}
+        NEXT_PUBLIC_BRAND_LOGO_ICON: ${NEXT_PUBLIC_BRAND_LOGO_ICON:-/images/logo-icon.svg}
+        NEXT_PUBLIC_BRAND_LOGO_WIDTH: ${NEXT_PUBLIC_BRAND_LOGO_WIDTH:-136}
+        NEXT_PUBLIC_BRAND_LOGO_HEIGHT: ${NEXT_PUBLIC_BRAND_LOGO_HEIGHT:-40}
+        NEXT_PUBLIC_BRAND_FAVICON: ${NEXT_PUBLIC_BRAND_FAVICON:-/images/favicon.png}
+        NEXT_PUBLIC_TERMS_URL: ${NEXT_PUBLIC_TERMS_URL:-https://sketivo.com/terms}
+        NEXT_PUBLIC_PRIVACY_URL: ${NEXT_PUBLIC_PRIVACY_URL:-https://sketivo.com/privacy-policy}
+        NEXT_PUBLIC_SUPPORT_URL: ${NEXT_PUBLIC_SUPPORT_URL:-https://sketivo.com/contact}
+        NEXT_PUBLIC_UPDATES_URL: ${NEXT_PUBLIC_UPDATES_URL:-https://updates.sketivo.com}
+        NEXT_PUBLIC_STATUS_URL: ${NEXT_PUBLIC_STATUS_URL:-https://status.sketivo.com}
+        NEXT_PUBLIC_COMMUNITY_URL: ${NEXT_PUBLIC_COMMUNITY_URL:-https://discord.gg/KrpvHfqcNA}
+        NEXT_PUBLIC_DOCS_URL: ${NEXT_PUBLIC_DOCS_URL:-https://docs.sketivo.com}
+        NEXT_PUBLIC_SOURCE_URL: ${NEXT_PUBLIC_SOURCE_URL:-https://github.com/DashingMZA/Sketivo}
+    restart: unless-stopped
+    env_file:
+      - app/.env
+    depends_on:
+      - api
+    ports:
+      - "3000:3000"
+
+volumes:
+  mongo-data:

@@ -1,0 +1,42 @@
+import { TGitProvider } from "@/lib/utils/provider-checker";
+import { projectSchema } from "@/lib/validate";
+import { z } from "zod/v4";
+
+export type TProjectLastEdit = {
+  createdAt: string;
+  user_name?: string;
+};
+
+export type TProject<
+  T = z.infer<typeof projectSchema> & {
+    org_id?: string;
+    project_id?: string;
+  },
+> = {
+  _id: string;
+  project_id: string;
+  project_name: string;
+  provider: TGitProvider;
+  repository: string;
+  /** GitLab's numeric project id, which survives a rename. GitLab only. */
+  repository_id?: string;
+  project_image?: string;
+  branch: string;
+  visibility: "public" | "private";
+  user_id: string;
+  generator?: string | null;
+  site_url: string;
+  org_id: string;
+  status: "active" | "archived";
+  variables: T;
+  createdAt?: string | Date;
+  updatedAt?: string | Date;
+  last_edit?: TProjectLastEdit;
+  ownerData?: Array<{
+    full_name: string;
+    email: string;
+    image?: string;
+    user_id: string;
+    active_package?: string;
+  }>;
+};
