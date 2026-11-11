@@ -64,14 +64,14 @@
     "@types/node": "^26",
     "@types/nodemailer": "^8.0.2",
     "@types/ws": "^8.18.2",
-    "eslint": "^10.13.0",
+    "eslint": "^10.14.0",
     "prettier": "3.9.10",
     "ts-node-dev": "^2.0.0",
     "tsc-alias": "^1.9.9",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.72.0",
-    "vitest": "^5.0.5",
+    "vitest": "^5.1.0",
     "wrangler": "^4.158.0"
   }
 }
