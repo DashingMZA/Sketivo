@@ -99,4 +99,48 @@ export const aiProviders: TAIProvider[] = [
     ],
     docsUrl: "https://docs.x.ai/overview#models",
   },
+  {
+    provider: "DeepSeek",
+    value: "deepseek",
+    models: ["deepseek-chat", "deepseek-reasoner"],
+    docsUrl: "https://api-docs.deepseek.com/",
+  },
+  {
+    provider: "Mistral AI",
+    value: "mistral",
+    models: [
+      "mistral-small-latest",
+      "mistral-medium-latest",
+      "mistral-large-latest",
+      "codestral-latest",
+    ],
+    docsUrl: "https://docs.mistral.ai/getting-started/models/",
+  },
+  {
+    provider: "Together AI",
+    value: "togetherai",
+    models: [
+      "meta-llama/Llama-3.3-70B-Instruct-Turbo",
+      "deepseek-ai/DeepSeek-R1",
+      "Qwen/Qwen2.5-72B-Instruct-Turbo",
+    ],
+    docsUrl: "https://docs.together.ai/docs/serverless-models",
+  },
+  {
+    provider: "Perplexity",
+    value: "perplexity",
+    models: ["sonar", "sonar-pro", "sonar-reasoning"],
+    docsUrl: "https://docs.perplexity.ai/getting-started/models",
+  },
+  {
+    provider: "NVIDIA NIM (via OpenAI-compatible)",
+    value: "nvidia",
+    models: [
+      "meta/llama-3.3-70b-instruct",
+      "nvidia/llama-3.1-nemotron-70b-instruct",
+      "deepseek-ai/deepseek-r1",
+      "meta/llama-3.1-405b-instruct",
+    ],
+    docsUrl: "https://build.nvidia.com/models",
+  },
 ];

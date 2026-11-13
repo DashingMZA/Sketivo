@@ -1,12 +1,27 @@
 import { BRAND_NAME, BRAND_URL } from "@/lib/brand";
 import { createAnthropic } from "@ai-sdk/anthropic";
+import { createDeepSeek } from "@ai-sdk/deepseek";
 import { createGoogle } from "@ai-sdk/google";
+import { createMistral } from "@ai-sdk/mistral";
 import { createOpenAI } from "@ai-sdk/openai";
+import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
+import { createPerplexity } from "@ai-sdk/perplexity";
+import { createTogetherAI } from "@ai-sdk/togetherai";
 import { createXai } from "@ai-sdk/xai";
 import type { LanguageModel } from "ai";
 
 export type TAiProviderType =
-  "groq" | "openrouter" | "openai" | "gemini" | "anthropic" | "xai";
+  | "groq"
+  | "openrouter"
+  | "openai"
+  | "gemini"
+  | "anthropic"
+  | "xai"
+  | "deepseek"
+  | "mistral"
+  | "togetherai"
+  | "perplexity"
+  | "nvidia";
 
 export const PROVIDER_DEFAULT_MODELS: Record<TAiProviderType, string> = {
   groq: "openai/gpt-oss-120b",
@@ -15,6 +30,11 @@ export const PROVIDER_DEFAULT_MODELS: Record<TAiProviderType, string> = {
   gemini: "gemini-2.5-flash",
   anthropic: "claude-haiku-4-5",
   xai: "grok-4-1-fast-non-reasoning",
+  deepseek: "deepseek-chat",
+  mistral: "mistral-small-latest",
+  togetherai: "meta-llama/Llama-3.3-70B-Instruct-Turbo",
+  perplexity: "sonar",
+  nvidia: "meta/llama-3.3-70b-instruct",
 };
 
 export const SUPPORTED_AI_PROVIDERS: readonly TAiProviderType[] = [
@@ -24,6 +44,11 @@ export const SUPPORTED_AI_PROVIDERS: readonly TAiProviderType[] = [
   "gemini",
   "anthropic",
   "xai",
+  "deepseek",
+  "mistral",
+  "togetherai",
+  "perplexity",
+  "nvidia",
 ] as const;
 
 /**
@@ -98,6 +123,8 @@ export function getDefaultProvider(): TAiProviderType {
       return "gemini";
     if (fallbackKey.startsWith("sk-ant-")) return "anthropic";
     if (fallbackKey.startsWith("xai-")) return "xai";
+    if (fallbackKey.startsWith("pplx-")) return "perplexity";
+    if (fallbackKey.startsWith("nvapi-")) return "nvidia";
     if (fallbackKey.startsWith("sk-")) return "openai";
   }
 
@@ -200,6 +227,40 @@ export function resolveLanguageModel(options?: {
     case "xai": {
       const xaiProvider = createXai({ apiKey });
       modelInstance = xaiProvider(modelName);
+      break;
+    }
+    case "deepseek": {
+      const deepseekProvider = createDeepSeek({ apiKey });
+      modelInstance = deepseekProvider(modelName);
+      break;
+    }
+    case "mistral": {
+      const mistralProvider = createMistral({ apiKey });
+      modelInstance = mistralProvider(modelName);
+      break;
+    }
+    case "togetherai": {
+      const togetheraiProvider = createTogetherAI({ apiKey });
+      modelInstance = togetheraiProvider(modelName);
+      break;
+    }
+    case "perplexity": {
+      const perplexityProvider = createPerplexity({ apiKey });
+      modelInstance = perplexityProvider(modelName);
+      break;
+    }
+    case "nvidia": {
+      // NVIDIA has no dedicated AI SDK package: NVIDIA NIM is OpenAI API
+      // compatible, so it runs through @ai-sdk/openai-compatible.
+      // Models: https://build.nvidia.com/models
+      const nvidiaProvider = createOpenAICompatible({
+        name: "nvidia",
+        baseURL: "https://integrate.api.nvidia.com/v1",
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+        },
+      });
+      modelInstance = nvidiaProvider.chatModel(modelName);
       break;
     }
     case "openai":

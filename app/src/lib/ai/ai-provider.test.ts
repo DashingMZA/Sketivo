@@ -26,7 +26,7 @@ describe("ai-provider service", () => {
   });
 
   describe("SUPPORTED_AI_PROVIDERS", () => {
-    it("contains the expected 6 core providers", () => {
+    it("contains the expected 11 core providers", () => {
       expect(SUPPORTED_AI_PROVIDERS).toEqual([
         "groq",
         "openrouter",
@@ -34,6 +34,11 @@ describe("ai-provider service", () => {
         "gemini",
         "anthropic",
         "xai",
+        "deepseek",
+        "mistral",
+        "togetherai",
+        "perplexity",
+        "nvidia",
       ]);
     });
   });
@@ -59,6 +64,12 @@ describe("ai-provider service", () => {
 
       process.env.AI_API_KEY = "xai-test_prefix";
       expect(getDefaultProvider()).toBe("xai");
+
+      process.env.AI_API_KEY = "pplx-test_prefix";
+      expect(getDefaultProvider()).toBe("perplexity");
+
+      process.env.AI_API_KEY = "nvapi-test_prefix";
+      expect(getDefaultProvider()).toBe("nvidia");
 
       process.env.AI_API_KEY = "sk-openai_prefix";
       expect(getDefaultProvider()).toBe("openai");
@@ -138,6 +149,27 @@ describe("ai-provider service", () => {
       });
       expect(resolved.provider).toBe("openrouter");
     });
+
+    it.each([
+      ["deepseek", "sk_dummy_deepseek_key", "deepseek-chat"],
+      ["mistral", "dummy_mistral_key", "mistral-small-latest"],
+      [
+        "togetherai",
+        "dummy_togetherai_key",
+        "meta-llama/Llama-3.3-70B-Instruct-Turbo",
+      ],
+      ["perplexity", "pplx-dummy_test_key", "sonar"],
+      ["nvidia", "nvapi-dummy_test_key", "meta/llama-3.3-70b-instruct"],
+    ] as const)(
+      "resolves %s language model instance with its default model",
+      (provider, apiKey, defaultModel) => {
+        const resolved = resolveLanguageModel({ provider, apiKey });
+        expect(resolved.provider).toBe(provider);
+        expect(resolved.modelName).toBe(defaultModel);
+        expect(resolved.model).toBeDefined();
+        expect(PROVIDER_DEFAULT_MODELS[provider]).toBe(defaultModel);
+      },
+    );
   });
 
   describe("getSafeMaxOutputTokens", () => {
