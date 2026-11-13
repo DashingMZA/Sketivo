@@ -15,14 +15,71 @@ allowBuilds:
 
 minimumReleaseAgeExclude:
   - zod@4.6.5
-  - "@better-auth/core@1.7.13"
-  - "@better-auth/drizzle-adapter@1.7.13"
-  - "@better-auth/kysely-adapter@1.7.13"
-  - "@better-auth/memory-adapter@1.7.13"
-  - "@better-auth/mongo-adapter@1.7.13"
-  - "@better-auth/prisma-adapter@1.7.13"
-  - "@better-auth/telemetry@1.7.13"
-  - better-auth@1.7.13
+  - "@better-auth/core@1.7.13 || 1.7.22"
+  - "@better-auth/drizzle-adapter@1.7.13 || 1.7.22"
+  - "@better-auth/kysely-adapter@1.7.13 || 1.7.22"
+  - "@better-auth/memory-adapter@1.7.13 || 1.7.22"
+  - "@better-auth/mongo-adapter@1.7.13 || 1.7.22"
+  - "@better-auth/prisma-adapter@1.7.13 || 1.7.22"
+  - "@better-auth/telemetry@1.7.13 || 1.7.22"
+  - better-auth@1.7.13 || 1.7.22
+  - "@ai-sdk/alibaba@2.0.89"
+  - "@ai-sdk/anthropic@4.0.103"
+  - "@ai-sdk/azure@4.0.124"
+  - "@ai-sdk/deepgram@3.1.52"
+  - "@ai-sdk/deepseek@3.0.85"
+  - "@ai-sdk/elevenlabs@3.0.85"
+  - "@ai-sdk/fal@3.0.82"
+  - "@ai-sdk/gateway@4.0.144"
+  - "@ai-sdk/google-vertex@5.0.139"
+  - "@ai-sdk/google@4.0.119"
+  - "@ai-sdk/groq@4.0.82"
+  - "@ai-sdk/heygen@3.0.23"
+  - "@ai-sdk/klingai@4.0.83"
+  - "@ai-sdk/langchain@3.0.171"
+  - "@ai-sdk/mcp@2.0.98"
+  - "@ai-sdk/mistral@4.0.85"
+  - "@ai-sdk/openai-compatible@3.0.91"
+  - "@ai-sdk/openai@4.0.116"
+  - "@ai-sdk/otel@1.0.171"
+  - "@ai-sdk/perplexity@5.0.33"
+  - "@ai-sdk/provider-utils@5.0.80"
+  - "@ai-sdk/provider@4.0.38"
+  - "@ai-sdk/react@4.0.175"
+  - "@ai-sdk/replicate@3.0.82"
+  - "@ai-sdk/togetherai@3.0.92"
+  - "@ai-sdk/typesafe-ai@3.0.39"
+  - "@ai-sdk/xai@5.0.44"
+  - "@aws-sdk/client-s3@3.1168.0"
+  - "@cloudflare/workers-types@5.20261112.1"
+  - "@opennextjs/aws@4.1.16"
+  - "@opennextjs/cloudflare@1.20.17"
+  - "@vercel/sandbox@4.0.0"
+  - ai@7.0.171
+  - framer-motion@14.13.0
+  - icu-minify@4.15.1
+  - miniflare@5.20261110.2-beta
+  - motion-dom@14.13.0
+  - motion@14.13.0
+  - next-intl-swc-plugin-extractor@4.15.1
+  - next-intl@4.15.1
+  - prettier@3.10.1
+  - use-intl@4.15.1
+  - wrangler@4.161.0
+  - ws@8.23.0
 
 overrides:
   mdast-util-to-markdown: 2.1.2
+
+permissions:
+  '@reduxjs/toolkit':
+    skills: [modern-redux, redux-dataflow, debug-redux-toolkit-apps, migrate-to-modern-redux, adopt-rtk-query, build-slices-and-selectors, design-state-ownership, handle-side-effects]
+
+skills:
+  dirs:
+    - .agent/skills
+    - .agents/skills
+    - .claude/skills
+    - .cursor/skills
+    - .gemini/skills
+    - .github/skills
