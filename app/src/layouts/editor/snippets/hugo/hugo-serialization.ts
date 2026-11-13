@@ -59,6 +59,47 @@ const trimBodyTrailingNewline = (children: Descendant[]): Descendant[] => {
 };
 
 /**
+ * Drops the newline(s) that separate a block body from its opening tag.
+ *
+ * Mirror of {@link trimBodyTrailingNewline}: the line break after the opener
+ * is structure, not content. Left in the first text node, Plate's paragraph
+ * rule rewrites the leading line break into a literal `\` hard-break line on
+ * serialize, and that line re-parses as another leading `\n` text node — so
+ * every raw/rich switch grows one more blank `\` line after the opener.
+ */
+const trimBodyLeadingNewline = (children: Descendant[]): Descendant[] => {
+  let rest = [...children];
+
+  // Drop leading text nodes that hold nothing but newlines (leftover from an
+  // already-corrupted round trip: each stray `\` line re-parses as one).
+  while (
+    rest.length > 0 &&
+    "text" in rest[0] &&
+    typeof rest[0].text === "string" &&
+    /^\n+$/.test(rest[0].text)
+  ) {
+    rest = rest.slice(1);
+  }
+
+  const first = rest.at(0);
+  if (!first) return rest;
+
+  if ("text" in first && typeof first.text === "string") {
+    const text = first.text.replace(/^\n+/, "");
+    if (text === first.text) return rest;
+    return [{ ...first, text }, ...rest.slice(1)];
+  }
+
+  const nested = (first as TElement).children;
+  if (!Array.isArray(nested)) return rest;
+
+  return [
+    { ...first, children: trimBodyLeadingNewline(nested as Descendant[]) },
+    ...rest.slice(1),
+  ];
+};
+
+/**
  * Deserializes Hugo shortcode mdast nodes to Slate nodes
  *
  * NOTE: This also handles JSX component detection because when JSX is serialized
@@ -88,11 +129,17 @@ export const deserializeShortcode = (
   const isBlock = Boolean(shortcodeMeta.isBlock || closing);
 
   // Deserialize children for block shortcodes
-  const children = isBlock
-    ? mdastNode.children && mdastNode.children.length > 0
-      ? trimBodyTrailingNewline(
-          convertNodesDeserialize(mdastNode.children, deco, options),
+  const body =
+    isBlock && mdastNode.children && mdastNode.children.length > 0
+      ? trimBodyLeadingNewline(
+          trimBodyTrailingNewline(
+            convertNodesDeserialize(mdastNode.children, deco, options),
+          ),
         )
+      : [];
+  const children = isBlock
+    ? body.length > 0
+      ? body
       : [{ text: "" }]
     : [{ text: mdastNode.content || "" }];
 
