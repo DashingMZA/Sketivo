@@ -1,0 +1,58 @@
+{
+  "navigation": {
+    "menu": {
+      "footer_account": {
+        "account": "اکاؤنٹ",
+        "updates": "اپ ڈیٹس",
+        "support": "سپورٹ",
+        "ai_agent": "AI ایجنٹ",
+        "mcp_connection": "MCP کنکشن",
+        "preferences": "ترجیحات",
+        "source_code": "سورس کوڈ"
+      },
+      "user_dashboard": {
+        "overview": "جائزہ",
+        "account": "اکاؤنٹ",
+        "preferences": "ترجیحات",
+        "ai_agent": "AI ایجنٹ",
+        "mcp_connection": "MCP کنکشن"
+      },
+      "org_dashboard": {
+        "websites": "ویب سائٹس",
+        "settings": "سیٹنگز"
+      },
+      "org_settings": {
+        "general": "عمومی",
+        "members": "اراکین",
+        "sandbox": "سینڈ باکس"
+      },
+      "project_dashboard": {
+        "overview": "جائزہ",
+        "media": "میڈیا",
+        "settings": "سیٹنگز"
+      },
+      "project_settings": {
+        "general": "عمومی",
+        "configure": "کنفیگریشن",
+        "git": "Git",
+        "schemas": "اسکیما",
+        "snippets": "اسنیپٹس",
+        "arrangement": "ترتیب"
+      }
+    },
+    "sidebar": {
+      "open_menu": "مینیو کھولیں",
+      "code": "کوڈ",
+      "config": "کنفیگ",
+      "actions": {
+        "close": "بند کریں"
+      },
+      "sidebar_trigger_mobile": {
+        "title": "مواد کی فہرست",
+        "description": "سائیڈ بار سے اپنی تمام مواد فائلیں دیکھیں",
+        "message": "اپنا مواد تلاش کر رہے ہیں؟ تمام فائلیں دیکھنے کے لیے سائیڈ بار کھولیں۔",
+        "open_sidebar": "سائیڈ بار کھولیں"
+      }
+    }
+  }
+}
