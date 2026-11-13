@@ -1,0 +1,28 @@
+{
+  "add-site": {
+    "add_new_site": "نئی سائٹ شامل کریں",
+    "create_new_site": "نئی سائٹ بنائیں",
+    "import_site_desc": "اپنی سائٹ درآمد کرنے کا طریقہ منتخب کریں۔",
+    "add_to_org_desc": "اپنی تنظیم میں نئی سائٹ شامل کریں۔",
+    "connected": "منسلک",
+    "not_connected": "منسلک نہیں ہے",
+    "site_name_label": "سائٹ کا نام",
+    "site_name_placeholder": "سائٹ کا نام",
+    "git_provider_label": "Git فراہم کنندہ",
+    "choose_provider_placeholder": "اپنا فراہم کنندہ منتخب کریں",
+    "repository_label": "ریپوزٹری",
+    "select_repository_placeholder": "ریپوزٹری منتخب کریں",
+    "branch_label": "برانچ",
+    "please_wait": "براہ کرم انتظار کریں",
+    "choose_branch_placeholder": "اپنی برانچ منتخب کریں",
+    "no_repository_found": "کوئی ریپوزٹری نہیں ملی",
+    "cant_see_repo": "اپنی ریپوزٹری نہیں دیکھ پا رہے؟",
+    "configure_on": "{provider} پر کنفیگر کریں",
+    "site_url_label": "سائٹ URL (اختیاری)",
+    "site_url_placeholder": "https://example.com",
+    "back": "واپس",
+    "create_site": "سائٹ بنائیں",
+    "project_created_success": "پروجیکٹ کامیابی سے بنایا گیا",
+    "something_went_wrong": "کچھ غلط ہو گیا!"
+  }
+}

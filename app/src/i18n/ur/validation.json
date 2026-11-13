@@ -1,0 +1,32 @@
+{
+  "validation": {
+    "required": "اس فیلڈ کو بھرنا ضروری ہے۔",
+    "email_invalid": "یہ درست ای میل نہیں ہے۔",
+    "name_required": "نام ضروری ہے",
+    "name_min": "نام کم از کم {count} حروف کا ہونا چاہیے",
+    "password_min": "پاس ورڈ کم از کم {count} حروف کا ہونا چاہیے",
+    "password_max": "پاس ورڈ {count} حروف سے کم ہونا چاہیے",
+    "password_letter": "پاس ورڈ میں کم از کم ایک حرف ہونا چاہیے",
+    "password_digit": "پاس ورڈ میں کم از کم ایک عدد ہونا چاہیے",
+    "password_special": "پاس ورڈ میں کم از کم ایک خاص حرف ہونا چاہیے",
+    "password_mismatch": "پاس ورڈ مماثل نہیں ہیں",
+    "otp_length": "OTP بالکل {count} ہندسوں کا ہونا چاہیے۔",
+    "select_provider": "براہ کرم فراہم کنندہ منتخب کریں۔",
+    "select_repository": "براہ کرم ریپوزٹری منتخب کریں۔",
+    "select_branch": "براہ کرم برانچ منتخب کریں۔",
+    "project_required": "پروجیکٹ کا نام ضروری ہے",
+    "select_file_type": "براہ کرم فائل کی قسم منتخب کریں",
+    "select_frontmatter_type": "براہ کرم فرنٹ میٹر کی قسم منتخب کریں",
+    "select_content_folder": "اپنا مواد فولڈر منتخب کریں۔",
+    "select_media_folder": "اپنا میڈیا فولڈر منتخب کریں۔",
+    "select_public_folder": "اپنا عوامی فولڈر منتخب کریں۔",
+    "select_theme": "براہ کرم تھیم منتخب کریں",
+    "select_role": "براہ کرم کردار منتخب کریں۔",
+    "select_preference": "براہ کرم کم از کم ایک ترجیح منتخب کریں۔",
+    "image_requirements": "معاون تصویری اقسام: JPEG، JPG، PNG، WebP۔ زیادہ سے زیادہ فائل سائز 200 KB ہے۔",
+    "api_key_required": "OpenAI API کلید ضروری ہے",
+    "label_required": "براہ کرم لیبل درج کریں",
+    "name_min_chars": "نام کم از کم {count} حروف کا ہونا چاہیے۔",
+    "heading_min_chars": "سرخی کم از کم {count} حروف کا ہونا چاہیے۔"
+  }
+}
