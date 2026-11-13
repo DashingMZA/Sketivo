@@ -1,1 +1,42 @@
-{"$schema":"node_modules/wrangler/config-schema.json","assets":{"binding":"ASSETS","directory":".open-next/assets"},"compatibility_date":"2026-11-09","compatibility_flags":["nodejs_compat"],"main":".open-next/worker.js","name":"sketivo-app","routes":[{"custom_domain":true,"pattern":"sketivo.com"}],"vars":{"NEXT_PUBLIC_BACKEND_URL":"https://api.sketivo.com/api/v1","NEXT_PUBLIC_BRAND_LOGO":"/images/logo.svg","NEXT_PUBLIC_BRAND_LOGO_DARK":"/images/logo-white.svg","NEXT_PUBLIC_BRAND_LOGO_HEIGHT":"40","NEXT_PUBLIC_BRAND_LOGO_ICON":"/images/logo-icon.svg","NEXT_PUBLIC_BRAND_LOGO_WIDTH":"136","NEXT_PUBLIC_BRAND_NAME":"Sketivo","NEXT_PUBLIC_BRAND_SLUG":"sketivo","NEXT_PUBLIC_BRAND_URL":"https://sketivo.com","NEXT_PUBLIC_BUCKET_URL":"https://media.sketivo.com","NEXT_PUBLIC_COMMUNITY_URL":"https://discord.gg/KrpvHfqcNA","NEXT_PUBLIC_DASHBOARD_HOME":"/dashboard/account","NEXT_PUBLIC_DOCS_URL":"https://docs.sketivo.com","NEXT_PUBLIC_BRAND_FAVICON":"/images/favicon.png","NEXT_PUBLIC_GIT_APP_NAME":"","NEXT_PUBLIC_HP_WS_URL":"wss://api.sketivo.com/api/v1/editor/collab","NEXT_PUBLIC_PRIVACY_URL":"https://sketivo.com/privacy-policy","NEXT_PUBLIC_SOURCE_URL":"https://github.com/DashingMZA/Sketivo","NEXT_PUBLIC_STATUS_URL":"https://status.sketivo.com","NEXT_PUBLIC_SUPPORT_URL":"https://sketivo.com/contact","NEXT_PUBLIC_TERMS_URL":"https://sketivo.com/terms","NEXT_PUBLIC_UPDATES_URL":"https://updates.sketivo.com"},"workers_dev":false}
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "sketivo-app",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2026-11-09",
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": false,
+  "assets": {
+    "binding": "ASSETS",
+    "directory": ".open-next/assets"
+  },
+  "routes": [
+    {
+      "pattern": "sketivo.com",
+      "custom_domain": true
+    }
+  ],
+  "vars": {
+    "NEXT_PUBLIC_BACKEND_URL": "https://api.sketivo.com/api/v1",
+    "NEXT_PUBLIC_HP_WS_URL": "wss://api.sketivo.com/api/v1/editor/collab",
+    "NEXT_PUBLIC_BUCKET_URL": "https://media.sketivo.com",
+    "NEXT_PUBLIC_BRAND_NAME": "Sketivo",
+    "NEXT_PUBLIC_BRAND_SLUG": "sketivo",
+    "NEXT_PUBLIC_BRAND_URL": "https://sketivo.com",
+    "NEXT_PUBLIC_BRAND_LOGO": "/images/logo.svg",
+    "NEXT_PUBLIC_BRAND_LOGO_DARK": "/images/logo-white.svg",
+    "NEXT_PUBLIC_BRAND_LOGO_ICON": "/images/logo-icon.svg",
+    "NEXT_PUBLIC_BRAND_LOGO_WIDTH": "136",
+    "NEXT_PUBLIC_BRAND_LOGO_HEIGHT": "40",
+    "NEXT_PUBLIC_BRAND_FAVICON": "/images/favicon.png",
+    "NEXT_PUBLIC_DASHBOARD_HOME": "/dashboard/account",
+    "NEXT_PUBLIC_GIT_APP_NAME": "sketivo",
+    "NEXT_PUBLIC_COMMUNITY_URL": "https://discord.gg/KrpvHfqcNA",
+    "NEXT_PUBLIC_DOCS_URL": "https://docs.sketivo.com",
+    "NEXT_PUBLIC_SOURCE_URL": "https://github.com/DashingMZA/Sketivo",
+    "NEXT_PUBLIC_STATUS_URL": "https://status.sketivo.com",
+    "NEXT_PUBLIC_SUPPORT_URL": "https://sketivo.com/contact",
+    "NEXT_PUBLIC_UPDATES_URL": "https://updates.sketivo.com",
+    "NEXT_PUBLIC_PRIVACY_URL": "https://sketivo.com/privacy-policy",
+    "NEXT_PUBLIC_TERMS_URL": "https://sketivo.com/terms"
+  }
+}
