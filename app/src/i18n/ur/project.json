@@ -1,0 +1,173 @@
+{
+  "project": {
+    "activity": {
+      "recent_file_changes": "فائلوں میں حالیہ تبدیلیاں",
+      "latest_activity": "آپ یا آپ کی ٹیم کی تازہ ترین سرگرمی",
+      "updated": "اپ ڈیٹ کیا گیا",
+      "created": "بنایا گیا",
+      "deleted": "حذف کیا گیا",
+      "renamed": "نام تبدیل کیا گیا",
+      "duplicated": "ڈپلیکیٹ کیا گیا",
+      "no_more": "مزید کچھ نہیں",
+      "load_more": "مزید لوڈ کریں"
+    },
+    "branching": {
+      "incoming_request": "آنے والی {provider} درخواست",
+      "merge": "ضم کریں",
+      "details": "تفصیلات",
+      "changes_detected": "تبدیلیاں ملی ہیں",
+      "view_request": "درخواست دیکھیں",
+      "create_request": "{provider} درخواست بنائیں",
+      "title": "عنوان",
+      "description_optional": "تفصیل (اختیاری)",
+      "placeholder_title": "فیچر کا عنوان",
+      "placeholder_description": "اپنی تبدیلیاں بیان کریں...",
+      "merge_into": "{head} کو {base} میں ضم کریں",
+      "merge_description": "{head} کی تبدیلیاں {base} میں ضم کریں",
+      "success_created": "{type} کامیابی سے بن گیا!",
+      "success_merged": "{branch} کامیابی سے ضم ہو گئی!",
+      "error_create": "{type} بنانے میں ناکامی ہوئی",
+      "error_merge": "ضم کرنے میں ناکامی ہوئی",
+      "permission_error_title": "GitHub ایپ کی اجازت کی خرابی",
+      "permission_error_description": "آپ کی GitHub ایپ کو 'Pull requests: Write' کی اجازت درکار ہے۔ براہ کرم اپنی GitHub ترتیبات میں نئی اجازتیں قبول کریں۔",
+      "review": "جائزہ لیں",
+      "switcher": {
+        "placeholder": "برانچ تلاش کریں...",
+        "no_results": "کوئی برانچ نہیں ملی۔",
+        "default": "ڈیفالٹ",
+        "create_new": "نئی برانچ بنائیں"
+      },
+      "create": {
+        "title": "نئی برانچ بنائیں",
+        "desc": "<branch>{branchName}</branch> سے نئی برانچ بنائیں",
+        "label": "برانچ کا نام",
+        "placeholder": "مثلاً staging",
+        "submit": "برانچ بنائیں",
+        "error": {
+          "required": "برانچ کا نام ضروری ہے",
+          "sha": "بنیادی برانچ کا SHA نہیں ملا",
+          "failed": "نئی برانچ بنانے میں ناکامی ہوئی"
+        },
+        "success": "برانچ {name} کامیابی سے بن گئی!"
+      },
+      "status": {
+        "on_default": "آپ ڈیفالٹ برانچ پر ہیں: {branch}",
+        "ahead": "{branch}، {base} سے آگے ہے۔"
+      }
+    },
+    "git": {
+      "recent_activities": "Git کی حالیہ سرگرمیاں",
+      "recent_commits": "آپ کی ریپوزیٹری میں حالیہ کمٹس",
+      "revert": "ریورٹ کریں",
+      "reset": "ری سیٹ کریں",
+      "commit": "کمٹ کریں",
+      "restore_version": "ورژن بحال کریں",
+      "undo_commit": "کمٹ واپس لیں",
+      "admin_only": "صرف ایڈمن اور مالکان یہ عمل کر سکتے ہیں",
+      "restore_title": "اس ورژن پر بحال کریں",
+      "restore_description_github": "اس سے آپ بالکل اسی حالت میں واپس چلے جائیں گے جیسی آپ کی سائٹ اس لمحے نظر آتی تھی۔ اس ورژن کے بعد کی گئی کوئی بھی تبدیلی ہٹا دی جائے گی۔",
+      "restore_description_gitlab": "اس سے آپ کی سائٹ بالکل اسی حالت میں واپس آ جائے گی جیسی وہ اس لمحے نظر آتی تھی۔ ایسا کرنے کے لیے ہم ایک نیا اپ ڈیٹ بنائیں گے، تاکہ آپ کی تاریخ محفوظ رہے۔",
+      "restore_warning_github": "⚠️ انتباہ: یہ مستقل تبدیلی ہے۔ اس برانچ سے تمام نئے اپ ڈیٹس حذف کر دیے جائیں گے۔ اسے صرف اس صورت میں استعمال کریں جب آپ حالیہ کام کو مکمل طور پر ترک کرنا چاہتے ہوں۔",
+      "restore_warning_gitlab": "✓ یہ محفوظ ہے۔ آپ کا حالیہ کام حذف نہیں ہو گا؛ ہم بس اس پرانے ورژن کی بنیاد پر نیا ورژن بناتے ہیں۔",
+      "undo_title": "اس کمٹ کو واپس لیں",
+      "undo_description": "اس سے ایک نیا اپ ڈیٹ بنے گا جو اس مخصوص ورژن میں کی گئی تمام تبدیلیوں کو الٹ دے گا۔",
+      "undo_warning": "✓ یہ محفوظ ہے! ہم آپ کی تاریخ میں ایک نیا ورژن شامل کریں گے جو ان مخصوص تبدیلیوں کو منسوخ کر دے گا، باقی سب کچھ برقرار رہے گا۔",
+      "feedback": {
+        "reset_success": "برانچ کامیابی سے {sha} پر ری سیٹ ہو گئی!",
+        "revert_success": "کمٹ ریورٹ ہو گیا! نیا کمٹ: {sha}",
+        "revert_failed": "ریورٹ کرنے میں ناکامی ہوئی"
+      },
+      "actions": {
+        "restoring": "بحال کیا جا رہا ہے",
+        "undoing": "واپس لیا جا رہا ہے",
+        "confirm_restore": "بحالی کی تصدیق کریں",
+        "confirm_undo": "واپس لینے کی تصدیق کریں"
+      },
+      "commit_messages": {
+        "add_file": "{name} شامل کریں",
+        "rename_file": "فائل {name} کا نام تبدیل کریں",
+        "delete_file": "فائل {name} حذف کریں",
+        "duplicate_file": "فائل {name} ڈپلیکیٹ کریں",
+        "create_schema": "اسکیما {name} بنائیں",
+        "update_schema": "اسکیما {name} اپ ڈیٹ کریں",
+        "delete_schema": "اسکیما {name} حذف کریں",
+        "update_config": "سائٹ کی ترتیبات اپ ڈیٹ کریں"
+      }
+    },
+    "setup-steps": {
+      "getting_started": "شروعات کریں",
+      "description": "{brand} سیٹ اپ کرنے اور اپنا پہلا مواد شائع کرنے کے لیے یہ مراحل مکمل کریں",
+      "progress": "پیش رفت",
+      "progress_count": "{total} میں سے {completed}",
+      "steps": {
+        "add_site": {
+          "title": "نئی سائٹ شامل کریں",
+          "description": "آپ کی سائٹ بن گئی ہے اور ترتیب کے لیے تیار ہے"
+        },
+        "configure_project": {
+          "title": "پروجیکٹ ترتیب دیں",
+          "description": "اپنی ریپوزیٹری کی ساخت ترتیب دیں (مواد کا فولڈر، میڈیا روٹ وغیرہ)"
+        },
+        "publish_content": {
+          "title": "پہلا مواد شائع کریں",
+          "description": "بائیں پینل سے اپنا پہلا مواد شائع کریں"
+        },
+        "deploy_site": {
+          "title": "سائٹ ڈپلائے کریں",
+          "description": "پہلی بار اپنی سائٹ Vercel پر ڈپلائے کریں"
+        }
+      },
+      "edit_config": "پروجیکٹ کی ترتیب میں ترمیم کریں",
+      "deploy_to_vercel": "Vercel پر ڈپلائے کریں",
+      "login_signup": "لاگ ان یا سائن اپ کریں",
+      "create_account": "اکاؤنٹ بنائیں",
+      "deploy_repo": "اپنی ریپوزیٹری ڈپلائے کریں",
+      "one_click": "ایک کلک سے",
+      "or": "یا",
+      "already_deployed": "پہلے سے ڈپلائے ہے؟ URL ابھی درج کریں",
+      "vercel_host": "اپنی سائٹ ہوسٹ کرنے کے لیے Vercel پر"
+    },
+    "no_sites": {
+      "welcome": "{brand} میں خوش آمدید 👋",
+      "connect_description": "منٹوں میں شروع کرنے کے لیے اپنی موجودہ ویب سائٹ منسلک کریں۔",
+      "add_site": "نئی سائٹ شامل کریں"
+    },
+    "preview": {
+      "button": "پری ویو",
+      "starting": "شروع ہو رہا ہے",
+      "booting": "بوٹ ہو رہا ہے",
+      "pushing": "پش ہو رہا ہے",
+      "sync": "پری ویو سنک کریں",
+      "open": "پری ویو کھولیں",
+      "destroy": "پری ویو ختم کریں",
+      "options": "پری ویو کے اختیارات",
+      "outdated_tooltip": "پری ویو پرانا ہو سکتا ہے — سنک استعمال کریں",
+      "toast_expired": "پری ویو سیشن ختم ہو گیا",
+      "toast_expires_in": "پری ویو تقریباً {mins} منٹ میں ختم ہو گا",
+      "toast_ready": "پری ویو تیار ہے!",
+      "toast_failed": "پری ویو ناکام ہو گیا",
+      "toast_destroyed": "پری ویو ختم کر دیا گیا"
+    },
+    "config_empty": {
+      "title": "یہاں دیکھنے کو کچھ نہیں ہے",
+      "description": "اس مواد کے لیے کوئی ترتیب دستیاب نہیں ہے۔ براہ کرم اس مواد کو ترتیب دینے کے لیے پہلے ایک اسکیما بنائیں۔"
+    },
+    "code_preview": {
+      "edit_code": "کوڈ میں ترمیم کریں",
+      "lines": "لائنیں:",
+      "characters": "حروف:",
+      "language": "زبان:",
+      "preview": "پری ویو"
+    },
+    "code_ai": {
+      "generating": "براہ راست ایڈیٹر میں تیار کیا جا رہا ہے",
+      "streaming": "{file} میں {count} لائنیں اسٹریم ہو رہی ہیں...",
+      "view_raw": "خام آؤٹ پٹ کا حصہ دیکھیں",
+      "target_scope": "ہدف کا دائرہ:",
+      "quick_actions": "فوری اقدامات:",
+      "refine_shortcut": "بہتر بنانے کے لیے ⌘+↵",
+      "run_shortcut": "چلانے کے لیے ⌘+↵",
+      "close_explanation": "وضاحت بند کریں"
+    }
+  }
+}

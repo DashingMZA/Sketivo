@@ -1,0 +1,136 @@
+{
+  "schema": {
+    "types": {
+      "string": "متن (String)",
+      "number": "عدد (Number)",
+      "boolean": "بولین (Boolean)",
+      "media": "میڈیا (Media)",
+      "gallery": "گیلری (Gallery)",
+      "array": "ارے (Array)",
+      "date": "تاریخ (Date)",
+      "object": "آبجیکٹ (Object)"
+    },
+    "fields": {
+      "label": "لیبل",
+      "name": "فیلڈ کا نام",
+      "type": "فیلڈ کی قسم",
+      "placeholder": {
+        "type": "قسم منتخب کریں",
+        "label": "مثلاً، عنوان",
+        "name": "خودکار_تیار_شدہ"
+      },
+      "description": "تفصیل",
+      "default_value": "طے شدہ قیمت",
+      "boolean": {
+        "true": "صحیح (True)",
+        "false": "غلط (False)"
+      },
+      "input_style": {
+        "label": "ان پٹ اسٹائل",
+        "placeholder": "ان پٹ اسٹائل منتخب کریں",
+        "options": {
+          "standard_text": "معیاری ٹیکسٹ باکس",
+          "standard_table": "معیاری ٹیبل",
+          "dropdown": "ڈراپ ڈاؤن انتخاب",
+          "multi_dropdown": "ملٹی سلیکٹ ڈراپ ڈاؤن"
+        }
+      }
+    },
+    "configuration": {
+      "title": "فیلڈ کنفیگریشن",
+      "dropdown": {
+        "title": "ڈراپ ڈاؤن کنفیگریشن",
+        "multi_title": "ملٹی سلیکٹ کنفیگریشن",
+        "source": "ماخذ",
+        "source_placeholder": "ماخذ منتخب کریں",
+        "sources": {
+          "static": "جامد آپشنز",
+          "folder": "فولڈر سے فائلز",
+          "file": "فائل سے ڈیٹا"
+        },
+        "static": {
+          "placeholder": "آپشن کی قیمت درج کریں"
+        },
+        "folder": {
+          "path": "فولڈر کا پاتھ",
+          "path_placeholder": "فولڈر منتخب کریں",
+          "display_field": "ڈسپلے فیلڈ (فرنٹ میٹر کی)",
+          "field_placeholder": "مثلاً title (طے شدہ طور پر فائل کا نام)",
+          "loading_fields": "فیلڈز لوڈ ہو رہے ہیں...",
+          "default_field": "فائل کا نام (طے شدہ)",
+          "include_pattern": "شامل کرنے کا پیٹرن (Glob)",
+          "include_placeholder": "مثلاً *.md",
+          "exclude_pattern": "خارج کرنے کا پیٹرن (Glob)",
+          "exclude_placeholder": "مثلاً index.md"
+        },
+        "file": {
+          "path": "فائل کا پاتھ (JSON/YAML/TOML)",
+          "path_placeholder": "فائل منتخب کریں",
+          "data_key": "ڈیٹا کی (نکالنے والا فیلڈ)",
+          "key_placeholder": "مثلاً categories یا name",
+          "default_key": "پوری فائل/ارے نکالیں"
+        }
+      }
+    },
+    "array": {
+      "label": "ارے برائے",
+      "placeholder": "ذیلی قسم منتخب کریں"
+    },
+    "nested": {
+      "title": "نیسٹڈ فیلڈز",
+      "add_button": "نیسٹڈ فیلڈ شامل کریں"
+    },
+    "date": {
+      "default_value": "طے شدہ قیمت",
+      "mode_placeholder": "موڈ منتخب کریں",
+      "static": "مقررہ تاریخ",
+      "dynamic": "موجودہ تاریخ (لائیو)",
+      "empty": "خالی",
+      "select_initial": "ابتدائی تاریخ منتخب کریں",
+      "today": "آج"
+    },
+    "actions": {
+      "add_option": "آپشن شامل کریں",
+      "add_field": "فیلڈ شامل کریں",
+      "update_field": "فیلڈ اپڈیٹ کریں",
+      "enter_option": "آپشن درج کریں",
+      "include": "شامل کریں",
+      "ignore": "نظر انداز کریں"
+    },
+    "builder": {
+      "add_new_field": "نیا فیلڈ شامل کریں",
+      "configure_properties": "نئے فیلڈ کی خصوصیات کنفیگر کریں",
+      "field_settings": "فیلڈ سیٹنگز",
+      "required": "لازمی",
+      "show": "دکھائیں",
+      "hide": "چھپائیں",
+      "no_field_selected": "کوئی فیلڈ منتخب نہیں ہے",
+      "select_to_edit": "اس کی سیٹنگز میں ترمیم کے لیے فہرست سے ایک فیلڈ منتخب کریں",
+      "no_fields": "ابھی کوئی فیلڈ نہیں ہے",
+      "add_first_field": "نیچے اپنا پہلا فیلڈ شامل کریں",
+      "back_to_fields": "فیلڈز پر واپس جائیں",
+      "field_count": "{count, plural, =0 {0 فیلڈز} one {1 فیلڈ} other {# فیلڈز}}",
+      "configure_field": "نئے فیلڈ کی خصوصیات کنفیگر کریں",
+      "select_field_desc": "اس کی سیٹنگز میں ترمیم کے لیے فہرست سے ایک فیلڈ منتخب کریں",
+      "no_fields_yet": "ابھی تک کوئی فیلڈ نہیں ہے",
+      "type_string": "سٹرنگ",
+      "type_number": "عدد",
+      "type_boolean": "بولین",
+      "type_media": "میڈیا",
+      "type_gallery": "گیلری",
+      "type_array": "ارے",
+      "type_date": "تاریخ",
+      "type_object": "آبجیکٹ",
+      "opt_static": "جامد آپشنز",
+      "opt_folder": "فولڈر سے فائلز",
+      "opt_file": "فائل سے ڈیٹا",
+      "placeholder_subtype": "ذیلی قسم منتخب کریں",
+      "placeholder_default": "طے شدہ قیمت منتخب کریں",
+      "placeholder_style": "ان پٹ اسٹائل منتخب کریں"
+    },
+    "errors": {
+      "name_required": "فیلڈ کا نام ضروری ہے",
+      "name_exists": "فیلڈ کا نام پہلے سے موجود ہے"
+    }
+  }
+}
